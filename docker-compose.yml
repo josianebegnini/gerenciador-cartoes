@@ -1,0 +1,132 @@
+services:
+  # 🗄️ Banco de Dados PostgreSQL
+  postgres:
+    image: postgres:15
+    container_name: postgres
+    restart: always
+    environment:
+      POSTGRES_DB: agendamento
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+    ports:
+      - "5435:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d agendamento"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"       # porta de comunicação do broker
+      - "15672:15672"     # painel web do RabbitMQ
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+
+  # 🩺 Microserviço de Cartao
+  ms-cartao:
+    build:
+      context: ./ms-cartao
+    container_name: ms-cartao
+    restart: always
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/cartao
+      SPRING_DATASOURCE_USERNAME: user
+      SPRING_DATASOURCE_PASSWORD: pass
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # 👩‍⚕️ Microserviço de Clientes
+  ms-cliente:
+    build:
+      context: ./ms-cliente
+    container_name: ms-cliente
+    restart: always
+    ports:
+      - "8082:8082"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/cliente
+      SPRING_DATASOURCE_USERNAME: user
+      SPRING_DATASOURCE_PASSWORD: pass
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+
+  # 🔐 Microserviço de Autenticação (JWT)
+  ms-auth:
+    build:
+      context: ./ms-auth
+    container_name: ms-auth
+    restart: always
+    ports:
+      - "8084:8084"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/cartao
+      SPRING_DATASOURCE_USERNAME: user
+      SPRING_DATASOURCE_PASSWORD: pass
+      JWT_SECRET: mySecretKeyForJWTGenerationThatIsAtLeast32BytesLong
+      JWT_EXPIRATION: 3600000
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # 🌐 API Gateway
+  gw-gerenciador-cartoes:
+    build:
+      context: ./gw-gerenciador-cartoes
+    container_name: gw-gerenciador-cartoes
+    restart: always
+    ports:
+      - "8085:8085"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      ms-medico:
+        condition: service_started
+      ms-paciente:
+        condition: service_started
+      ms-agenda:
+        condition: service_started
+      ms-auth:
+        condition: service_started
+
+  mail:
+    build:
+      context: ./mail
+    container_name: mail
+    ports:
+      - "8086:8086"
+    environment:
+      - SPRING_RABBITMQ_HOST=rabbitmq
+      - SPRING_RABBITMQ_PORT=5672
+      - SPRING_RABBITMQ_USERNAME=guest
+      - SPRING_RABBITMQ_PASSWORD=guest
+    depends_on:
+      - rabbitmq
+
+  # 💻 Front-end (Spring Boot servindo HTML/JS/CSS)
+  gerenciador-cartoes-front:
+    build:
+      context: ./gerenciador-cartoes-front
+    container_name: 
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      APP_GATEWAY_BASE_URL: http://gw-gerenciador-cartoes:8085
+    depends_on:
+      gw-gerenciador-cartoes:
+        condition: service_started
+
+volumes:
+  postgres_data:
