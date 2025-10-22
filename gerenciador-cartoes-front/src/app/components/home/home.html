@@ -1,0 +1,151 @@
+<div class="layout">
+
+    <app-menu-lateral
+    (novoCliente)="novoCliente()"
+    (navegarHome)="onNavegarHome()"
+    (navegarCartoes)="onNavegarCartoes()"
+    (navegarRelatorios)="onNavegarRelatorios()"
+  ></app-menu-lateral>
+
+  <main class="main-content">
+    <header class="header">
+      <div class="header-content">
+       <!--<img src="../../../../assets/logo.png" width="32" height="32">-->
+        <svg class="logo" width="32" height="32" viewBox="0 0 32 32" fill="none">
+          <rect width="32" height="32" rx="6" fill="#4B2E2E"/>
+          <path d="M16 8L20 12L16 16L12 12L16 8Z" fill="white"/>
+          <path d="M16 16L20 20L16 24L12 20L16 16Z" fill="white" opacity="0.7"/>
+        </svg>
+        <h1 class="title">Gerenciamento de Cartões de Clientes</h1>
+      </div>
+    </header>
+
+    <div class="filters">
+      <div class="filter-group">
+        <label class="filter-label">Filtrar por CPF</label>
+        <div class="input-wrapper">
+          <svg class="search-icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <circle cx="7" cy="7" r="5" stroke="#9CA3AF" stroke-width="2"/>
+            <path d="M11 11L14 14" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <input
+            type="text"
+            class="filter-input"
+            [(ngModel)]="filtroCpf"
+            placeholder="Digite o CPF"
+          />
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <label class="filter-label">Filtrar por Nome</label>
+        <div class="input-wrapper">
+          <svg class="search-icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <circle cx="7" cy="7" r="5" stroke="#9CA3AF" stroke-width="2"/>
+            <path d="M11 11L14 14" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <input
+            type="text"
+            class="filter-input"
+            [(ngModel)]="filtroNome"
+            placeholder="Digite o nome"
+          />
+        </div>
+      </div>
+    </div>
+
+    <div class="bulk-actions" *ngIf="temClientesSelecionados">
+      <div class="bulk-actions-content">
+        <span class="bulk-actions-text">
+          {{ quantidadeClientesSelecionados }} cliente(s) selecionado(s)
+        </span>
+        <div class="bulk-actions-buttons">
+          <button class="bulk-btn bulk-btn-ativo" (click)="mudarStatus('ativo')">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M13 4L6 11L3 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Ativar
+          </button>
+          <button class="bulk-btn bulk-btn-bloqueado" (click)="mudarStatus('bloqueado')">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M12 4L4 12M4 4L12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            Bloquear
+          </button>
+          <button class="bulk-btn bulk-btn-pendente" (click)="mudarStatus('pendente')">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="2" fill="none"/>
+              <path d="M8 5V8L10 10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            Pendente
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="table-container">
+      <table class="table">
+        <thead>
+          <tr>
+            <th class="th-checkbox"></th>
+            <th class="th-nome">
+              <div class="th-content">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                  <path d="M2 4L6 8L10 4" stroke="#6B7280" stroke-width="1.5"/>
+                </svg>
+                Nome
+              </div>
+            </th>
+            <th>Últimos 4 Dígitos do Cartão</th>
+            <th>CPF</th>
+            <th>Status</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let cliente of clientesFiltrados" class="table-row">
+            <td class="td-checkbox">
+              <input
+                type="checkbox"
+                [(ngModel)]="cliente.selecionado"
+                class="checkbox"
+              />
+            </td>
+            <td class="td-nome">{{ cliente.nome }}</td>
+            <td>{{ cliente.ultimosDigitos }}</td>
+            <td>{{ cliente.cpf }}</td>
+            <td>
+              <button
+                class="btn-status"
+                [ngClass]="getStatusClass(cliente.status)"
+                (click)="alternarStatus(cliente)"
+              >
+                {{ getStatusLabel(cliente.status) }}
+              </button>
+            </td>
+            <td>
+              <div class="action-buttons">
+                <button class="btn-acao btn-detalhes" (click)="verDetalhes(cliente)">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <circle cx="8" cy="8" r="2" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                    <path d="M1 8C1 8 3.5 3 8 3C12.5 3 15 8 15 8C15 8 12.5 13 8 13C3.5 13 1 8 1 8Z" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                  </svg>
+                  Detalhes
+                </button>
+                <button class="btn-acao" (click)="segundaVia(cliente)">
+                  2ª Via
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+</div>
+
+<app-cliente-detalhes
+  [cliente]="clienteSelecionadoDetalhes"
+  [isOpen]="modalDetalhesAberto"
+  (fechar)="fecharDetalhes()"
+></app-cliente-detalhes>

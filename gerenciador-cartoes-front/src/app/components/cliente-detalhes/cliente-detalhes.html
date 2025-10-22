@@ -1,0 +1,93 @@
+<div class="modal-overlay" *ngIf="isOpen && cliente" (click)="onOverlayClick($event)">
+  <div class="modal-container">
+    <div class="modal-header">
+      <h2 class="modal-title">Detalhes do Cliente</h2>
+      <button class="modal-close" (click)="fecharModal()" aria-label="Fechar">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <div class="detail-section">
+        <div class="detail-header">
+          <svg class="detail-icon" width="48" height="48" viewBox="0 0 48 48" fill="none">
+            <circle cx="24" cy="24" r="22" fill="#E0F2FE" stroke="#3B82F6" stroke-width="2"/>
+            <circle cx="24" cy="18" r="6" stroke="#3B82F6" stroke-width="2" fill="none"/>
+            <path d="M12 38C12 32 16 28 24 28C32 28 36 32 36 38" stroke="#3B82F6" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <div class="detail-header-info">
+            <h3 class="detail-name">{{ cliente.nome }}</h3>
+            <span class="detail-badge" [ngClass]="getStatusClass(cliente.status)">
+              {{ getStatusTexto(cliente.status) }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="detail-grid">
+        <div class="detail-item">
+          <label class="detail-label">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <rect x="2" y="4" width="12" height="8" rx="1" stroke="#6B7280" stroke-width="1.5" fill="none"/>
+              <path d="M2 7H14M5 4V2M11 4V2" stroke="#6B7280" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            CPF
+          </label>
+          <p class="detail-value">{{ cliente.cpf }}</p>
+        </div>
+
+        <div class="detail-item">
+          <label class="detail-label">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <rect x="2" y="3" width="12" height="10" rx="2" stroke="#6B7280" stroke-width="1.5" fill="none"/>
+              <path d="M2 6H14M5 3V1M11 3V1" stroke="#6B7280" stroke-width="1.5" stroke-linecap="round"/>
+              <circle cx="8" cy="9" r="1.5" fill="#6B7280"/>
+            </svg>
+            Últimos 4 Dígitos do Cartão
+          </label>
+          <p class="detail-value">{{ cliente.ultimosDigitos }}</p>
+        </div>
+
+        <div class="detail-item">
+          <label class="detail-label">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M8 2L2 5V10C2 12 4.5 13.5 8 14C11.5 13.5 14 12 14 10V5L8 2Z" stroke="#6B7280" stroke-width="1.5" fill="none"/>
+            </svg>
+            ID do Cliente
+          </label>
+          <p class="detail-value">#{{ cliente.id }}</p>
+        </div>
+
+        <div class="detail-item">
+          <label class="detail-label">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <circle cx="8" cy="8" r="6" stroke="#6B7280" stroke-width="1.5" fill="none"/>
+              <path d="M8 4V8L11 11" stroke="#6B7280" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            Status Atual
+          </label>
+          <p class="detail-value">{{ getStatusTexto(cliente.status) }}</p>
+        </div>
+      </div>
+
+      <div class="detail-info-box">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <circle cx="10" cy="10" r="8" stroke="#3B82F6" stroke-width="2" fill="none"/>
+          <path d="M10 10V14M10 6V7" stroke="#3B82F6" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <p class="detail-info-text">
+          Este cliente está atualmente com status <strong>{{ getStatusTexto(cliente.status) }}</strong>.
+          Você pode alterar o status diretamente na lista de clientes.
+        </p>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-secondary" (click)="fecharModal()">
+        Fechar
+      </button>
+    </div>
+  </div>
+</div>

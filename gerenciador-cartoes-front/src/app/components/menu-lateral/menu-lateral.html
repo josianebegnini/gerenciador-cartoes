@@ -1,0 +1,42 @@
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <svg class="sidebar-logo" width="32" height="32" viewBox="0 0 32 32" fill="none">
+      <rect width="32" height="32" rx="6" fill="#4B2E2E"/>
+      <path d="M16 8L20 12L16 16L12 12L16 8Z" fill="white"/>
+      <path d="M16 16L20 20L16 24L12 20L16 16Z" fill="white" opacity="0.7"/>
+    </svg>
+    <h2 class="sidebar-title">Menu</h2>
+  </div>
+
+  <nav class="sidebar-nav">
+    <button class="sidebar-btn sidebar-btn-primary" (click)="onNovoCliente()">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <path d="M10 4V16M4 10H16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <span>Novo Cliente</span>
+    </button>
+
+    <button class="sidebar-btn" (click)="onNavegarHome()">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <path d="M3 10L10 3L17 10M5 8V17H8V13H12V17H15V8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      </svg>
+      <span>Home</span>
+    </button>
+
+    <button class="sidebar-btn" (click)="onNavegarCartoes()">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <rect x="3" y="5" width="14" height="10" rx="2" stroke="currentColor" stroke-width="2" fill="none"/>
+        <path d="M3 9H17M7 5V3M13 5V3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <span>Cartões</span>
+    </button>
+
+    <button class="sidebar-btn" (click)="onNavegarRelatorios()">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <path d="M10 3L3 7V13C3 15.5 6 17.5 10 18C14 17.5 17 15.5 17 13V7L10 3Z" stroke="currentColor" stroke-width="2" fill="none"/>
+      </svg>
+      <span>Relatórios</span>
+    </button>
+  </nav>
+
+</aside>
