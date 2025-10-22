@@ -1,17 +1,49 @@
 package com.example.gw_gerenciador_cartoes.infra.entity;
 
+import jakarta.persistence.*;
+
 import java.time.LocalDate;
 
+@Entity
+@Table(name = "cartao")
 public class CartaoEntity {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @Column(name = "id", nullable = false)
+    private Long id;
+
+    @Column(name = "numero", nullable = false, unique = true)
     private String numero;
+
+    @Column(name = "cvv", nullable = false)
     private String cvv;
+
+    @Column(name = "cliente_id", nullable = false)
     private String clienteId;
+
+    @Column(name = "conta_id", nullable = false)
     private String contaId;
+
+    @Column(name = "data_vencimento", nullable = false)
     private LocalDate dataVencimento;
+
+    @Column(name = "tipo", nullable = false)
     private String tipo = "CONTA";
+
+    @Column(name = "status", nullable = false)
     private String status = "DESATIVADO";
+
+    @Column(name = "fisico", nullable = false)
     private boolean fisico = true;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getNumero() {
         return numero;
