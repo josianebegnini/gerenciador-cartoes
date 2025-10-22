@@ -5,7 +5,7 @@ services:
     container_name: postgres
     restart: always
     environment:
-      POSTGRES_DB: agendamento
+      POSTGRES_DB: cartoes
       POSTGRES_USER: user
       POSTGRES_PASSWORD: pass
     ports:
@@ -13,7 +13,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U user -d agendamento"]
+      test: ["CMD-SHELL", "pg_isready -U user -d cartoes"]
       interval: 5s
       timeout: 5s
       retries: 10
