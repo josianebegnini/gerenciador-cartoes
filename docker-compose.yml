@@ -5,7 +5,7 @@ services:
     container_name: postgres
     restart: always
     environment:
-      POSTGRES_DB: agendamento
+      POSTGRES_DB: cartoes
       POSTGRES_USER: user
       POSTGRES_PASSWORD: pass
     ports:
@@ -13,7 +13,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U user -d agendamento"]
+      test: ["CMD-SHELL", "pg_isready -U user -d cartoes"]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -91,11 +91,9 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: docker
     depends_on:
-      ms-medico:
+      ms-cartao:
         condition: service_started
-      ms-paciente:
-        condition: service_started
-      ms-agenda:
+      ms-cliente:
         condition: service_started
       ms-auth:
         condition: service_started
@@ -115,18 +113,18 @@ services:
       - rabbitmq
 
   # 💻 Front-end (Spring Boot servindo HTML/JS/CSS)
-  gerenciador-cartoes-front:
-    build:
-      context: ./gerenciador-cartoes-front
-    container_name: 
-    restart: always
-    ports:
-      - "8080:8080"
-    environment:
-      APP_GATEWAY_BASE_URL: http://gw-gerenciador-cartoes:8085
-    depends_on:
-      gw-gerenciador-cartoes:
-        condition: service_started
+   # gerenciador-cartoes-front:
+   #   build:
+   #     context: ./gerenciador-cartoes-front
+   #   container_name: 
+   #   restart: always
+   #   ports:
+   #     - "8080:8080"
+  #    environment:
+  #      APP_GATEWAY_BASE_URL: http://gw-gerenciador-cartoes:8085
+  #    depends_on:
+  #      gw-gerenciador-cartoes:
+  #        condition: service_started
 
 volumes:
   postgres_data:
