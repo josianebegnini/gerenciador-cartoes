@@ -4,6 +4,10 @@ package com.example.gw_gerenciador_cartoes.service;
 import com.example.gw_gerenciador_cartoes.domain.model.Cliente;
 import com.example.gw_gerenciador_cartoes.domain.ports.ClienteRepositoryPort;
 import com.example.gw_gerenciador_cartoes.domain.ports.ClienteServicePort;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -37,8 +41,15 @@ public class ClienteServiceImpl implements ClienteServicePort {
             throw new RuntimeException("Cliente bnao encontrado id " + id);
         }
 
-
-
     }
 
+    public Page<Cliente> listarClientes(int page, int size, String sortBy, String direction) {
+
+        Sort sort = direction.equalsIgnoreCase("desc") ?
+                Sort.by(sortBy).descending() :
+                Sort.by(sortBy).ascending();
+
+        Pageable pageable = PageRequest.of(page, size, sort);
+        return clienteRepository.findAll(pageable);
+    }
 }
