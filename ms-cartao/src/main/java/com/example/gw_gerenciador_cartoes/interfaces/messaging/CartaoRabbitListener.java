@@ -1,6 +1,7 @@
 package com.example.gw_gerenciador_cartoes.interfaces.messaging;
 
 import com.example.gw_gerenciador_cartoes.application.service.CartaoService;
+import com.example.gw_gerenciador_cartoes.interfaces.dto.ClienteContaCriadoDTO;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 
@@ -14,11 +15,9 @@ public class CartaoRabbitListener {
     }
 
     @RabbitListener(queues = "cliente-conta-criado")
-    public void receberMensagem(String mensagem) {
-        String[] dados = mensagem.split(",");
-        String clienteId = dados[0];
-        String contaId = dados[1];
-        service.gerarCartao(clienteId, contaId);
+    public void handleMensagem(ClienteContaCriadoDTO dto) {
+        Long clienteId = dto.getClienteId();
+        service.gerarCartao(clienteId);
     }
 
 }

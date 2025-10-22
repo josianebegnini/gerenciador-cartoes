@@ -15,16 +15,17 @@ public class CartaoRepositoryAdapter implements CartaoRepositoryPort {
         this.repository = repository;
     }
 
+    @Override
     public void salvar(Cartao cartao) {
         CartaoEntity entity = new CartaoEntity();
+        entity.setClienteId(cartao.getClienteId());
         entity.setNumero(cartao.getNumero());
         entity.setCvv(cartao.getCvv());
-        entity.setClienteId(cartao.getClienteId());
-        entity.setContaId(cartao.getContaId());
         entity.setDataVencimento(cartao.getDataVencimento());
-        entity.setTipo(cartao.getTipo());
+        entity.setTipoConta(cartao.getTipoConta());
         entity.setStatus(cartao.getStatus());
-        entity.setFisico(cartao.isFisico());
+        entity.setFormatoCartao(cartao.isFormatoCartao());
+
         repository.save(entity);
     }
 }

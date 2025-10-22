@@ -4,14 +4,21 @@ import java.time.LocalDate;
 
 public class Cartao {
 
+    private Long clienteId;
     private String numero;
     private String cvv;
-    private String clienteId;
-    private String contaId;
     private LocalDate dataVencimento;
-    private String tipo = "CONTA";
-    private String status = "DESATIVADO";
-    private boolean fisico = true;
+    private String tipoConta;
+    private String status;
+    private String formatoCartao;
+
+    public Long getClienteId() {
+        return clienteId;
+    }
+
+    public void setClienteId(Long clienteId) {
+        this.clienteId = clienteId;
+    }
 
     public String getNumero() {
         return numero;
@@ -29,22 +36,6 @@ public class Cartao {
         this.cvv = cvv;
     }
 
-    public String getClienteId() {
-        return clienteId;
-    }
-
-    public void setClienteId(String clienteId) {
-        this.clienteId = clienteId;
-    }
-
-    public String getContaId() {
-        return contaId;
-    }
-
-    public void setContaId(String contaId) {
-        this.contaId = contaId;
-    }
-
     public LocalDate getDataVencimento() {
         return dataVencimento;
     }
@@ -53,12 +44,12 @@ public class Cartao {
         this.dataVencimento = dataVencimento;
     }
 
-    public String getTipo() {
-        return tipo;
+    public String getTipoConta() {
+        return tipoConta;
     }
 
-    public void setTipo(String tipo) {
-        this.tipo = tipo;
+    public void setTipoConta(String tipoConta) {
+        this.tipoConta = tipoConta;
     }
 
     public String getStatus() {
@@ -69,11 +60,11 @@ public class Cartao {
         this.status = status;
     }
 
-    public boolean isFisico() {
-        return fisico;
+    public String isFormatoCartao() {
+        return formatoCartao;
     }
 
-    public void setFisico(boolean fisico) {
-        this.fisico = fisico;
+    public void setFormatoCartao(String formatoCartao) {
+        this.formatoCartao = formatoCartao;
     }
 }

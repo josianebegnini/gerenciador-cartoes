@@ -9,9 +9,12 @@ import java.time.LocalDate;
 public class CartaoEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
+
+    @Column(name = "cliente_id", nullable = false)
+    private Long clienteId;
 
     @Column(name = "numero", nullable = false, unique = true)
     private String numero;
@@ -19,23 +22,17 @@ public class CartaoEntity {
     @Column(name = "cvv", nullable = false)
     private String cvv;
 
-    @Column(name = "cliente_id", nullable = false)
-    private String clienteId;
-
-    @Column(name = "conta_id", nullable = false)
-    private String contaId;
-
     @Column(name = "data_vencimento", nullable = false)
     private LocalDate dataVencimento;
 
-    @Column(name = "tipo", nullable = false)
-    private String tipo = "CONTA";
+    @Column(name = "tipo_conta", nullable = false)
+    private String tipoConta = "CONTA";
 
     @Column(name = "status", nullable = false)
     private String status = "DESATIVADO";
 
-    @Column(name = "fisico", nullable = false)
-    private boolean fisico = true;
+    @Column(name = "formato_cartao", nullable = false)
+    private String formatoCartao = "FISICO";
 
     public Long getId() {
         return id;
@@ -43,6 +40,14 @@ public class CartaoEntity {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Long getClienteId() {
+        return clienteId;
+    }
+
+    public void setClienteId(Long clienteId) {
+        this.clienteId = clienteId;
     }
 
     public String getNumero() {
@@ -61,22 +66,6 @@ public class CartaoEntity {
         this.cvv = cvv;
     }
 
-    public String getClienteId() {
-        return clienteId;
-    }
-
-    public void setClienteId(String clienteId) {
-        this.clienteId = clienteId;
-    }
-
-    public String getContaId() {
-        return contaId;
-    }
-
-    public void setContaId(String contaId) {
-        this.contaId = contaId;
-    }
-
     public LocalDate getDataVencimento() {
         return dataVencimento;
     }
@@ -85,12 +74,12 @@ public class CartaoEntity {
         this.dataVencimento = dataVencimento;
     }
 
-    public String getTipo() {
-        return tipo;
+    public String getTipoConta() {
+        return tipoConta;
     }
 
-    public void setTipo(String tipo) {
-        this.tipo = tipo;
+    public void setTipoConta(String tipoConta) {
+        this.tipoConta = tipoConta;
     }
 
     public String getStatus() {
@@ -101,11 +90,11 @@ public class CartaoEntity {
         this.status = status;
     }
 
-    public boolean isFisico() {
-        return fisico;
+    public String getFormatoCartao() {
+        return formatoCartao;
     }
 
-    public void setFisico(boolean fisico) {
-        this.fisico = fisico;
+    public void setFormatoCartao(String formatoCartao) {
+        this.formatoCartao = formatoCartao;
     }
 }
