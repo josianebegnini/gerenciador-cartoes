@@ -1,12 +1,8 @@
-
-
-
 package com.example.gw_gerenciador_cartoes.infra.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 @Entity
@@ -29,9 +25,8 @@ public class ClienteEntity {
     @NotBlank(message = "Data de nascimento é obrigatória")
     private String dataNasc;
 
-    @NotBlank(message = "CPF é obrigatório")
-    @Pattern(regexp = "\\d{3}\\.\\d{3}\\.\\d{3}-\\d{2}", message = "CPF deve estar no formato 000.000.000-00")
-    private String CPF;
+    @NotBlank(message = "cpf é obrigatório")
+    private String cpf;
 
 
     @OneToOne(cascade = CascadeType.ALL)
@@ -41,19 +36,20 @@ public class ClienteEntity {
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "conta_id", referencedColumnName = "id")
-    private ContaEntity contas;
+    private ContaEntity conta;
 
 
     public ClienteEntity() {
     }
 
-    public ClienteEntity(Long id, String nome, String email, String dataNasc, String CPF, EnderecoEntity endereco) {
+    public ClienteEntity(Long id, String nome, String email, String dataNasc, String cpf, EnderecoEntity endereco, ContaEntity conta) {
         this.id = id;
         this.nome = nome;
         this.email = email;
         this.dataNasc = dataNasc;
-        this.CPF = CPF;
+        this.cpf = cpf;
         this.endereco = endereco;
+        this.conta = conta;
     }
 
     public Long getId() {
@@ -72,8 +68,8 @@ public class ClienteEntity {
         return dataNasc;
     }
 
-    public String getCPF() {
-        return CPF;
+    public String getCpf() {
+        return cpf;
     }
 
     public EnderecoEntity getEndereco() {
@@ -82,6 +78,14 @@ public class ClienteEntity {
 
     public void setEndereco(EnderecoEntity endereco) {
         this.endereco = endereco;
+    }
+
+    public ContaEntity getConta() {
+        return conta;
+    }
+
+    public void setConta(ContaEntity conta) {
+        this.conta = conta;
     }
 }
 
