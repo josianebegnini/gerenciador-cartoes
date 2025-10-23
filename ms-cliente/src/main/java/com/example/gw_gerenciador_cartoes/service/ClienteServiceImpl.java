@@ -1,6 +1,5 @@
 package com.example.gw_gerenciador_cartoes.service;
 
-
 import com.example.gw_gerenciador_cartoes.domain.model.Cliente;
 import com.example.gw_gerenciador_cartoes.domain.ports.ClienteRepositoryPort;
 import com.example.gw_gerenciador_cartoes.domain.ports.ClienteServicePort;
@@ -43,13 +42,15 @@ public class ClienteServiceImpl implements ClienteServicePort {
 
     }
 
-    public Page<Cliente> listarClientes(int page, int size, String sortBy, String direction) {
+    @Override
+    public Page<Cliente> listarClientes(int page, int size, String sortBy, String direction, String nome, String cpf) {
 
         Sort sort = direction.equalsIgnoreCase("desc") ?
                 Sort.by(sortBy).descending() :
                 Sort.by(sortBy).ascending();
 
         Pageable pageable = PageRequest.of(page, size, sort);
-        return clienteRepository.findAll(pageable);
+        return clienteRepository.findAll(pageable, nome, cpf);
     }
+
 }

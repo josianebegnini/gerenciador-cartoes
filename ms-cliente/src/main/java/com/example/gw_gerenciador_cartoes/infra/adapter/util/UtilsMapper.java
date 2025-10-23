@@ -1,17 +1,15 @@
-
-
 package com.example.gw_gerenciador_cartoes.infra.adapter.util;
 
-
 import com.example.gw_gerenciador_cartoes.domain.model.Cliente;
+import com.example.gw_gerenciador_cartoes.domain.model.Conta;
 import com.example.gw_gerenciador_cartoes.domain.model.Endereco;
 import com.example.gw_gerenciador_cartoes.infra.entity.ClienteEntity;
+import com.example.gw_gerenciador_cartoes.infra.entity.ContaEntity;
 import com.example.gw_gerenciador_cartoes.infra.entity.EnderecoEntity;
 
 public class UtilsMapper {
 
-    private UtilsMapper() {
-    }
+    private UtilsMapper() {}
 
     public static Cliente fromEntityToDomain(ClienteEntity entity) {
         if (entity == null) return null;
@@ -21,8 +19,9 @@ public class UtilsMapper {
             entity.getNome(),
             entity.getEmail(),
             entity.getDataNasc(),
-            entity.getCPF(),
-            fromEntityToDomain(entity.getEndereco())
+            entity.getCpf(),
+            fromEntityToDomain(entity.getEndereco()),
+            fromEntityToDomain(entity.getConta())
         );
     }
 
@@ -39,6 +38,17 @@ public class UtilsMapper {
         );
     }
 
+    public static Conta fromEntityToDomain(ContaEntity entity) {
+        if (entity == null) return null;
+
+        return new Conta(
+                entity.getId(),
+                entity.getAgencia(),
+                entity.getTipo(),
+                entity.getSaldo()
+        );
+    }
+
     public static ClienteEntity FromDomainToEntity(Cliente cliente) {
         if (cliente == null) return null;
 
@@ -47,8 +57,9 @@ public class UtilsMapper {
                 cliente.getNome(),
                 cliente.getEmail(),
                 cliente.getDataNasc(),
-                cliente.getCPF(),
-                FromDomainToEntity(cliente.getEndereco())
+                cliente.getCpf(),
+                FromDomainToEntity(cliente.getEndereco()),
+                FromDomainToEntity(cliente.getConta())
         );
     }
 
@@ -64,6 +75,19 @@ public class UtilsMapper {
             endereco.getNumero()
         );
     }
+
+    public static ContaEntity FromDomainToEntity(Conta conta) {
+        if (conta == null) return null;
+
+        return new ContaEntity(
+                conta.getId(),
+                conta.getAgencia(),
+                conta.getTipo(),
+                conta.getSaldo()
+        );
+    }
+
+
 }
 
 

@@ -5,22 +5,22 @@ public class Cliente {
     private String nome;
     private String email;
     private String dataNasc;
-    private String CPF;
+    private String cpf;
     private Endereco endereco;
+    private Conta conta;
 
 
-    public Cliente(Long id, String nome, String email, String dataNasc, String CPF, Endereco endereco) {
+    public Cliente(Long id, String nome, String email, String dataNasc, String cpf, Endereco endereco, Conta conta) {
         this.id = id;
         this.nome = nome;
         this.email = email;
         this.dataNasc = dataNasc;
-        this.CPF = CPF;
+        this.cpf = cpf;
         this.endereco = endereco;
+        this.conta = conta;
     }
 
-    public Cliente() {
-
-    }
+    public Cliente() {}
 
     public Long getId() {
         return id;
@@ -54,12 +54,12 @@ public class Cliente {
         this.dataNasc = dataNasc;
     }
 
-    public String getCPF() {
-        return CPF;
+    public String getCpf() {
+        return cpf;
     }
 
-    public void setCPF(String CPF) {
-        this.CPF = CPF;
+    public void setCpf(String cpf) {
+        this.cpf = cpf;
     }
 
     public Endereco getEndereco() {
@@ -69,5 +69,13 @@ public class Cliente {
     public Cliente setEndereco(Endereco endereco) {
         this.endereco = endereco;
         return this;
+    }
+
+    public Conta getConta() {
+        return conta;
+    }
+
+    public void setConta(Conta conta) {
+        this.conta = conta;
     }
 }
