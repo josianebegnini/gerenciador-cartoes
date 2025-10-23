@@ -31,6 +31,7 @@ public class CartaoRepositoryAdapter implements CartaoRepositoryPort {
         entity.setCategoria(cartao.getCategoriaCartao());
         entity.setStatus(cartao.getStatus());
         entity.setTipo(cartao.getTipoCartao());
+        entity.setMotivoSegundaVia(cartao.getMotivoSegundaVia());
 
         CartaoEntity savedEntity = jpaRepository.save(entity);
         return Optional.of(mapper.toDomain(savedEntity));
@@ -60,24 +61,15 @@ public class CartaoRepositoryAdapter implements CartaoRepositoryPort {
     }
 
     @Override
-    public Optional<Cartao> buscarPorId(Long id) {
-        return jpaRepository.findById(id)
-                .map(entity -> new Cartao(
-                        entity.getId(),
-                        entity.getClienteId(),
-                        entity.getNumero(),
-                        entity.getCvv(),
-                        entity.getDataVencimento(),
-                        entity.getCategoria(),
-                        entity.getStatus(),
-                        entity.getTipo(),
-                        entity.getMotivoSegundaVia()
-                ));
-    }
-
-    @Override
     public boolean existePorNumero(String numero) {
         return jpaRepository.existsByNumero(numero);
     }
+
+    @Override
+    public Optional<Cartao> buscarPorNumeroECvv(String numero, String cvv) {
+        return jpaRepository.findByNumeroAndCvv(numero, cvv)
+                .map(mapper::toDomain);
+    }
+
 
 }

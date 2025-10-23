@@ -1,5 +1,6 @@
 package com.example.gw_gerenciador_cartoes.application.restController;
 
+import com.example.gw_gerenciador_cartoes.application.dto.CartaoIdentificacaoRequestDTO;
 import com.example.gw_gerenciador_cartoes.domain.ports.CartaoServicePort;
 import com.example.gw_gerenciador_cartoes.application.dto.SegundaViaCartaoRequestDTO;
 import com.example.gw_gerenciador_cartoes.application.dto.CartaoResponseDTO;
@@ -17,15 +18,15 @@ public class CartaoController {
         this.cartaoService = cartaoService;
     }
 
-    @PatchMapping("/{id}/ativar")
-    public ResponseEntity<CartaoResponseDTO> ativar(@PathVariable Long id) {
-        CartaoResponseDTO response = cartaoService.ativar(id);
+    @PutMapping("/ativar")
+    public ResponseEntity<CartaoResponseDTO> ativar(@Valid @RequestBody CartaoIdentificacaoRequestDTO dto) {
+        CartaoResponseDTO response = cartaoService.ativar(dto);
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/segunda-via")
     public ResponseEntity<CartaoResponseDTO> solicitarSegundaVia(@Valid @RequestBody SegundaViaCartaoRequestDTO dto) {
-        return ResponseEntity.ok(cartaoService.solicitarSegundaVia(dto.getIdCartaoOriginal(), dto.getMotivo()));
+        return ResponseEntity.ok(cartaoService.solicitarSegundaVia(dto));
     }
 
 }
