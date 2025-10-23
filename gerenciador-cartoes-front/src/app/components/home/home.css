@@ -258,6 +258,11 @@
   accent-color: #3b82f6;
 }
 
+.checkbox:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
 .td-nome {
   font-weight: 500;
 }
@@ -273,12 +278,17 @@
   font-family: inherit;
 }
 
+.btn-status:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
 .status-ativo {
   background-color: #10b981;
   color: white;
 }
 
-.status-ativo:hover {
+.status-ativo:hover:not(:disabled) {
   background-color: #059669;
 }
 
@@ -287,7 +297,7 @@
   color: white;
 }
 
-.status-bloqueado:hover {
+.status-bloqueado:hover:not(:disabled) {
   background-color: #dc2626;
 }
 
@@ -296,8 +306,13 @@
   color: white;
 }
 
-.status-pendente:hover {
+.status-pendente:hover:not(:disabled) {
   background-color: #d97706;
+}
+
+.status-sem-cartao {
+  background-color: #6b7280;
+  color: white;
 }
 
 .action-buttons {
@@ -319,8 +334,14 @@
   font-family: inherit;
 }
 
-.btn-acao:hover {
+.btn-acao:hover:not(:disabled) {
   background-color: #E2725B;
+}
+
+.btn-acao:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+  background-color: #9ca3af;
 }
 
 .btn-detalhes {

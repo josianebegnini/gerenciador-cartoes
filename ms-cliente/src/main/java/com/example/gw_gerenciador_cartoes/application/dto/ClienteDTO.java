@@ -20,21 +20,27 @@ public record ClienteDTO(
         @NotBlank(message = "Data de nascimento é obrigatória")
         String dataNasc,
 
-        @NotBlank(message = "CPF é obrigatório")
-        @Pattern(
-                regexp = "\\d{11}",
-                message = "CPF deve conter exatamente 11 dígitos numéricos"
-        )
-        String CPF,
+        @NotBlank(message = "cpf é obrigatório")
+        @Pattern(regexp = "\\d{11}",
+                message = "cpf deve conter exatamente 11 dígitos numéricos" )
+        String cpf,
 
         @NotNull(message = "Endereço é obrigatório")
         @Valid
-        EnderecoDTO enderecoDTO
+        EnderecoDTO enderecoDTO,
+
+        @NotNull(message = "Conta é obrigatório")
+        @Valid
+        ContaDTO contaDTO
 )
  {
 
-    @Override
-    public EnderecoDTO enderecoDTO() {
+    public EnderecoDTO getEnderecoDTO() {
         return enderecoDTO;
     }
+
+     public ContaDTO getContaDTO() {
+         return contaDTO;
+     }
+
 }

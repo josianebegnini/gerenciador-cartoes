@@ -1,4 +1,4 @@
-package com.example.gw_gerenciador_cartoes.config;
+package com.example.gw_gerenciador_cartoes.infra.config;
 
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;

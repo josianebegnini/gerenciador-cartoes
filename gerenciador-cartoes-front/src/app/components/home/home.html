@@ -1,6 +1,5 @@
 <div class="layout">
-
-    <app-menu-lateral
+  <app-menu-lateral
     (novoCliente)="novoCliente()"
     (navegarHome)="onNavegarHome()"
     (navegarCartoes)="onNavegarCartoes()"
@@ -10,7 +9,6 @@
   <main class="main-content">
     <header class="header">
       <div class="header-content">
-       <!--<img src="../../../../assets/logo.png" width="32" height="32">-->
         <svg class="logo" width="32" height="32" viewBox="0 0 32 32" fill="none">
           <rect width="32" height="32" rx="6" fill="#4B2E2E"/>
           <path d="M16 8L20 12L16 16L12 12L16 8Z" fill="white"/>
@@ -96,9 +94,9 @@
                 Nome
               </div>
             </th>
-            <th>Últimos 4 Dígitos do Cartão</th>
+            <th>Email</th>
             <th>CPF</th>
-            <th>Status</th>
+            <th>Status do Cartão</th>
             <th>Ações</th>
           </tr>
         </thead>
@@ -109,18 +107,20 @@
                 type="checkbox"
                 [(ngModel)]="cliente.selecionado"
                 class="checkbox"
+                [disabled]="!cliente.cartao"
               />
             </td>
             <td class="td-nome">{{ cliente.nome }}</td>
-            <td>{{ cliente.ultimosDigitos }}</td>
+            <td>{{ cliente.email }}</td>
             <td>{{ cliente.cpf }}</td>
             <td>
               <button
                 class="btn-status"
-                [ngClass]="getStatusClass(cliente.status)"
+                [ngClass]="getStatusClass(cliente.cartao?.status)"
                 (click)="alternarStatus(cliente)"
+                [disabled]="!cliente.cartao"
               >
-                {{ getStatusLabel(cliente.status) }}
+                {{ getStatusLabel(cliente.cartao?.status) }}
               </button>
             </td>
             <td>
@@ -132,7 +132,11 @@
                   </svg>
                   Detalhes
                 </button>
-                <button class="btn-acao" (click)="segundaVia(cliente)">
+                <button
+                  class="btn-acao"
+                  (click)="segundaVia(cliente)"
+                  [disabled]="!cliente.cartao"
+                >
                   2ª Via
                 </button>
               </div>

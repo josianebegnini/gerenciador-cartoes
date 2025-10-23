@@ -1,16 +1,45 @@
 package com.example.gw_gerenciador_cartoes.domain.model;
 
+import com.example.gw_gerenciador_cartoes.domain.enums.CategoriaCartao;
+import com.example.gw_gerenciador_cartoes.domain.enums.StatusCartao;
+import com.example.gw_gerenciador_cartoes.domain.enums.TipoCartao;
+
 import java.time.LocalDate;
 
 public class Cartao {
 
+    private Long id;
     private Long clienteId;
     private String numero;
     private String cvv;
     private LocalDate dataVencimento;
-    private String tipoConta;
-    private String status;
-    private String formatoCartao;
+    private CategoriaCartao categoriaCartao;
+    private StatusCartao status;
+    private TipoCartao tipoCartao;
+    private String motivoSegundaVia;
+
+    public Cartao() {
+    }
+
+    public Cartao(Long id, Long clienteId, String numero, String cvv, LocalDate dataVencimento, CategoriaCartao categoriaCartao, StatusCartao status, TipoCartao tipoCartao, String motivoSegundaVia) {
+        this.id = id;
+        this.clienteId = clienteId;
+        this.numero = numero;
+        this.cvv = cvv;
+        this.dataVencimento = dataVencimento;
+        this.categoriaCartao = categoriaCartao;
+        this.status = status;
+        this.tipoCartao = tipoCartao;
+        this.motivoSegundaVia = motivoSegundaVia;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public Long getClienteId() {
         return clienteId;
@@ -44,27 +73,36 @@ public class Cartao {
         this.dataVencimento = dataVencimento;
     }
 
-    public String getTipoConta() {
-        return tipoConta;
+    public CategoriaCartao getCategoriaCartao() {
+        return categoriaCartao;
     }
 
-    public void setTipoConta(String tipoConta) {
-        this.tipoConta = tipoConta;
+    public void setCategoriaCartao(CategoriaCartao categoriaCartao) {
+        this.categoriaCartao = categoriaCartao;
     }
 
-    public String getStatus() {
+    public StatusCartao getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(StatusCartao status) {
         this.status = status;
     }
 
-    public String isFormatoCartao() {
-        return formatoCartao;
+    public TipoCartao getTipoCartao() {
+        return tipoCartao;
     }
 
-    public void setFormatoCartao(String formatoCartao) {
-        this.formatoCartao = formatoCartao;
+    public void setTipoCartao(TipoCartao tipoCartao) {
+        this.tipoCartao = tipoCartao;
     }
+
+    public String getMotivoSegundaVia() {
+        return motivoSegundaVia;
+    }
+
+    public void setMotivoSegundaVia(String motivoSegundaVia) {
+        this.motivoSegundaVia = motivoSegundaVia;
+    }
+
 }
