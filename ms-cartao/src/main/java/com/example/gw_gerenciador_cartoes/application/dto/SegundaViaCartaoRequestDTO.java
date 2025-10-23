@@ -1,4 +1,4 @@
-package com.example.gw_gerenciador_cartoes.interfaces.dto;
+package com.example.gw_gerenciador_cartoes.application.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

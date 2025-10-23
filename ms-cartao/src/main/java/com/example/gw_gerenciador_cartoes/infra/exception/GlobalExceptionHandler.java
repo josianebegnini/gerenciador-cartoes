@@ -1,4 +1,4 @@
-package com.example.gw_gerenciador_cartoes.interfaces.exception;
+package com.example.gw_gerenciador_cartoes.infra.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

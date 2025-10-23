@@ -1,4 +1,4 @@
-package com.example.gw_gerenciador_cartoes.application.service;
+package com.example.gw_gerenciador_cartoes.service;
 
 import com.example.gw_gerenciador_cartoes.domain.enums.CategoriaCartao;
 import com.example.gw_gerenciador_cartoes.domain.enums.StatusCartao;
@@ -6,10 +6,10 @@ import com.example.gw_gerenciador_cartoes.domain.enums.TipoCartao;
 import com.example.gw_gerenciador_cartoes.domain.model.Cartao;
 import com.example.gw_gerenciador_cartoes.domain.ports.CartaoRepositoryPort;
 import com.example.gw_gerenciador_cartoes.domain.ports.CartaoServicePort;
-import com.example.gw_gerenciador_cartoes.interfaces.dto.SegundaViaCartaoResponseDTO;
-import com.example.gw_gerenciador_cartoes.interfaces.exception.CartaoOriginalNotFoundException;
-import com.example.gw_gerenciador_cartoes.interfaces.exception.RegraNegocioException;
-import com.example.gw_gerenciador_cartoes.interfaces.mapper.SegundaViaCartaoMapper;
+import com.example.gw_gerenciador_cartoes.application.dto.SegundaViaCartaoResponseDTO;
+import com.example.gw_gerenciador_cartoes.infra.exception.CartaoOriginalNotFoundException;
+import com.example.gw_gerenciador_cartoes.infra.exception.RegraNegocioException;
+import com.example.gw_gerenciador_cartoes.application.mapper.SegundaViaCartaoMapper;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;

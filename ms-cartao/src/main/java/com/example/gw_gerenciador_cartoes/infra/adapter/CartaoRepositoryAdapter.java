@@ -4,7 +4,7 @@ import com.example.gw_gerenciador_cartoes.domain.model.Cartao;
 import com.example.gw_gerenciador_cartoes.domain.ports.CartaoRepositoryPort;
 import com.example.gw_gerenciador_cartoes.infra.entity.CartaoEntity;
 import com.example.gw_gerenciador_cartoes.infra.repository.CartaoRepositoryJpa;
-import com.example.gw_gerenciador_cartoes.interfaces.mapper.CartaoMapper;
+import com.example.gw_gerenciador_cartoes.application.mapper.CartaoMapper;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;

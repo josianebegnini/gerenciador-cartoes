@@ -1,4 +1,4 @@
-package com.example.gw_gerenciador_cartoes.interfaces.dto;
+package com.example.gw_gerenciador_cartoes.application.dto;
 
 import com.example.gw_gerenciador_cartoes.domain.enums.CategoriaCartao;
 import com.example.gw_gerenciador_cartoes.domain.enums.StatusCartao;

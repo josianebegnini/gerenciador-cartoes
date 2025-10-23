@@ -1,7 +1,7 @@
-package com.example.gw_gerenciador_cartoes.interfaces.messaging;
+package com.example.gw_gerenciador_cartoes.infra.messaging;
 
-import com.example.gw_gerenciador_cartoes.application.service.CartaoService;
-import com.example.gw_gerenciador_cartoes.interfaces.dto.ClienteContaCriadoDTO;
+import com.example.gw_gerenciador_cartoes.service.CartaoService;
+import com.example.gw_gerenciador_cartoes.application.dto.ClienteContaCriadoDTO;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 

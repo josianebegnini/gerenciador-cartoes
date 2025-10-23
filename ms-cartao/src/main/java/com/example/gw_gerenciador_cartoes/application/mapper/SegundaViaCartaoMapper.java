@@ -1,7 +1,7 @@
-package com.example.gw_gerenciador_cartoes.interfaces.mapper;
+package com.example.gw_gerenciador_cartoes.application.mapper;
 
 import com.example.gw_gerenciador_cartoes.domain.model.Cartao;
-import com.example.gw_gerenciador_cartoes.interfaces.dto.SegundaViaCartaoResponseDTO;
+import com.example.gw_gerenciador_cartoes.application.dto.SegundaViaCartaoResponseDTO;
 import org.springframework.stereotype.Component;
 
 @Component

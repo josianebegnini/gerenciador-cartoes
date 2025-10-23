@@ -1,8 +1,8 @@
-package com.example.gw_gerenciador_cartoes.interfaces.restController;
+package com.example.gw_gerenciador_cartoes.application.restController;
 
 import com.example.gw_gerenciador_cartoes.domain.ports.CartaoServicePort;
-import com.example.gw_gerenciador_cartoes.interfaces.dto.SegundaViaCartaoRequestDTO;
-import com.example.gw_gerenciador_cartoes.interfaces.dto.SegundaViaCartaoResponseDTO;
+import com.example.gw_gerenciador_cartoes.application.dto.SegundaViaCartaoRequestDTO;
+import com.example.gw_gerenciador_cartoes.application.dto.SegundaViaCartaoResponseDTO;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
