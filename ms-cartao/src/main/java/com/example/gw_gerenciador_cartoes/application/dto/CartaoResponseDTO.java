@@ -6,7 +6,7 @@ import com.example.gw_gerenciador_cartoes.domain.enums.TipoCartao;
 
 import java.time.LocalDate;
 
-public class SegundaViaCartaoResponseDTO {
+public class CartaoResponseDTO {
     private Long id;
     private Long clienteId;
     private String numero;
