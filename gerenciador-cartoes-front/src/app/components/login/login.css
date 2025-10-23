@@ -1,0 +1,113 @@
+* {
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+
+body, html {
+  height: 100%;
+  margin: 0;
+  background-color: #f4f6fa;
+}
+
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+.card {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  width: 380px;
+  overflow: hidden;
+}
+
+.header {
+  background-color: #d32f2f;
+  color: white;
+  text-align: center;
+  padding: 25px 20px;
+  border-radius: 16px 16px 0 0;
+}
+
+.header h2 {
+  margin: 0;
+  font-size: 22px;
+}
+
+.header p {
+  font-size: 14px;
+  margin-top: 6px;
+  color: #fceaea;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+}
+
+label {
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+
+input {
+  padding: 10px;
+  border: 1px solid #d0d0d0;
+  border-radius: 6px;
+  margin-bottom: 15px;
+  background-color: #f9faff;
+  transition: border-color 0.2s;
+}
+
+input:focus {
+  outline: none;
+  border-color: #d32f2f;
+}
+
+.error {
+  color: #d32f2f;
+  font-size: 12px;
+  margin-top: -10px;
+  margin-bottom: 10px;
+}
+
+.btn-acessar {
+  background-color: #d32f2f;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.btn-acessar:hover {
+  background-color: #b71c1c;
+}
+
+.btn-acessar:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.links {
+  display: flex;
+  justify-content: space-between;
+  margin: 10px 20px 20px;
+}
+
+.links a {
+  font-size: 14px;
+  color: #d32f2f;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.links a:hover {
+  text-decoration: underline;
+}
