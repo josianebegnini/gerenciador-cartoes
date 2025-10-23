@@ -1,14 +1,14 @@
 package com.example.gw_gerenciador_cartoes.application.mapper;
 
 import com.example.gw_gerenciador_cartoes.domain.model.Cartao;
-import com.example.gw_gerenciador_cartoes.application.dto.SegundaViaCartaoResponseDTO;
+import com.example.gw_gerenciador_cartoes.application.dto.CartaoResponseDTO;
 import org.springframework.stereotype.Component;
 
 @Component
 public class SegundaViaCartaoMapper {
 
-    public SegundaViaCartaoResponseDTO toResponseDTO(Cartao cartao) {
-        SegundaViaCartaoResponseDTO dto = new SegundaViaCartaoResponseDTO();
+    public CartaoResponseDTO toResponseDTO(Cartao cartao) {
+        CartaoResponseDTO dto = new CartaoResponseDTO();
         dto.setId(cartao.getId());
         dto.setClienteId(cartao.getClienteId());
         dto.setNumero(cartao.getNumero().substring(cartao.getNumero().length() - 4));
