@@ -1,19 +1,36 @@
+
+
+
 package com.example.gw_gerenciador_cartoes.infra.entity;
 
-import com.example.gw_gerenciador_cartoes.domain.model.Endereco;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "clientes")
 public class ClienteEntity {
 
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Nome é obrigatório")
+    @Size(max = 100, message = "Nome deve ter no máximo 100 caracteres")
     private String nome;
+
+    @NotBlank(message = "Email é obrigatório")
+    @Email(message = "Email deve ser válido")
     private String email;
+
+    @NotBlank(message = "Data de nascimento é obrigatória")
     private String dataNasc;
+
+    @NotBlank(message = "CPF é obrigatório")
+    @Pattern(regexp = "\\d{3}\\.\\d{3}\\.\\d{3}-\\d{2}", message = "CPF deve estar no formato 000.000.000-00")
     private String CPF;
 
 
@@ -22,7 +39,8 @@ public class ClienteEntity {
     private EnderecoEntity endereco;
 
 
-    @OneToOne(mappedBy = "cliente", cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "conta_id", referencedColumnName = "id")
     private ContaEntity contas;
 
 
@@ -66,3 +84,9 @@ public class ClienteEntity {
         this.endereco = endereco;
     }
 }
+
+
+
+
+
+
