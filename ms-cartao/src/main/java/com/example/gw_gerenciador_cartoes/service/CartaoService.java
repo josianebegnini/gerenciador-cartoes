@@ -6,7 +6,7 @@ import com.example.gw_gerenciador_cartoes.domain.enums.TipoCartao;
 import com.example.gw_gerenciador_cartoes.domain.model.Cartao;
 import com.example.gw_gerenciador_cartoes.domain.ports.CartaoRepositoryPort;
 import com.example.gw_gerenciador_cartoes.domain.ports.CartaoServicePort;
-import com.example.gw_gerenciador_cartoes.application.dto.SegundaViaCartaoResponseDTO;
+import com.example.gw_gerenciador_cartoes.application.dto.CartaoResponseDTO;
 import com.example.gw_gerenciador_cartoes.infra.exception.CartaoOriginalNotFoundException;
 import com.example.gw_gerenciador_cartoes.infra.exception.RegraNegocioException;
 import com.example.gw_gerenciador_cartoes.application.mapper.SegundaViaCartaoMapper;
@@ -27,21 +27,38 @@ public class CartaoService implements CartaoServicePort {
     }
 
     @Override
-    public void gerarCartao(Long clienteId) {
+    public void gerar(Long clienteId) {
         Cartao cartao = new Cartao();
         cartao.setNumero(gerarNumeroCartao());
         cartao.setCvv(gerarCvv());
         cartao.setClienteId(clienteId);
         cartao.setDataVencimento(LocalDate.now().plusYears(3));
-        cartao.setStatus(StatusCartao.ATIVADO); //TODO colocar para DESATIVADO
+        cartao.setStatus(StatusCartao.DESATIVADO);
         cartao.setCategoriaCartao(CategoriaCartao.CONTA);
         cartao.setTipoCartao(TipoCartao.FISICO);
 
         repository.salvar(cartao);
     }
 
+    public CartaoResponseDTO ativar(Long idCartao) {
+        Cartao cartao = repository.buscarPorId(idCartao)
+                .orElseThrow(() -> new CartaoOriginalNotFoundException("Cartão não encontrado."));
+
+        if (cartao.getStatus() != StatusCartao.DESATIVADO) {
+            throw new RegraNegocioException("Só é possível ativar cartões com status DESATIVADO.");
+        }
+
+        cartao.setStatus(StatusCartao.ATIVADO);
+
+        Cartao atualizado = repository.atualizar(cartao)
+                .orElseThrow(() -> new RuntimeException("Erro ao ativar cartão"));
+
+        return mapper.toResponseDTO(atualizado);
+    }
+
+
     @Override
-    public SegundaViaCartaoResponseDTO solicitarSegundaVia(Long idCartaoOriginal, String motivo) {
+    public CartaoResponseDTO solicitarSegundaVia(Long idCartaoOriginal, String motivo) {
         Cartao original = repository.buscarPorId(idCartaoOriginal)
                 .orElseThrow(() -> new CartaoOriginalNotFoundException("Cartão original não encontrado."));
 
@@ -101,4 +118,5 @@ public class CartaoService implements CartaoServicePort {
         }
         return (10 - (soma % 10)) % 10;
     }
+
 }
