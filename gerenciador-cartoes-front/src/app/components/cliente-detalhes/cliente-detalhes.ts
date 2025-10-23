@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from "@angular/core"
+import { Component, Input, Output, EventEmitter, SimpleChanges } from "@angular/core"
 import { CommonModule } from "@angular/common"
 import type { Cliente } from "../../models/cliente"
 import type { Cartao } from "../../models/cartao"
@@ -15,6 +15,13 @@ export class ClienteDetalhesComponent {
   @Input() cartao: Cartao | null = null
   @Input() isOpen = false
   @Output() fechar = new EventEmitter<void>()
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['cliente'] || changes['cartao']) {
+      console.log('[v0] ClienteDetalhes - Cliente recebido:', this.cliente);
+      console.log('[v0] ClienteDetalhes - Cartão recebido:', this.cartao);
+    }
+  }
 
   fecharModal(): void {
     this.fechar.emit()

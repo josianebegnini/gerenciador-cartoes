@@ -202,7 +202,7 @@ export class CadastroCartaoComponent implements OnDestroy {
 
           setTimeout(() => {
             this.router.navigate(['/home']);
-          }, 2000);
+          }, 1000);
         },
         error: (error) => {
           console.error('Erro ao criar cartão:', error);

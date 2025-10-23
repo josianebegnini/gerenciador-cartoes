@@ -28,6 +28,7 @@ export class Home implements OnInit, OnDestroy {
   cartoes: Cartao[] = [];
 
   clienteSelecionadoDetalhes: ClienteComCartao | null = null;
+  cartaoSelecionado: Cartao | null = null;
   modalDetalhesAberto: boolean = false;
 
   private destroy$ = new Subject<void>();
@@ -55,11 +56,17 @@ export class Home implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: ([clientes, cartoes]) => {
+          console.log('[v0] Cartões carregados:', cartoes);
           this.cartoes = cartoes;
-          this.clientes = clientes.map(cliente => ({
-            ...cliente,
-            cartao: cartoes.find(c => c.clienteId === cliente.id)
-          }));
+          this.clientes = clientes.map(cliente => {
+            const cartaoEncontrado = cartoes.find(c => c.clienteId === cliente.id);
+            console.log(`[v0] Cliente ${cliente.id} - Cartão encontrado:`, cartaoEncontrado);
+            return {
+              ...cliente,
+              cartao: cartaoEncontrado
+            };
+          });
+          console.log('[v0] Clientes com cartões:', this.clientes);
         },
         error: (error) => {
           console.error('Erro ao carregar dados:', error);
@@ -133,14 +140,28 @@ export class Home implements OnInit, OnDestroy {
       });
   }
 
-  verDetalhes(cliente: ClienteComCartao): void {
+ verDetalhes(cliente: ClienteComCartao): void {
+    console.log('[v0] Abrindo detalhes do cliente:', cliente);
+    console.log('[v0] Cartão do cliente:', cliente.cartao);
+
     this.clienteSelecionadoDetalhes = cliente;
+
+    // Busca o cartão diretamente do array de cartões para garantir que está atualizado
+    if (cliente.id) {
+      const cartaoAtualizado = this.cartoes.find(c => c.clienteId === cliente.id);
+      this.cartaoSelecionado = cartaoAtualizado || null;
+      console.log('[v0] Cartão selecionado:', this.cartaoSelecionado);
+    } else {
+      this.cartaoSelecionado = null;
+    }
+
     this.modalDetalhesAberto = true;
   }
 
   fecharDetalhes(): void {
     this.modalDetalhesAberto = false;
     this.clienteSelecionadoDetalhes = null;
+    this.cartaoSelecionado = null;
   }
 
   getStatusLabel(status: string | undefined): string {

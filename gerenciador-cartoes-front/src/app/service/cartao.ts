@@ -7,6 +7,7 @@ import { map, delay } from 'rxjs/operators';
 @Injectable({
   providedIn: 'root'
 })
+
 export class CartaoService {
   private cartoes: Cartao[] = [
     {
