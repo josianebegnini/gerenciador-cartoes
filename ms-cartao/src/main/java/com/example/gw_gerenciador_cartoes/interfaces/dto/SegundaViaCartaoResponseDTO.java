@@ -1,4 +1,4 @@
-package com.example.gw_gerenciador_cartoes.domain.model;
+package com.example.gw_gerenciador_cartoes.interfaces.dto;
 
 import com.example.gw_gerenciador_cartoes.domain.enums.CategoriaCartao;
 import com.example.gw_gerenciador_cartoes.domain.enums.StatusCartao;
@@ -6,32 +6,16 @@ import com.example.gw_gerenciador_cartoes.domain.enums.TipoCartao;
 
 import java.time.LocalDate;
 
-public class Cartao {
-
+public class SegundaViaCartaoResponseDTO {
     private Long id;
     private Long clienteId;
     private String numero;
     private String cvv;
     private LocalDate dataVencimento;
-    private CategoriaCartao categoriaCartao;
     private StatusCartao status;
+    private CategoriaCartao categoriaCartao;
     private TipoCartao tipoCartao;
     private String motivoSegundaVia;
-
-    public Cartao() {
-    }
-
-    public Cartao(Long id, Long clienteId, String numero, String cvv, LocalDate dataVencimento, CategoriaCartao categoriaCartao, StatusCartao status, TipoCartao tipoCartao, String motivoSegundaVia) {
-        this.id = id;
-        this.clienteId = clienteId;
-        this.numero = numero;
-        this.cvv = cvv;
-        this.dataVencimento = dataVencimento;
-        this.categoriaCartao = categoriaCartao;
-        this.status = status;
-        this.tipoCartao = tipoCartao;
-        this.motivoSegundaVia = motivoSegundaVia;
-    }
 
     public Long getId() {
         return id;
@@ -73,20 +57,20 @@ public class Cartao {
         this.dataVencimento = dataVencimento;
     }
 
-    public CategoriaCartao getCategoriaCartao() {
-        return categoriaCartao;
-    }
-
-    public void setCategoriaCartao(CategoriaCartao categoriaCartao) {
-        this.categoriaCartao = categoriaCartao;
-    }
-
     public StatusCartao getStatus() {
         return status;
     }
 
     public void setStatus(StatusCartao status) {
         this.status = status;
+    }
+
+    public CategoriaCartao getCategoriaCartao() {
+        return categoriaCartao;
+    }
+
+    public void setCategoriaCartao(CategoriaCartao categoriaCartao) {
+        this.categoriaCartao = categoriaCartao;
     }
 
     public TipoCartao getTipoCartao() {
