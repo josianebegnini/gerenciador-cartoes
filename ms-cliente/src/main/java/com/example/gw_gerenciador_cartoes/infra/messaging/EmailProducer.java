@@ -1,6 +1,5 @@
 package com.example.gw_gerenciador_cartoes.infra.messaging;
 
-
 import com.example.gw_gerenciador_cartoes.domain.model.Cliente;
 import com.example.gw_gerenciador_cartoes.infra.config.RabbitMQConfig;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;

@@ -1,6 +1,5 @@
 package com.example.gw_gerenciador_cartoes.application.restController;
 
-
 import com.example.gw_gerenciador_cartoes.application.util.ClienteMapper;
 import com.example.gw_gerenciador_cartoes.domain.model.Cliente;
 import com.example.gw_gerenciador_cartoes.application.dto.ClienteDTO;
@@ -11,7 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("/clientes")
@@ -24,13 +22,19 @@ public class ClienteController {
         this.clienteService = clienteService;
     }
 
+
     @GetMapping
     public ResponseEntity<Page<Cliente>> listarTodosClientes(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "6") int size,
             @RequestParam(defaultValue = "id") String sort,
-            @RequestParam(defaultValue = "asc") String direction) {
-        return ResponseEntity.ok(clienteService.listarClientes(page, size, sort, direction));
+            @RequestParam(defaultValue = "asc") String direction,
+            @RequestParam(required = false) String nome,
+            @RequestParam(required = false) String cpf) {
+
+        return ResponseEntity.ok(
+                clienteService.listarClientes(page, size, sort, direction, nome, cpf)
+        );
     }
 
 
