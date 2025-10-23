@@ -1,8 +1,11 @@
+import { Endereco } from "./endereco";
+
 export interface Cliente {
-  id: number;
+  id?: number;
   nome: string;
+  email: string;
+  dataNasc: string;
   cpf: string;
-  ultimosDigitos: string;
-  status: 'ativo' | 'bloqueado' | 'pendente';
   selecionado: boolean;
+  endereco: Endereco;
 }

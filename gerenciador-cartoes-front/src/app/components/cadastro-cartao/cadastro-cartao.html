@@ -1,0 +1,172 @@
+<div class="page-container">
+  <app-menu-lateral
+    (novoCliente)="novoCliente()"
+    (navegarHome)="onNavegarHome()"
+    (navegarCartoes)="onNavegarCartoes()"
+    (navegarRelatorios)="onNavegarRelatorios()">
+  </app-menu-lateral>
+
+  <div class="cadastro-container">
+    <div class="cadastro-card">
+      <div class="cadastro-header">
+        <h1>Cadastro de Novo Cartão</h1>
+      </div>
+
+      <!-- Mensagens -->
+      <div *ngIf="mensagemSucesso" class="mensagem mensagem-sucesso">
+        {{ mensagemSucesso }}
+      </div>
+      <div *ngIf="mensagemErro" class="mensagem mensagem-erro">
+        {{ mensagemErro }}
+      </div>
+
+      <!-- Busca de Cliente -->
+      <div class="form-section">
+        <h2 class="section-title">Buscar Cliente</h2>
+        <div class="busca-cliente">
+          <div class="form-group">
+            <label for="cpfBusca">CPF do Cliente *</label>
+            <div class="input-group">
+              <input
+                type="text"
+                id="cpfBusca"
+                [(ngModel)]="cpfBusca"
+                name="cpfBusca"
+                placeholder="000.000.000-00"
+                (input)="formatarCPF($event)"
+                maxlength="14"
+                [disabled]="buscandoCliente"
+              />
+              <button
+                type="button"
+                class="btn btn-search"
+                (click)="buscarClientePorCPF()"
+                [disabled]="buscandoCliente || !cpfBusca"
+              >
+                {{ buscandoCliente ? 'Buscando...' : 'Buscar' }}
+              </button>
+            </div>
+          </div>
+
+          <!-- Erro na busca -->
+          <div *ngIf="erroCliente" class="mensagem mensagem-erro">
+            {{ erroCliente }}
+          </div>
+
+          <!-- Cliente encontrado -->
+          <div *ngIf="clienteEncontrado" class="cliente-info">
+            <div class="info-header">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M12 11C14.2091 11 16 9.20914 16 7C16 4.79086 14.2091 3 12 3C9.79086 3 8 4.79086 8 7C8 9.20914 9.79086 11 12 11Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <h3>Cliente Encontrado</h3>
+            </div>
+            <div class="info-content">
+              <p><strong>Nome:</strong> {{ clienteEncontrado?.nome }}</p>
+              <p><strong>Email:</strong> {{ clienteEncontrado?.email }}</p>
+              <p><strong>CPF:</strong> {{ clienteEncontrado?.cpf }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Formulário de Cartão -->
+      <form class="cadastro-form" (ngSubmit)="criarCartao()" *ngIf="clienteEncontrado">
+        <!-- Dados do Cartão -->
+        <div class="form-section">
+          <h2 class="section-title">Dados do Cartão</h2>
+          <div class="form-grid">
+            <div class="form-group full-width">
+              <label for="numero">Número do Cartão *</label>
+              <input
+                type="text"
+                id="numero"
+                [(ngModel)]="cartao.numero"
+                name="numero"
+                placeholder="0000 0000 0000 0000"
+                (input)="formatarNumeroCartao($event)"
+                maxlength="19"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="cvv">CVV *</label>
+              <input
+                type="text"
+                id="cvv"
+                [(ngModel)]="cartao.cvv"
+                name="cvv"
+                placeholder="123"
+                (input)="formatarCVV($event)"
+                maxlength="4"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="dataVencimento">Data de Vencimento *</label>
+              <input
+                type="text"
+                id="dataVencimento"
+                [(ngModel)]="cartao.dataVencimento"
+                name="dataVencimento"
+                placeholder="MM/AA"
+                (input)="formatarDataVencimento($event)"
+                maxlength="5"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="tipoConta">Tipo de Conta *</label>
+              <select
+                id="tipoConta"
+                [(ngModel)]="cartao.tipoConta"
+                name="tipoConta"
+                required
+              >
+                <option value="debito">Débito</option>
+                <option value="credito">Crédito</option>
+                <option value="multiplo">Múltiplo</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="formatoCartao">Formato do Cartão *</label>
+              <select
+                id="formatoCartao"
+                [(ngModel)]="cartao.formatoCartao"
+                name="formatoCartao"
+                required
+              >
+                <option value="fisico">Físico</option>
+                <option value="virtual">Virtual</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Botões -->
+        <div class="form-actions">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            (click)="cancelar()"
+            [disabled]="carregando"
+          >
+            Cancelar
+          </button>
+          <button
+            type="submit"
+            class="btn btn-primary"
+            [disabled]="carregando"
+          >
+            {{ carregando ? 'Cadastrando...' : 'Criar Cartão' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
