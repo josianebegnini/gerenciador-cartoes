@@ -1,18 +1,21 @@
 package com.example.gw_gerenciador_cartoes.service;
 
+import com.example.gw_gerenciador_cartoes.application.dto.CartaoIdentificacaoRequestDTO;
+import com.example.gw_gerenciador_cartoes.application.dto.CartaoResponseDTO;
+import com.example.gw_gerenciador_cartoes.application.dto.SegundaViaCartaoRequestDTO;
+import com.example.gw_gerenciador_cartoes.application.mapper.SegundaViaCartaoMapper;
 import com.example.gw_gerenciador_cartoes.domain.enums.CategoriaCartao;
 import com.example.gw_gerenciador_cartoes.domain.enums.StatusCartao;
 import com.example.gw_gerenciador_cartoes.domain.enums.TipoCartao;
 import com.example.gw_gerenciador_cartoes.domain.model.Cartao;
 import com.example.gw_gerenciador_cartoes.domain.ports.CartaoRepositoryPort;
 import com.example.gw_gerenciador_cartoes.domain.ports.CartaoServicePort;
-import com.example.gw_gerenciador_cartoes.application.dto.CartaoResponseDTO;
-import com.example.gw_gerenciador_cartoes.infra.exception.CartaoOriginalNotFoundException;
+import com.example.gw_gerenciador_cartoes.infra.exception.CartaoNotFoundException;
 import com.example.gw_gerenciador_cartoes.infra.exception.RegraNegocioException;
-import com.example.gw_gerenciador_cartoes.application.mapper.SegundaViaCartaoMapper;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.Optional;
 import java.util.Random;
 
 @Service
@@ -40,9 +43,9 @@ public class CartaoService implements CartaoServicePort {
         repository.salvar(cartao);
     }
 
-    public CartaoResponseDTO ativar(Long idCartao) {
-        Cartao cartao = repository.buscarPorId(idCartao)
-                .orElseThrow(() -> new CartaoOriginalNotFoundException("Cartão não encontrado."));
+    public CartaoResponseDTO ativar(CartaoIdentificacaoRequestDTO dto) {
+        Cartao cartao = repository.buscarPorNumeroECvv(dto.getNumero(), dto.getCvv())
+                .orElseThrow(() -> new CartaoNotFoundException("Cartão não encontrado"));
 
         if (cartao.getStatus() != StatusCartao.DESATIVADO) {
             throw new RegraNegocioException("Só é possível ativar cartões com status DESATIVADO.");
@@ -58,9 +61,10 @@ public class CartaoService implements CartaoServicePort {
 
 
     @Override
-    public CartaoResponseDTO solicitarSegundaVia(Long idCartaoOriginal, String motivo) {
-        Cartao original = repository.buscarPorId(idCartaoOriginal)
-                .orElseThrow(() -> new CartaoOriginalNotFoundException("Cartão original não encontrado."));
+    public CartaoResponseDTO solicitarSegundaVia(SegundaViaCartaoRequestDTO dto) {
+
+        Cartao original = buscarCartaoPorNumeroECvv(dto.getNumero(), dto.getCvv())
+                .orElseThrow(() -> new CartaoNotFoundException("Cartão original não encontrado."));
 
         if (original.getStatus() != StatusCartao.ATIVADO && original.getStatus() != StatusCartao.BLOQUEADO) {
             throw new RegraNegocioException("Segunda via só pode ser solicitada para cartões ATIVADOS ou BLOQUEADOS.");
@@ -78,7 +82,7 @@ public class CartaoService implements CartaoServicePort {
         segundaVia.setStatus(StatusCartao.DESATIVADO);
         segundaVia.setCategoriaCartao(original.getCategoriaCartao());
         segundaVia.setTipoCartao(original.getTipoCartao());
-        segundaVia.setMotivoSegundaVia(motivo);
+        segundaVia.setMotivoSegundaVia(dto.getMotivoSegundaVia());
 
         Cartao cartaoSalvo = repository.salvar(segundaVia)
                 .orElseThrow(() -> new RuntimeException("Erro ao salvar segunda via"));
@@ -117,6 +121,10 @@ public class CartaoService implements CartaoServicePort {
             alternar = !alternar;
         }
         return (10 - (soma % 10)) % 10;
+    }
+
+    public Optional<Cartao> buscarCartaoPorNumeroECvv(String numero, String cvv) {
+        return repository.buscarPorNumeroECvv(numero, cvv);
     }
 
 }

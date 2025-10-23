@@ -28,8 +28,8 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
     }
 
-    @ExceptionHandler(CartaoOriginalNotFoundException.class)
-    public ResponseEntity<Map<String, String>> handleCartaoOriginalNotFound(CartaoOriginalNotFoundException ex) {
+    @ExceptionHandler(CartaoNotFoundException.class)
+    public ResponseEntity<Map<String, String>> handleCartaoOriginalNotFound(CartaoNotFoundException ex) {
         Map<String, String> error = new HashMap<>();
         error.put("erro", ex.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
