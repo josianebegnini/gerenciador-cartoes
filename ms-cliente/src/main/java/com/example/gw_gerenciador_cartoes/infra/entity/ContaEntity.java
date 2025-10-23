@@ -13,14 +13,16 @@ public class ContaEntity {
     private String agencia;
     private String conta;
 
-    @Column(name = "cliente_id")
-    private Long clienteId;
 
-    public ContaEntity(Long id, String agencia, String conta, Long clienteId) {
+    @ManyToOne
+    @JoinColumn(name = "cliente_id")
+    private ClienteEntity cliente;
+
+
+    public ContaEntity(Long id, String agencia, String conta) {
         this.id = id;
         this.agencia = agencia;
         this.conta = conta;
-        this.clienteId = clienteId;
     }
 
     public Long getId() {
@@ -35,7 +37,5 @@ public class ContaEntity {
         return conta;
     }
 
-    public Long getClienteId() {
-        return clienteId;
-    }
+
 }

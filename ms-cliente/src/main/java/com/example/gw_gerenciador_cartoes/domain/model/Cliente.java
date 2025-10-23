@@ -6,13 +6,16 @@ public class Cliente {
     private String email;
     private String dataNasc;
     private String CPF;
+    private Endereco endereco;
 
-    public Cliente(Long id, String nome, String email, String dataNasc, String CPF) {
+
+    public Cliente(Long id, String nome, String email, String dataNasc, String CPF, Endereco endereco) {
         this.id = id;
         this.nome = nome;
         this.email = email;
         this.dataNasc = dataNasc;
         this.CPF = CPF;
+        this.endereco = endereco;
     }
 
     public Cliente() {
@@ -57,5 +60,14 @@ public class Cliente {
 
     public void setCPF(String CPF) {
         this.CPF = CPF;
+    }
+
+    public Endereco getEndereco() {
+        return endereco;
+    }
+
+    public Cliente setEndereco(Endereco endereco) {
+        this.endereco = endereco;
+        return this;
     }
 }
