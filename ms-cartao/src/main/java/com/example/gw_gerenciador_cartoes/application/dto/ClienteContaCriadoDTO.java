@@ -1,4 +1,4 @@
-package com.example.gw_gerenciador_cartoes.interfaces.dto;
+package com.example.gw_gerenciador_cartoes.application.dto;
 
 public class ClienteContaCriadoDTO {
     private Long clienteId;
@@ -37,4 +37,5 @@ public class ClienteContaCriadoDTO {
     public void setEmail(String email) {
         this.email = email;
     }
+
 }
