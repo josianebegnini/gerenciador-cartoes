@@ -6,11 +6,12 @@
 body, html {
   height: 100%;
   margin: 0;
-  background-color: #f4f6fa;
+  background-color: #072a70;
 }
 
 .container {
   display: flex;
+  background: #e1e4ea;
   align-items: center;
   justify-content: center;
   height: 100vh;
@@ -25,7 +26,7 @@ body, html {
 }
 
 .header {
-  background-color: #d32f2f;
+  background: linear-gradient(135deg, #7B2D26 0%, #B22222 100%);
   color: white;
   text-align: center;
   padding: 25px 20px;
@@ -42,6 +43,20 @@ body, html {
   margin-top: 6px;
   color: #fceaea;
 }
+.logo-container {
+  background: transparent;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.logo {
+  display: block;
+  margin: 1px auto 1px auto;
+  width: 100px; 
+  height: auto;
+  border-radius: 10px;
+}
+
 
 .form {
   display: flex;
@@ -76,7 +91,7 @@ input:focus {
 }
 
 .btn-acessar {
-  background-color: #d32f2f;
+  background: linear-gradient(135deg, #7B2D26 0%, #B22222 100%);
   color: white;
   border: none;
   border-radius: 6px;
@@ -91,7 +106,7 @@ input:focus {
 }
 
 .btn-acessar:disabled {
-  background-color: #ccc;
+  background-color: #928787;
   cursor: not-allowed;
 }
 
