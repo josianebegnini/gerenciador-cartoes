@@ -2,6 +2,7 @@ import { Component, Input, Output, EventEmitter, SimpleChanges } from "@angular/
 import { CommonModule } from "@angular/common"
 import type { Cliente } from "../../models/cliente"
 import type { Cartao } from "../../models/cartao"
+import jsPDF from "jspdf"
 
 @Component({
   selector: "app-cliente-detalhes",
@@ -15,6 +16,7 @@ export class ClienteDetalhesComponent {
   @Input() cartao: Cartao | null = null
   @Input() isOpen = false
   @Output() fechar = new EventEmitter<void>()
+  
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['cliente'] || changes['cartao']) {
@@ -62,4 +64,84 @@ export class ClienteDetalhesComponent {
       this.fecharModal()
     }
   }
+
+  exportarPDF(): void {
+    if (!this.cliente) return;
+    console.log('Exportando PDF...');
+
+    const doc = new jsPDF();
+    let y = 15;
+
+    doc.setFontSize(16);
+    doc.text("Relatório do Cliente", 14, y);
+    y += 10;
+
+    doc.setFontSize(12);
+    doc.text(`Nome: ${this.cliente.nome}`, 14, y); y += 7;
+    doc.text(`CPF: ${this.formatarCPF(this.cliente.cpf)}`, 14, y); y += 7;
+    doc.text(`Email: ${this.cliente.email}`, 14, y); y += 7;
+    doc.text(`Data de Nascimento: ${this.cliente.dataNasc}`, 14, y); y += 7;
+    doc.text(`ID: ${this.cliente.id}`, 14, y); y += 10;
+
+    doc.text("Endereço:", 14, y); y += 7;
+    const end = this.cliente.endereco;
+    doc.text(`Rua: ${end.rua}, Nº ${end.numero}`, 14, y); y += 7;
+    doc.text(`Bairro: ${end.bairro}`, 14, y); y += 7;
+    doc.text(`Cidade: ${end.cidade}`, 14, y); y += 7;
+    doc.text(`CEP: ${this.formatarCEP(end.cep)}`, 14, y); y += 10;
+
+    if (this.cartao) {
+      doc.text("Cartão:", 14, y); y += 7;
+      doc.text(`Número: ${this.formatarNumeroCartao(this.cartao.numero)}`, 14, y); y += 7;
+      doc.text(`Vencimento: ${this.cartao.dataVencimento}`, 14, y); y += 7;
+      doc.text(`Tipo de Conta: ${this.cartao.tipoConta}`, 14, y); y += 7;
+      doc.text(`Status: ${this.getStatusTexto(this.cartao.status)}`, 14, y);
+    } else {
+      doc.text("Cartão: Não associado", 14, y);
+    }
+
+    doc.save(`cliente_${this.cliente.id}.pdf`);
+  }
+
+  //XML
+  exportarXML(): void {
+    if (!this.cliente) return;
+    console.log('Exportando XML...');
+
+    const cartaoXML = this.cartao
+      ? `
+      <cartao>
+        <numero>${this.cartao.numero}</numero>
+        <dataVencimento>${this.cartao.dataVencimento}</dataVencimento>
+        <tipoConta>${this.cartao.tipoConta}</tipoConta>
+        <status>${this.cartao.status}</status>
+      </cartao>`
+      : `<cartao>Nenhum</cartao>`;
+
+    const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<cliente>
+  <id>${this.cliente.id}</id>
+  <nome>${this.cliente.nome}</nome>
+  <cpf>${this.cliente.cpf}</cpf>
+  <email>${this.cliente.email}</email>
+  <dataNasc>${this.cliente.dataNasc}</dataNasc>
+  <endereco>
+    <cep>${this.cliente.endereco.cep}</cep>
+    <rua>${this.cliente.endereco.rua}</rua>
+    <numero>${this.cliente.endereco.numero}</numero>
+    <bairro>${this.cliente.endereco.bairro}</bairro>
+    <cidade>${this.cliente.endereco.cidade}</cidade>
+    <complemento>${this.cliente.endereco.complemento || ""}</complemento>
+  </endereco>
+  ${cartaoXML}
+</cliente>`;
+
+    const blob = new Blob([xml], { type: "application/xml" });
+    saveAs(blob, `cliente_${this.cliente.id}.xml`);
+  }
 }
+
+function saveAs(blob: Blob, arg1: string) {
+  throw new Error("Function not implemented.")
+}
+
