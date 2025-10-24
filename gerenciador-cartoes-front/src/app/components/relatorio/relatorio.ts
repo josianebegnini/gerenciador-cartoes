@@ -86,21 +86,26 @@ export class RelatorioComponent implements OnInit, OnDestroy {
     return classes[status] || 'status-sem-cartao';
   }
 
-  //PDF
-  exportarPDF(): void {
+//PDF
+exportarPDF(): void {
   const clientes = this.clientesFiltrados;
   const doc = new jsPDF();
 
+  
   doc.setFontSize(16);
+  doc.setTextColor('#7B2D26');
   doc.text('Relatório de Clientes - Detalhado', 14, 15);
   doc.setFontSize(11);
+  doc.setTextColor(0, 0, 0);
 
+  
   const head = [[
     'ID', 'Nome', 'CPF', 'Email', 'Data Nasc.',
     'Endereço', 'Conta', 'Cartão'
   ]];
 
-  const body = clientes.map((c: any, index: number) => [
+  
+  const body = clientes.map((c: any) => [
     c.id ?? '',
     c.nome ?? '',
     c.cpf ?? '',
@@ -122,19 +127,51 @@ export class RelatorioComponent implements OnInit, OnDestroy {
     startY: 25,
     head,
     body,
-    styles: { fontSize: 9, cellPadding: 3 },
-    headStyles: {
-      fillColor: [123, 45, 38],
-      textColor: 255,
-      halign: 'center'
+    styles: {
+      fontSize: 9,
+      cellPadding: 3,
     },
-    alternateRowStyles: { fillColor: [240, 240, 240] }, 
+    headStyles: {
+      fillColor: [123, 45, 38], // #7B2D26 cor do projeto
+      textColor: 255,
+      halign: 'center',
+      fontStyle: 'bold'
+    },
+    alternateRowStyles: { fillColor: [250, 240, 240] },
     margin: { left: 10, right: 10 },
+
+    
+    didParseCell: function (data) {
+      const col = data.column.index;
+      const text = String(data.cell.text || '').toLowerCase();
+
+    
+      if (col === 7) {
+        if (text.includes('ativado')) {
+          data.cell.styles.textColor = [0, 128, 0];    
+          data.cell.styles.fontStyle = 'bold';
+        } else if (text.includes('cancelado')) {
+          data.cell.styles.textColor = [255, 140, 0];   
+          data.cell.styles.fontStyle = 'bold';
+        } else if (text.includes('bloqueado')) {
+          data.cell.styles.textColor = [178, 34, 34];    
+          data.cell.styles.fontStyle = 'bold';
+        } else if (text.includes('desativado')) {
+          data.cell.styles.textColor = [105, 105, 105];  
+          data.cell.styles.fontStyle = 'bold';
+        }
+      }
+    },
   });
+
+  
+  const pageHeight = doc.internal.pageSize.height;
+  doc.setFontSize(9);
+  doc.setTextColor('#B22222');
+  doc.text(`Gerado em: ${new Date().toLocaleString('pt-BR')}`, 14, pageHeight - 10);
 
   doc.save('relatorio-clientes-tabela.pdf');
 }
-
 
 
 //XML

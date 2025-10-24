@@ -2,7 +2,8 @@ import { Component, Input, Output, EventEmitter, SimpleChanges } from "@angular/
 import { CommonModule } from "@angular/common"
 import type { Cliente } from "../../models/cliente"
 import type { Cartao } from "../../models/cartao"
-import jsPDF from "jspdf"
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 @Component({
   selector: "app-cliente-detalhes",
