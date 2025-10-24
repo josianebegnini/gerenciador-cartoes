@@ -56,17 +56,14 @@ export class Home implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: ([clientes, cartoes]) => {
-          console.log('[v0] Cartões carregados:', cartoes);
           this.cartoes = cartoes;
           this.clientes = clientes.map(cliente => {
             const cartaoEncontrado = cartoes.find(c => c.clienteId === cliente.id);
-            console.log(`[v0] Cliente ${cliente.id} - Cartão encontrado:`, cartaoEncontrado);
             return {
               ...cliente,
               cartao: cartaoEncontrado
             };
           });
-          console.log('[v0] Clientes com cartões:', this.clientes);
         },
         error: (error) => {
           console.error('Erro ao carregar dados:', error);
@@ -92,53 +89,49 @@ export class Home implements OnInit, OnDestroy {
   }
 
   mudarStatus(novoStatus: 'desativado' | 'ativado' | 'bloqueado' | 'cancelado'): void {
-  const clientesSelecionados = this.clientes.filter(cliente => cliente.selecionado);
-  const idsComCartao = clientesSelecionados
-    .filter(cliente => cliente.cartao && cliente.id)
-    .map(cliente => cliente.id!);
+    const clientesSelecionados = this.clientes.filter(cliente => cliente.selecionado);
+    const idsComCartao = clientesSelecionados
+      .filter(cliente => cliente.cartao && cliente.id)
+      .map(cliente => cliente.id!);
 
-  if (idsComCartao.length === 0) {
-    alert('Nenhum cliente com cartão selecionado');
-    return;
-  }
+    if (idsComCartao.length === 0) {
+      alert('Nenhum cliente com cartão selecionado');
+      return;
+    }
 
-  let statusTexto = '';
+    let statusTexto = '';
+    switch (novoStatus) {
+      case 'ativado':
+        statusTexto = 'ativado';
+        break;
+      case 'bloqueado':
+        statusTexto = 'bloqueado';
+        break;
+      case 'cancelado':
+        statusTexto = 'cancelado';
+        break;
+      case 'desativado':
+        statusTexto = 'desativado';
+        break;
+    }
 
-  switch (novoStatus) {
-    case 'ativado':
-      statusTexto = 'ativado';
-      break;
-    case 'bloqueado':
-      statusTexto = 'bloqueado';
-      break;
-    case 'cancelado':
-      statusTexto = 'cancelado';
-      break;
-    case 'desativado':
-      statusTexto = 'desativado';
-      break;
-  }
-
-  if (confirm(`Deseja alterar o status de ${idsComCartao.length} cartão(ões) para ${statusTexto}?`)) {
-    this.cartaoService.updateStatusEmLote(idsComCartao, novoStatus)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: () => {
-          console.log('Status alterado com sucesso');
-
-          this.clientes.forEach(cliente => {
-            if (cliente.selecionado && cliente.cartao) {
-              cliente.cartao.status = novoStatus;
-            }
-            cliente.selecionado = false;
-          });
-
-        },
-        error: (error) => {
-          console.error('Erro ao alterar status:', error);
-        }
-      });
-  }
+    if (confirm(`Deseja alterar o status de ${idsComCartao.length} cartão(ões) para ${statusTexto}?`)) {
+      this.cartaoService.updateStatusEmLote(idsComCartao, novoStatus)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: () => {
+            this.clientes.forEach(cliente => {
+              if (cliente.selecionado && cliente.cartao) {
+                cliente.cartao.status = novoStatus;
+              }
+              cliente.selecionado = false;
+            });
+          },
+          error: (error) => {
+            console.error('Erro ao alterar status:', error);
+          }
+        });
+    }
   }
 
   alternarStatus(cliente: ClienteComCartao): void {
@@ -150,26 +143,17 @@ export class Home implements OnInit, OnDestroy {
     this.cartaoService.alternarStatus(cliente.id)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: () => {
-          console.log('Status alterado com sucesso');
-        },
-        error: (error) => {
-          console.error('Erro ao alterar status:', error);
-
-        }
+        next: () => console.log('Status alterado com sucesso'),
+        error: (error) => console.error('Erro ao alterar status:', error)
       });
   }
 
- verDetalhes(cliente: ClienteComCartao): void {
-    console.log('[v0] Abrindo detalhes do cliente:', cliente);
-    console.log('[v0] Cartão do cliente:', cliente.cartao);
-
+  verDetalhes(cliente: ClienteComCartao): void {
     this.clienteSelecionadoDetalhes = cliente;
 
     if (cliente.id) {
       const cartaoAtualizado = this.cartoes.find(c => c.clienteId === cliente.id);
       this.cartaoSelecionado = cartaoAtualizado || null;
-      console.log('[v0] Cartão selecionado:', this.cartaoSelecionado);
     } else {
       this.cartaoSelecionado = null;
     }
@@ -181,26 +165,6 @@ export class Home implements OnInit, OnDestroy {
     this.modalDetalhesAberto = false;
     this.clienteSelecionadoDetalhes = null;
     this.cartaoSelecionado = null;
-  }
-
-  getStatusLabel(status: string | undefined): string {
-    if (!status) return 'Sem Cartão';
-    if (status === 'ativado') return 'ativado';
-    if (status === 'bloqueado') return 'bloqueado';
-    if (status === 'cancelado') return 'cancelado';
-    if (status === 'desativado') return 'desativado';
-    return 'Sem Cartão';
-  }
-
-  getStatusClass(status: string | undefined): string {
-    if (!status) return 'status-sem-cartao';
-    const classes: Record<string, string> = {
-      'ativado': 'status-ativado',
-      'bloqueado': 'status-bloqueado',
-      'desativado': 'status-desativado',
-      'cancelado': 'status-cancelado'
-    };
-    return classes[status] || 'status-sem-cartao';
   }
 
   novoCliente(): void {
@@ -217,9 +181,7 @@ export class Home implements OnInit, OnDestroy {
       this.cartaoService.solicitarSegundaVia(cliente.id)
         .pipe(takeUntil(this.destroy$))
         .subscribe({
-          next: () => {
-            alert('2ª via solicitada com sucesso!');
-          },
+          next: () => alert('2ª via solicitada com sucesso!'),
           error: (error) => {
             console.error('Erro ao solicitar 2ª via:', error);
             alert('Erro ao solicitar 2ª via do cartão');
@@ -235,9 +197,7 @@ export class Home implements OnInit, OnDestroy {
       this.clienteService.deleteCliente(cliente.id)
         .pipe(takeUntil(this.destroy$))
         .subscribe({
-          next: () => {
-            alert('Cliente excluído com sucesso!');
-          },
+          next: () => alert('Cliente excluído com sucesso!'),
           error: (error) => {
             console.error('Erro ao excluir cliente:', error);
             alert('Erro ao excluir cliente');
@@ -251,9 +211,41 @@ export class Home implements OnInit, OnDestroy {
   }
 
   onNavegarCartoes(): void {
-    this.router.navigate(['cadastro-cartao']);
+    this.router.navigate(['/cadastro-cartao']);
   }
 
   onNavegarRelatorios(): void {
+    this.router.navigate(['/relatorio']);
+  }
+
+  // 🧩 Adicionados para corrigir o erro no HTML:
+  getStatusClass(status?: string): string {
+    switch (status) {
+      case 'ativado':
+        return 'status-ativado';
+      case 'bloqueado':
+        return 'status-bloqueado';
+      case 'cancelado':
+        return 'status-cancelado';
+      case 'desativado':
+        return 'status-desativado';
+      default:
+        return 'status-desconhecido';
+    }
+  }
+
+  getStatusLabel(status?: string): string {
+    switch (status) {
+      case 'ativado':
+        return 'Ativado';
+      case 'bloqueado':
+        return 'Bloqueado';
+      case 'cancelado':
+        return 'Cancelado';
+      case 'desativado':
+        return 'Desativado';
+      default:
+        return 'Sem cartão';
+    }
   }
 }
