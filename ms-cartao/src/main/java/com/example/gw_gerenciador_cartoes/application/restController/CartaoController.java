@@ -1,6 +1,7 @@
 package com.example.gw_gerenciador_cartoes.application.restController;
 
 import com.example.gw_gerenciador_cartoes.application.dto.CartaoIdentificacaoRequestDTO;
+import com.example.gw_gerenciador_cartoes.application.dto.SegundaViaCartaoResponseDTO;
 import com.example.gw_gerenciador_cartoes.domain.ports.CartaoServicePort;
 import com.example.gw_gerenciador_cartoes.application.dto.SegundaViaCartaoRequestDTO;
 import com.example.gw_gerenciador_cartoes.application.dto.CartaoResponseDTO;
@@ -25,7 +26,7 @@ public class CartaoController {
     }
 
     @PostMapping("/segunda-via")
-    public ResponseEntity<CartaoResponseDTO> solicitarSegundaVia(@Valid @RequestBody SegundaViaCartaoRequestDTO dto) {
+    public ResponseEntity<SegundaViaCartaoResponseDTO> solicitarSegundaVia(@Valid @RequestBody SegundaViaCartaoRequestDTO dto) {
         return ResponseEntity.ok(cartaoService.solicitarSegundaVia(dto));
     }
 
