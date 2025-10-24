@@ -3,7 +3,6 @@ import { CommonModule } from "@angular/common"
 import type { Cliente } from "../../models/cliente"
 import type { Cartao } from "../../models/cartao"
 import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
 
 @Component({
   selector: "app-cliente-detalhes",
@@ -81,7 +80,7 @@ export class ClienteDetalhesComponent {
     });
   }
 
-  //PDF
+
   exportarPDF(): void {
     if (!this.cliente) return;
     console.log('Exportando PDF...');
