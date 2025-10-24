@@ -56,24 +56,24 @@
           {{ quantidadeClientesSelecionados }} cliente(s) selecionado(s)
         </span>
         <div class="bulk-actions-buttons">
-          <button class="bulk-btn bulk-btn-ativo" (click)="mudarStatus('ativo')">
+          <button class="bulk-btn bulk-btn-ativado" (click)="mudarStatus('ativado')">
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
               <path d="M13 4L6 11L3 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
-            Ativar
+            ativado
           </button>
           <button class="bulk-btn bulk-btn-bloqueado" (click)="mudarStatus('bloqueado')">
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
               <path d="M12 4L4 12M4 4L12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
             </svg>
-            Bloquear
+            bloqueado
           </button>
-          <button class="bulk-btn bulk-btn-pendente" (click)="mudarStatus('pendente')">
+          <button class="bulk-btn bulk-btn-cancelado" (click)="mudarStatus('cancelado')">
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
               <circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="2" fill="none"/>
               <path d="M8 5V8L10 10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
             </svg>
-            Pendente
+            cancelado
           </button>
         </div>
       </div>

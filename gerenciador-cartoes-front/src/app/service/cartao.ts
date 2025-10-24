@@ -15,27 +15,27 @@ export class CartaoService {
       numero: '4532 1234 5678 9010',
       cvv: '123',
       dataVencimento: '12/2027',
-      tipoConta: 'Corrente',
-      status: 'ativo',
-      formatoCartao: 'Visa'
+      tipoCartao: 'Corrente',
+      status: 'ativado',
+      categoriaCartao: 'Visa'
     },
     {
       clienteId: 2,
       numero: '5425 2334 3010 9876',
       cvv: '456',
       dataVencimento: '08/2026',
-      tipoConta: 'Poupança',
-      status: 'ativo',
-      formatoCartao: 'Mastercard'
+      tipoCartao: 'Poupança',
+      status: 'ativado',
+      categoriaCartao: 'Mastercard'
     },
     {
       clienteId: 3,
       numero: '3782 822463 10005',
       cvv: '789',
       dataVencimento: '03/2028',
-      tipoConta: 'Corrente',
-      status: 'bloqueado',
-      formatoCartao: 'American Express'
+      tipoCartao: 'Corrente',
+      status: 'ativado',
+      categoriaCartao: 'American Express'
     }
   ];
 
@@ -104,11 +104,11 @@ export class CartaoService {
     return of(cartaoAtualizado).pipe(delay(100));
   }
 
-  updateStatus(clienteId: number, status: 'ativo' | 'bloqueado' | 'pendente'): Observable<Cartao> {
+  updateStatus(clienteId: number, status: 'desativado' | 'ativado' | 'bloqueado' | 'cancelado'): Observable<Cartao> {
     return this.updateCartao(clienteId, { status });
   }
 
-  updateStatusEmLote(clienteIds: number[], status: 'ativo' | 'bloqueado' | 'pendente'): Observable<Cartao[]> {
+  updateStatusEmLote(clienteIds: number[], status: 'desativado' | 'ativado' | 'bloqueado' | 'cancelado'): Observable<Cartao[]> {
     const cartoesAtualizados: Cartao[] = [];
 
     clienteIds.forEach(clienteId => {
@@ -136,14 +136,14 @@ export class CartaoService {
     }
 
     const statusAtual = cartao.status;
-    let novoStatus: 'ativo' | 'bloqueado' | 'pendente';
+    let novoStatus: 'desativado' | 'ativado' | 'bloqueado' | 'cancelado';
 
-    if (statusAtual === 'ativo') {
+    if (statusAtual === 'ativado') {
       novoStatus = 'bloqueado';
     } else if (statusAtual === 'bloqueado') {
-      novoStatus = 'pendente';
+      novoStatus = 'cancelado';
     } else {
-      novoStatus = 'ativo';
+      novoStatus = 'desativado';
     }
 
     return this.updateStatus(clienteId, novoStatus);
@@ -173,11 +173,11 @@ export class CartaoService {
       return throwError(() => new Error(`Cartão do cliente ${clienteId} não encontrado`));
     }
 
-    const novoNumero = this.gerarNumeroCartao(cartao.formatoCartao);
+    const novoNumero = this.gerarNumeroCartao(cartao.categoriaCartao);
 
     return this.updateCartao(clienteId, {
       numero: novoNumero,
-      status: 'pendente'
+      status: 'ativado',
     });
   }
 
