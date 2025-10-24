@@ -9,6 +9,7 @@ import java.time.LocalDate;
 public class CartaoResponseDTO {
     private Long id;
     private Long clienteId;
+    private Long contaId;
     private String numero;
     private String cvv;
     private LocalDate dataVencimento;
@@ -31,6 +32,14 @@ public class CartaoResponseDTO {
 
     public void setClienteId(Long clienteId) {
         this.clienteId = clienteId;
+    }
+
+    public Long getContaId() {
+        return contaId;
+    }
+
+    public void setContaId(Long contaId) {
+        this.contaId = contaId;
     }
 
     public String getNumero() {
@@ -88,5 +97,4 @@ public class CartaoResponseDTO {
     public void setMotivoSegundaVia(String motivoSegundaVia) {
         this.motivoSegundaVia = motivoSegundaVia;
     }
-
 }

@@ -25,6 +25,7 @@ public class CartaoRepositoryAdapter implements CartaoRepositoryPort {
 
         CartaoEntity entity = new CartaoEntity();
         entity.setClienteId(cartao.getClienteId());
+        entity.setContaId(cartao.getContaId());
         entity.setNumero(cartao.getNumero());
         entity.setCvv(cartao.getCvv());
         entity.setDataVencimento(cartao.getDataVencimento());
@@ -48,6 +49,7 @@ public class CartaoRepositoryAdapter implements CartaoRepositoryPort {
         }
 
         entity.setClienteId(cartao.getClienteId());
+        entity.setContaId(cartao.getContaId());
         entity.setNumero(cartao.getNumero());
         entity.setCvv(cartao.getCvv());
         entity.setDataVencimento(cartao.getDataVencimento());

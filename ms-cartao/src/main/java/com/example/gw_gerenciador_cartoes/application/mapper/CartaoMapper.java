@@ -11,6 +11,7 @@ public class CartaoMapper {
         Cartao cartao = new Cartao();
         cartao.setId(entity.getId());
         cartao.setClienteId(entity.getClienteId());
+        cartao.setContaId(entity.getContaId());
         cartao.setNumero(entity.getNumero());
         cartao.setCvv(entity.getCvv());
         cartao.setDataVencimento(entity.getDataVencimento());
@@ -25,6 +26,7 @@ public class CartaoMapper {
         CartaoEntity entity = new CartaoEntity();
         entity.setId(cartao.getId());
         entity.setClienteId(cartao.getClienteId());
+        entity.setContaId(cartao.getContaId());
         entity.setNumero(cartao.getNumero());
         entity.setCvv(cartao.getCvv());
         entity.setDataVencimento(cartao.getDataVencimento());

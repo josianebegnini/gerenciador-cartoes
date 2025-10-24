@@ -10,6 +10,7 @@ public class Cartao {
 
     private Long id;
     private Long clienteId;
+    private Long contaId;
     private String numero;
     private String cvv;
     private LocalDate dataVencimento;
@@ -21,9 +22,10 @@ public class Cartao {
     public Cartao() {
     }
 
-    public Cartao(Long id, Long clienteId, String numero, String cvv, LocalDate dataVencimento, CategoriaCartao categoriaCartao, StatusCartao status, TipoCartao tipoCartao, String motivoSegundaVia) {
+    public Cartao(Long id, Long clienteId, Long contaId, String numero, String cvv, LocalDate dataVencimento, CategoriaCartao categoriaCartao, StatusCartao status, TipoCartao tipoCartao, String motivoSegundaVia) {
         this.id = id;
         this.clienteId = clienteId;
+        this.contaId = contaId;
         this.numero = numero;
         this.cvv = cvv;
         this.dataVencimento = dataVencimento;
@@ -47,6 +49,14 @@ public class Cartao {
 
     public void setClienteId(Long clienteId) {
         this.clienteId = clienteId;
+    }
+
+    public Long getContaId() {
+        return contaId;
+    }
+
+    public void setContaId(Long contaId) {
+        this.contaId = contaId;
     }
 
     public String getNumero() {
@@ -104,5 +114,4 @@ public class Cartao {
     public void setMotivoSegundaVia(String motivoSegundaVia) {
         this.motivoSegundaVia = motivoSegundaVia;
     }
-
 }

@@ -12,7 +12,8 @@ public class CartaoMapperDTO {
         CartaoResponseDTO dto = new CartaoResponseDTO();
         dto.setId(cartao.getId());
         dto.setClienteId(cartao.getClienteId());
-        dto.setNumero(cartao.getNumero().substring(cartao.getNumero().length() - 4)); // últimos 4 dígitos
+        dto.setContaId(cartao.getContaId());
+        dto.setNumero(cartao.getNumero().substring(cartao.getNumero().length() - 4));
         dto.setCvv(cartao.getCvv());
         dto.setStatus(cartao.getStatus());
         dto.setTipoCartao(cartao.getTipoCartao());

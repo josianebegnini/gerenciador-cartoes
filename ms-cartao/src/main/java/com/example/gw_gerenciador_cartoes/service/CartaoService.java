@@ -1,9 +1,6 @@
 package com.example.gw_gerenciador_cartoes.service;
 
-import com.example.gw_gerenciador_cartoes.application.dto.CartaoIdentificacaoRequestDTO;
-import com.example.gw_gerenciador_cartoes.application.dto.CartaoResponseDTO;
-import com.example.gw_gerenciador_cartoes.application.dto.SegundaViaCartaoRequestDTO;
-import com.example.gw_gerenciador_cartoes.application.dto.SegundaViaCartaoResponseDTO;
+import com.example.gw_gerenciador_cartoes.application.dto.*;
 import com.example.gw_gerenciador_cartoes.application.mapper.CartaoMapperDTO;
 import com.example.gw_gerenciador_cartoes.domain.enums.CategoriaCartao;
 import com.example.gw_gerenciador_cartoes.domain.enums.StatusCartao;
@@ -33,15 +30,16 @@ public class CartaoService implements CartaoServicePort {
     }
 
     @Override
-    public void gerar(Long clienteId) {
+    public void gerar(CriarCartaoMessageDTO dto) {
         Cartao cartao = new Cartao();
         cartao.setNumero(gerarNumeroCartaoUnico());
         cartao.setCvv(cartaoGenerator.gerarCvv());
-        cartao.setClienteId(clienteId);
+        cartao.setClienteId(dto.getClienteId());
+        cartao.setContaId(dto.getContaId());
         cartao.setDataVencimento(calcularDataVencimento());
         cartao.setStatus(StatusCartao.DESATIVADO);
-        cartao.setCategoriaCartao(CategoriaCartao.DEBITO);
-        cartao.setTipoCartao(TipoCartao.FISICO);
+        cartao.setCategoriaCartao(validarEnum(CategoriaCartao.class, dto.getCategoriaCartao()));
+        cartao.setTipoCartao(validarEnum(TipoCartao.class, dto.getTipoCartao()));
 
         repository.salvar(cartao);
     }
@@ -58,6 +56,7 @@ public class CartaoService implements CartaoServicePort {
         return LocalDate.now().plusYears(3);
     }
 
+    @Override
     public CartaoResponseDTO ativar(CartaoIdentificacaoRequestDTO dto) {
         Cartao cartao = repository.buscarPorNumeroECvv(dto.getNumero(), dto.getCvv())
                 .orElseThrow(() -> new CartaoNotFoundException(MensagensErroConstantes.CARTAO_NAO_ENCONTRADO));
@@ -102,6 +101,7 @@ public class CartaoService implements CartaoServicePort {
         segundaVia.setNumero(gerarNumeroCartaoUnico());
         segundaVia.setCvv(cartaoGenerator.gerarCvv());
         segundaVia.setClienteId(original.getClienteId());
+        segundaVia.setContaId(original.getContaId());
         segundaVia.setDataVencimento(calcularNovaDataVencimento(original.getDataVencimento()));
         segundaVia.setStatus(StatusCartao.DESATIVADO);
         segundaVia.setCategoriaCartao(original.getCategoriaCartao());
@@ -119,4 +119,11 @@ public class CartaoService implements CartaoServicePort {
         return repository.buscarPorNumeroECvv(numero, cvv);
     }
 
+    private <T> T validarEnum(Class<T> enumClass, String value) {
+        try {
+            return (T) enumClass.getMethod("fromString", String.class).invoke(null, value);
+        } catch (Exception e) {
+            throw new RegraNegocioException("Valor inválido para " + enumClass.getSimpleName() + ": " + value);
+        }
+    }
 }

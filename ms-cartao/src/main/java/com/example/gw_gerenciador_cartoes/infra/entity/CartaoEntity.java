@@ -19,6 +19,9 @@ public class CartaoEntity {
     @Column(name = "cliente_id", nullable = false)
     private Long clienteId;
 
+    @Column(name = "conta_id", nullable = false)
+    private Long contaId;
+
     @Column(name = "numero", nullable = false, unique = true)
     private String numero;
 
@@ -46,9 +49,10 @@ public class CartaoEntity {
     public CartaoEntity() {
     }
 
-    public CartaoEntity(Long id, Long clienteId, String numero, String cvv, LocalDate dataVencimento, CategoriaCartao categoria, StatusCartao status, TipoCartao tipo, String motivoSegundaVia) {
+    public CartaoEntity(Long id, Long clienteId, Long contaId, String numero, String cvv, LocalDate dataVencimento, CategoriaCartao categoria, StatusCartao status, TipoCartao tipo, String motivoSegundaVia) {
         this.id = id;
         this.clienteId = clienteId;
+        this.contaId = contaId;
         this.numero = numero;
         this.cvv = cvv;
         this.dataVencimento = dataVencimento;
@@ -72,6 +76,14 @@ public class CartaoEntity {
 
     public void setClienteId(Long clienteId) {
         this.clienteId = clienteId;
+    }
+
+    public Long getContaId() {
+        return contaId;
+    }
+
+    public void setContaId(Long contaId) {
+        this.contaId = contaId;
     }
 
     public String getNumero() {
@@ -129,5 +141,4 @@ public class CartaoEntity {
     public void setMotivoSegundaVia(String motivoSegundaVia) {
         this.motivoSegundaVia = motivoSegundaVia;
     }
-
 }
