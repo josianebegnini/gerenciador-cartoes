@@ -8,6 +8,8 @@ import { Cartao } from '../../models/cartao';
 import { Subject, combineLatest, takeUntil } from 'rxjs';
 import { MenuLateral } from '../menu-lateral/menu-lateral';
 import { jsPDF } from 'jspdf';
+import autoTable from 'jspdf-autotable';
+
 
 interface ClienteComCartao extends Cliente {
   cartao?: Cartao;
@@ -84,17 +86,58 @@ export class RelatorioComponent implements OnInit, OnDestroy {
     return classes[status] || 'status-sem-cartao';
   }
 
+  //PDF
   exportarPDF(): void {
-    const doc = new jsPDF();
-    doc.text('Relatório de Clientes', 10, 10);
-    let y = 20;
-    this.clientesFiltrados.forEach(c => {
-      doc.text(`${c.nome} | ${c.email} | ${c.cpf} | ${c.cartao?.status ?? 'Sem Cartão'}`, 10, y);
-      y += 8;
-    });
-    doc.save('relatorio-clientes.pdf');
-  }
+  const clientes = this.clientesFiltrados;
+  const doc = new jsPDF();
 
+  doc.setFontSize(16);
+  doc.text('Relatório de Clientes - Detalhado', 14, 15);
+  doc.setFontSize(11);
+
+  const head = [[
+    'ID', 'Nome', 'CPF', 'Email', 'Data Nasc.',
+    'Endereço', 'Conta', 'Cartão'
+  ]];
+
+  const body = clientes.map((c: any, index: number) => [
+    c.id ?? '',
+    c.nome ?? '',
+    c.cpf ?? '',
+    c.email ?? '',
+    c.dataNasc ?? '',
+    c.endereco
+      ? `${c.endereco.rua}, ${c.endereco.numero} - ${c.endereco.bairro}, ${c.endereco.cidade}`
+      : '---',
+    c.conta
+      ? `${c.conta.agencia} / ${c.conta.tipo} / R$ ${Number(c.conta.saldo).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`
+      : '---',
+    c.cartao
+      ? `${c.cartao.numero} (${c.cartao.tipoCartao}) - ${c.cartao.status}`
+      : '---'
+  ]);
+
+  
+  autoTable(doc, {
+    startY: 25,
+    head,
+    body,
+    styles: { fontSize: 9, cellPadding: 3 },
+    headStyles: {
+      fillColor: [123, 45, 38],
+      textColor: 255,
+      halign: 'center'
+    },
+    alternateRowStyles: { fillColor: [240, 240, 240] }, 
+    margin: { left: 10, right: 10 },
+  });
+
+  doc.save('relatorio-clientes-tabela.pdf');
+}
+
+
+
+//XML
   exportarXML(): void {
     const xml = this.clientesFiltrados.map(c => `
       <cliente>

@@ -80,6 +80,7 @@ export class ClienteDetalhesComponent {
     });
   }
 
+  //PDF
   exportarPDF(): void {
     if (!this.cliente) return;
     console.log('Exportando PDF...');
@@ -159,4 +160,3 @@ export class ClienteDetalhesComponent {
 function saveAs(blob: Blob, arg1: string) {
   throw new Error("Function not implemented.")
 }
-
