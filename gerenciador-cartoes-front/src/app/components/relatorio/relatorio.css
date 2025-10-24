@@ -6,6 +6,18 @@
   gap: 10px;
 }
 
+.header-content {
+  background: transparent;
+  display: flex;
+  
+}
+.logo {
+  display: block;
+  margin: 1px auto 1px auto;
+  width: 100px; 
+  height: auto;
+  border-radius: 10px;
+}
 .btn-exportar {
   padding: 10px 16px;
   background-color: #3b82f6;
