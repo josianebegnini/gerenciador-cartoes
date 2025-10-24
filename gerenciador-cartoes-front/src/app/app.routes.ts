@@ -14,5 +14,5 @@ export const routes: Routes = [
    { path: 'relatorio', component: RelatorioComponent },
   { path: 'cadastro-cartao', component: CadastroCartaoComponent },
   { path: 'cadastro-user', component: CadastroUserComponent },
-  { path: '**', redirectTo: '' }
+  { path: '**', redirectTo: 'home', pathMatch: 'full' }
 ];
