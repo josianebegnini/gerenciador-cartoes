@@ -1,9 +1,11 @@
 export interface Cartao {
+  id?: number;
   clienteId: number;
   numero: string;
   cvv: string;
   dataVencimento: string;
-  tipoConta: string;
-  status: 'ativo' | 'bloqueado' | 'pendente' | '';
-  formatoCartao: string;
+  status: 'desativado' | 'ativado' | 'bloqueado' | 'cancelado' | '';
+  categoriaCartao: string;
+  tipoCartao: string;
+  motivoSegundaVia?: string;
 }

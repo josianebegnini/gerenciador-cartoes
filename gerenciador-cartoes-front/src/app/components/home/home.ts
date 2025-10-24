@@ -91,34 +91,54 @@ export class Home implements OnInit, OnDestroy {
     return this.clientes.filter(cliente => cliente.selecionado).length;
   }
 
-  mudarStatus(novoStatus: 'ativo' | 'bloqueado' | 'pendente'): void {
-    const clientesSelecionados = this.clientes.filter(cliente => cliente.selecionado);
-    const idsComCartao = clientesSelecionados
-      .filter(cliente => cliente.cartao && cliente.id)
-      .map(cliente => cliente.id!);
+  mudarStatus(novoStatus: 'desativado' | 'ativado' | 'bloqueado' | 'cancelado'): void {
+  const clientesSelecionados = this.clientes.filter(cliente => cliente.selecionado);
+  const idsComCartao = clientesSelecionados
+    .filter(cliente => cliente.cartao && cliente.id)
+    .map(cliente => cliente.id!);
 
-    if (idsComCartao.length === 0) {
-      alert('Nenhum cliente com cartão selecionado');
-      return;
-    }
+  if (idsComCartao.length === 0) {
+    alert('Nenhum cliente com cartão selecionado');
+    return;
+  }
 
-    const statusTexto = novoStatus === 'ativo' ? 'Ativo' :
-                        novoStatus === 'bloqueado' ? 'Bloqueado' : 'Pendente';
+  let statusTexto = '';
 
-    if (confirm(`Deseja alterar o status de ${idsComCartao.length} cartão(ões) para ${statusTexto}?`)) {
-      this.cartaoService.updateStatusEmLote(idsComCartao, novoStatus)
-        .pipe(takeUntil(this.destroy$))
-        .subscribe({
-          next: () => {
-            console.log('Status alterado com sucesso');
-            this.clientes.forEach(cliente => cliente.selecionado = false);
-          },
-          error: (error) => {
-            console.error('Erro ao alterar status:', error);
-            alert('Erro ao alterar status dos cartões');
-          }
-        });
-    }
+  switch (novoStatus) {
+    case 'ativado':
+      statusTexto = 'ativado';
+      break;
+    case 'bloqueado':
+      statusTexto = 'bloqueado';
+      break;
+    case 'cancelado':
+      statusTexto = 'cancelado';
+      break;
+    case 'desativado':
+      statusTexto = 'desativado';
+      break;
+  }
+
+  if (confirm(`Deseja alterar o status de ${idsComCartao.length} cartão(ões) para ${statusTexto}?`)) {
+    this.cartaoService.updateStatusEmLote(idsComCartao, novoStatus)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => {
+          console.log('Status alterado com sucesso');
+
+          this.clientes.forEach(cliente => {
+            if (cliente.selecionado && cliente.cartao) {
+              cliente.cartao.status = novoStatus;
+            }
+            cliente.selecionado = false;
+          });
+
+        },
+        error: (error) => {
+          console.error('Erro ao alterar status:', error);
+        }
+      });
+  }
   }
 
   alternarStatus(cliente: ClienteComCartao): void {
@@ -135,7 +155,7 @@ export class Home implements OnInit, OnDestroy {
         },
         error: (error) => {
           console.error('Erro ao alterar status:', error);
-          alert('Erro ao alterar status do cartão');
+
         }
       });
   }
@@ -146,7 +166,6 @@ export class Home implements OnInit, OnDestroy {
 
     this.clienteSelecionadoDetalhes = cliente;
 
-    // Busca o cartão diretamente do array de cartões para garantir que está atualizado
     if (cliente.id) {
       const cartaoAtualizado = this.cartoes.find(c => c.clienteId === cliente.id);
       this.cartaoSelecionado = cartaoAtualizado || null;
@@ -166,18 +185,20 @@ export class Home implements OnInit, OnDestroy {
 
   getStatusLabel(status: string | undefined): string {
     if (!status) return 'Sem Cartão';
-    if (status === 'ativo') return 'Ativo';
-    if (status === 'bloqueado') return 'Bloqueado';
-    if (status === 'pendente') return 'Pendente';
+    if (status === 'ativado') return 'ativado';
+    if (status === 'bloqueado') return 'bloqueado';
+    if (status === 'cancelado') return 'cancelado';
+    if (status === 'desativado') return 'desativado';
     return 'Sem Cartão';
   }
 
   getStatusClass(status: string | undefined): string {
     if (!status) return 'status-sem-cartao';
     const classes: Record<string, string> = {
-      'ativo': 'status-ativo',
+      'ativado': 'status-ativado',
       'bloqueado': 'status-bloqueado',
-      'pendente': 'status-pendente'
+      'desativado': 'status-desativado',
+      'cancelado': 'status-cancelado'
     };
     return classes[status] || 'status-sem-cartao';
   }
