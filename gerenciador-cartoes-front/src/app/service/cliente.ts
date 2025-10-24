@@ -1,61 +1,67 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { map, delay } from 'rxjs/operators';
-
-export interface Cliente {
-  id: number;
-  nome: string;
-  cpf: string;
-  ultimosDigitos: string;
-  status: 'ativo' | 'bloqueado' | 'pendente';
-  selecionado: boolean;
-}
+import { Cliente } from '../models/cliente';
 
 @Injectable({
   providedIn: 'root'
 })
-
 export class ClienteService {
-
   private clientes: Cliente[] = [
     {
       id: 1,
-      nome: 'Ana Silva',
-      cpf: '123.456.789-00',
-      ultimosDigitos: '1234',
-      status: 'ativo',
-      selecionado: false
+      nome: 'Carlos Andrade',
+      email: 'carlos.andrade@example.com',
+      dataNasc: '1980-03-15',
+      cpf: '123.456.789-01',
+      selecionado: false,
+      endereco: {
+        cidade: 'São Paulo',
+        bairro: 'Moema',
+        rua: 'Av. Ibirapuera',
+        cep: '04548-000',
+        complemento: 'Apto 12',
+        numero: '1500'
+      }
     },
     {
       id: 2,
-      nome: 'Bruno Costa',
-      cpf: '987.554.321-11',
-      ultimosDigitos: '5678',
-      status: 'bloqueado',
-      selecionado: false
+      nome: 'Fernanda Lima',
+      email: 'fernanda.lima@example.com',
+      dataNasc: '1992-07-22',
+      cpf: '987.654.321-00',
+      selecionado: false,
+      endereco: {
+        cidade: 'Rio de Janeiro',
+        bairro: 'Copacabana',
+        rua: 'Rua Barata Ribeiro',
+        cep: '22011-001',
+        complemento: 'Cobertura',
+        numero: '300'
+      }
     },
     {
       id: 3,
-      nome: 'Carlos Oliveira',
-      cpf: '456.789.012-22',
-      ultimosDigitos: '9012',
-      status: 'ativo',
-      selecionado: false
-    },
-    {
-      id: 4,
-      nome: 'Sofia Mendes',
-      cpf: '321.654.987-33',
-      ultimosDigitos: '3456',
-      status: 'pendente',
-      selecionado: false
+      nome: 'Lucas Pereira',
+      email: 'lucas.pereira@example.com',
+      dataNasc: '1988-11-05',
+      cpf: '456.789.123-45',
+      selecionado: false,
+      endereco: {
+        cidade: 'Belo Horizonte',
+        bairro: 'Savassi',
+        rua: 'Rua Pernambuco',
+        cep: '30130-150',
+        complemento: 'Sala 5',
+        numero: '450'
+      }
     }
   ];
 
   private clientesSubject = new BehaviorSubject<Cliente[]>(this.clientes);
   public clientes$ = this.clientesSubject.asObservable();
 
-  private nextId = 5;
+  private nextId = 4;
 
   constructor() {}
 
@@ -123,34 +129,6 @@ export class ClienteService {
     return of(true).pipe(delay(100));
   }
 
-  alternarStatus(id: number): Observable<Cliente> {
-    const cliente = this.clientes.find(c => c.id === id);
-
-    if (!cliente) {
-      return throwError(() => new Error(`Cliente com ID ${id} não encontrado`));
-    }
-
-    const novoStatus = cliente.status === 'ativo' ? 'bloqueado' : 'ativo';
-    return this.updateCliente(id, { status: novoStatus });
-  }
-
-  updateStatusEmLote(ids: number[], novoStatus: 'ativo' | 'bloqueado' | 'pendente'): Observable<Cliente[]> {
-    const clientesAtualizados: Cliente[] = [];
-
-    this.clientes = this.clientes.map(cliente => {
-      if (ids.includes(cliente.id)) {
-        const clienteAtualizado = { ...cliente, status: novoStatus, selecionado: false };
-        clientesAtualizados.push(clienteAtualizado);
-        return clienteAtualizado;
-      }
-      return cliente;
-    });
-
-    this.clientesSubject.next(this.clientes);
-
-    return of(clientesAtualizados).pipe(delay(100));
-  }
-
   filtrarClientes(cpf?: string, nome?: string): Observable<Cliente[]> {
     return this.clientes$.pipe(
       map(clientes => {
@@ -165,9 +143,30 @@ export class ClienteService {
     );
   }
 
-  getClientesPorStatus(status: 'ativo' | 'bloqueado' | 'pendente'): Observable<Cliente[]> {
+  toggleSelecao(id: number): Observable<Cliente> {
+    const cliente = this.clientes.find(c => c.id === id);
+
+    if (!cliente) {
+      return throwError(() => new Error(`Cliente com ID ${id} não encontrado`));
+    }
+
+    return this.updateCliente(id, { selecionado: !cliente.selecionado });
+  }
+
+  desselecionarTodos(): Observable<Cliente[]> {
+    this.clientes = this.clientes.map(cliente => ({
+      ...cliente,
+      selecionado: false
+    }));
+
+    this.clientesSubject.next(this.clientes);
+
+    return of(this.clientes).pipe(delay(100));
+  }
+
+  getClientesSelecionados(): Observable<Cliente[]> {
     return this.clientes$.pipe(
-      map(clientes => clientes.filter(c => c.status === status)),
+      map(clientes => clientes.filter(c => c.selecionado)),
       delay(100)
     );
   }

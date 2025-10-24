@@ -1,37 +1,48 @@
 package com.example.gw_gerenciador_cartoes.application.dto;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 
 public class SegundaViaCartaoRequestDTO {
-    @NotNull(message = "O ID do cartão original é obrigatório")
-    private Long idCartaoOriginal;
+
+    @NotBlank(message = "O número é obrigatório")
+    private String numero;
+
+    @NotBlank(message = "O cvv é obrigatório")
+    private String cvv;
 
     @NotBlank(message = "O motivo é obrigatório")
-    private String motivo;
+    private String motivoSegundaVia;
 
     public SegundaViaCartaoRequestDTO() {
     }
 
-    public SegundaViaCartaoRequestDTO(Long idCartaoOriginal, String motivo) {
-        this.idCartaoOriginal = idCartaoOriginal;
-        this.motivo = motivo;
+    public SegundaViaCartaoRequestDTO(String numero, String cvv, String motivo) {
+        this.numero = numero;
+        this.cvv = cvv;
+        this.motivoSegundaVia = motivo;
     }
 
-    public Long getIdCartaoOriginal() {
-        return idCartaoOriginal;
+    public String getNumero() {
+        return numero;
     }
 
-    public void setIdCartaoOriginal(Long idCartaoOriginal) {
-        this.idCartaoOriginal = idCartaoOriginal;
+    public void setNumero(String numero) {
+        this.numero = numero;
     }
 
-    public String getMotivo() {
-        return motivo;
+    public String getCvv() {
+        return cvv;
     }
 
-    public void setMotivo(String motivo) {
-        this.motivo = motivo;
+    public void setCvv(String cvv) {
+        this.cvv = cvv;
     }
 
+    public String getMotivoSegundaVia() {
+        return motivoSegundaVia;
+    }
+
+    public void setMotivoSegundaVia(String motivoSegundaVia) {
+        this.motivoSegundaVia = motivoSegundaVia;
+    }
 }
