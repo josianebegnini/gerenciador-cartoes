@@ -1,5 +1,9 @@
 @import '../home/home.css';
 
+* {
+  font-family: 'Poppins', sans-serif;
+}
+
 .filter-actions {
   display: flex;
   align-items: flex-end;
