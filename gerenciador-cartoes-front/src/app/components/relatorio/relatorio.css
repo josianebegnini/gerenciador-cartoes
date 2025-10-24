@@ -9,12 +9,24 @@
 .header-content {
   background: transparent;
   display: flex;
-  
+
 }
+
+span{
+    padding: 6px 14px;
+    border: none;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+  }
+
 .logo {
   display: block;
   margin: 1px auto 1px auto;
-  width: 100px; 
+  width: 100px;
   height: auto;
   border-radius: 10px;
 }

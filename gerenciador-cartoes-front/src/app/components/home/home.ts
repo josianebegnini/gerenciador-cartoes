@@ -9,6 +9,7 @@ import { Subject, takeUntil, combineLatest } from 'rxjs';
 import { ClienteDetalhesComponent } from '../cliente-detalhes/cliente-detalhes';
 import { MenuLateral } from '../menu-lateral/menu-lateral';
 import { Router } from '@angular/router';
+import { SolicitacaoSegundaVia, SegundaViaPopupComponent } from '../cartao-segunda-via/cartao-segunda-via';
 
 interface ClienteComCartao extends Cliente {
   cartao?: Cartao;
@@ -17,7 +18,7 @@ interface ClienteComCartao extends Cliente {
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, FormsModule, ClienteDetalhesComponent, MenuLateral],
+  imports: [CommonModule, FormsModule, ClienteDetalhesComponent, MenuLateral, SegundaViaPopupComponent],
   templateUrl: './home.html',
   styleUrls: ['./home.css']
 })
@@ -30,6 +31,10 @@ export class Home implements OnInit, OnDestroy {
   clienteSelecionadoDetalhes: ClienteComCartao | null = null;
   cartaoSelecionado: Cartao | null = null;
   modalDetalhesAberto: boolean = false;
+
+  modalSegundaViaAberto = false
+  clienteSegundaVia: ClienteComCartao | null = null
+  cartaoSegundaVia: Cartao | null = null
 
   private destroy$ = new Subject<void>();
 
@@ -171,23 +176,45 @@ export class Home implements OnInit, OnDestroy {
     this.router.navigate(['/cadastro-cliente']);
   }
 
-  segundaVia(cliente: ClienteComCartao): void {
+   segundaVia(cliente: ClienteComCartao): void {
     if (!cliente.id || !cliente.cartao) {
-      alert('Cliente não possui cartão para solicitar 2ª via');
-      return;
+      alert("Cliente não possui cartão para solicitar 2ª via")
+      return
     }
 
-    if (confirm(`Deseja solicitar 2ª via do cartão para ${cliente.nome}?`)) {
-      this.cartaoService.solicitarSegundaVia(cliente.id)
-        .pipe(takeUntil(this.destroy$))
-        .subscribe({
-          next: () => alert('2ª via solicitada com sucesso!'),
-          error: (error) => {
-            console.error('Erro ao solicitar 2ª via:', error);
-            alert('Erro ao solicitar 2ª via do cartão');
-          }
-        });
+    this.clienteSegundaVia = cliente
+    this.cartaoSegundaVia = cliente.cartao
+    this.modalSegundaViaAberto = true
+  }
+
+  fecharSegundaVia(): void {
+    this.modalSegundaViaAberto = false
+    this.clienteSegundaVia = null
+    this.cartaoSegundaVia = null
+  }
+
+  processarSegundaVia(solicitacao: SolicitacaoSegundaVia): void {
+    console.log("[v0] Processando solicitação de segunda via:", solicitacao)
+
+    if (!solicitacao.clienteId) {
+      alert("Erro: ID do cliente não encontrado")
+      return
     }
+
+    this.cartaoService
+      .solicitarSegundaVia(solicitacao.clienteId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => {
+          alert(`2ª via solicitada com sucesso!\nMotivo: ${solicitacao.motivo}`)
+          this.fecharSegundaVia()
+          this.carregarDados() // Recarrega os dados para atualizar a lista
+        },
+        error: (error) => {
+          console.error("Erro ao solicitar 2ª via:", error)
+          alert("Erro ao solicitar 2ª via do cartão")
+        },
+      })
   }
 
   excluirCliente(cliente: ClienteComCartao): void {

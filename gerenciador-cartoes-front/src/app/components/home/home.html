@@ -130,6 +130,13 @@
                   </svg>
                   Detalhes
                 </button>
+                 <app-segunda-via-popup
+                    [isOpen]="modalSegundaViaAberto"
+                    [cliente]="clienteSegundaVia"
+                    [cartao]="cartaoSegundaVia"
+                    (fechar)="fecharSegundaVia()"
+                    (confirmar)="processarSegundaVia($event)"
+                  ></app-segunda-via-popup>
                 <button
                   class="btn-acao"
                   (click)="segundaVia(cliente)"
