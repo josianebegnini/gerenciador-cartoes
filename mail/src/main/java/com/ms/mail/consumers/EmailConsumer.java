@@ -1,8 +1,6 @@
 package com.ms.mail.consumers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ms.mail.config.RabbitMQConfig;
-import com.ms.mail.dtos.EmailPacienteDTO;
+import com.ms.mail.dtos.EmailMessageDTO;
 import com.ms.mail.services.EmailService;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
@@ -16,9 +14,28 @@ public class EmailConsumer {
         this.emailService = emailService;
     }
 
-    @RabbitListener(queues = "agendamento.medico.queue")
-    public void receberMensagem(EmailPacienteDTO dto) {
-        System.out.println("📩 Mensagem recebida da fila: " + dto.getPacienteEmail());
-        emailService.enviarEmail(dto);
+    @RabbitListener(queues = "email-normal-queue")
+    public void listenNormalQueue(EmailMessageDTO message) {
+        System.out.println("📩 Mensagem recebida da fila NORMAL: " + message);
+        enviarEmailComLog(message);
+    }
+
+    @RabbitListener(queues = "email-alta-prioridade-queue")
+    public void listenHighPriorityQueue(EmailMessageDTO message) {
+        System.out.println("📩 Mensagem recebida da fila ALTA: " + message);
+        enviarEmailComLog(message);
+    }
+
+    private void enviarEmailComLog(EmailMessageDTO message) {
+        try {
+            emailService.enviarEmail(message);
+            System.out.println("✅ E-mail enviado com sucesso para: " + message.getEmail() +
+                    " | Tipo: " + message.getTipo());
+        } catch (Exception e) {
+            System.err.println("❌ Falha ao enviar e-mail para: " + message.getEmail() +
+                    " | Tipo: " + message.getTipo() +
+                    " | Erro: " + e.getMessage());
+            // Aqui você pode implementar envio para DLQ
+        }
     }
 }

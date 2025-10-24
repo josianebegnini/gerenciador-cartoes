@@ -1,3 +1,4 @@
+import { Conta } from "./conta";
 import { Endereco } from "./endereco";
 
 export interface Cliente {
@@ -8,4 +9,5 @@ export interface Cliente {
   cpf: string;
   selecionado: boolean;
   endereco: Endereco;
+  conta: Conta;
 }

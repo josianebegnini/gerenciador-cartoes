@@ -2,6 +2,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
 }
 
 .layout {
@@ -412,4 +413,29 @@
   .table {
     min-width: 800px;
   }
+
+  .status-ativado {
+  background-color: #16a34a; /* verde */
+  color: white;
+}
+
+.status-bloqueado {
+  background-color: #facc15; /* amarelo */
+  color: black;
+}
+
+.status-cancelado {
+  background-color: #dc2626; /* vermelho */
+  color: white;
+}
+
+.status-desativado {
+  background-color: #9ca3af; /* cinza */
+  color: white;
+}
+
+.status-desconhecido {
+  background-color: #6b7280;
+  color: white;
+}
 }

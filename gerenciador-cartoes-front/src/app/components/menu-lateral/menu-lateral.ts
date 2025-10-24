@@ -13,6 +13,8 @@ export class MenuLateral {
   @Output() navegarHome = new EventEmitter<void>()
   @Output() navegarCartoes = new EventEmitter<void>()
   @Output() navegarRelatorios = new EventEmitter<void>()
+  @Output() irLogin = new EventEmitter<void>()
+
 
   onNovoCliente(): void {
     this.novoCliente.emit()
@@ -28,5 +30,9 @@ export class MenuLateral {
 
   onNavegarRelatorios(): void {
     this.navegarRelatorios.emit()
+  }
+
+  onNavegarLogout(): void{
+    this.irLogin.emit()
   }
 }
