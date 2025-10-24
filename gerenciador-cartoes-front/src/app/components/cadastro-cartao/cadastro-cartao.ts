@@ -29,9 +29,9 @@ export class CadastroCartaoComponent implements OnDestroy {
     numero: '',
     cvv: '',
     dataVencimento: '',
-    tipoConta: 'debito',
-    status: 'pendente',
-    formatoCartao: 'fisico'
+    tipoCartao: 'debito',
+    status: 'desativado',
+    categoriaCartao: 'fisico'
   };
 
   carregando: boolean = false;
@@ -170,13 +170,13 @@ export class CadastroCartaoComponent implements OnDestroy {
       return false;
     }
 
-    if (!this.cartao.tipoConta) {
-      this.mensagemErro = 'Selecione o tipo de conta';
+    if (!this.cartao.tipoCartao) {
+      this.mensagemErro = 'Selecione o tipo de cartão';
       return false;
     }
 
-    if (!this.cartao.formatoCartao) {
-      this.mensagemErro = 'Selecione o formato do cartão';
+    if (!this.cartao.categoriaCartao) {
+      this.mensagemErro = 'Selecione a categoria do cartão';
       return false;
     }
 
@@ -221,9 +221,9 @@ export class CadastroCartaoComponent implements OnDestroy {
       numero: '',
       cvv: '',
       dataVencimento: '',
-      tipoConta: 'debito',
-      status: 'pendente',
-      formatoCartao: 'fisico'
+      tipoCartao: 'debito',
+      status: 'desativado',
+      categoriaCartao: 'fisico'
     };
     this.mensagemErro = '';
     this.mensagemSucesso = '';

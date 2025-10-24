@@ -122,9 +122,9 @@
             <div class="form-group">
               <label for="tipoConta">Tipo de Conta *</label>
               <select
-                id="tipoConta"
-                [(ngModel)]="cartao.tipoConta"
-                name="tipoConta"
+                id="tipoCartao"
+                [(ngModel)]="cartao.tipoCartao"
+                name="tipoCartao"
                 required
               >
                 <option value="debito">Débito</option>
@@ -137,7 +137,7 @@
               <label for="formatoCartao">Formato do Cartão *</label>
               <select
                 id="formatoCartao"
-                [(ngModel)]="cartao.formatoCartao"
+                [(ngModel)]="cartao.categoriaCartao"
                 name="formatoCartao"
                 required
               >
