@@ -143,7 +143,7 @@ export class CartaoService {
     } else if (statusAtual === 'bloqueado') {
       novoStatus = 'cancelado';
     } else {
-      novoStatus = 'ativado';
+      novoStatus = 'desativado';
     }
 
     return this.updateStatus(clienteId, novoStatus);

@@ -161,11 +161,11 @@
   flex-shrink: 0;
 }
 
-.bulk-btn-ativo {
+.bulk-btn-ativado {
   background-color: #10b981;
 }
 
-.bulk-btn-ativo:hover {
+.bulk-btn-ativado:hover {
   background-color: #059669;
   transform: translateY(-1px);
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
@@ -181,11 +181,11 @@
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
 }
 
-.bulk-btn-pendente {
+.bulk-btn-cancelado {
   background-color: #f59e0b;
 }
 
-.bulk-btn-pendente:hover {
+.bulk-btn-cancelado:hover {
   background-color: #d97706;
   transform: translateY(-1px);
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
@@ -287,12 +287,12 @@
   opacity: 0.6;
 }
 
-.status-ativo {
+.status-ativado {
   background-color: #10b981;
   color: white;
 }
 
-.status-ativo:hover:not(:disabled) {
+.status-ativado:hover:not(:disabled) {
   background-color: #059669;
 }
 
@@ -305,12 +305,12 @@
   background-color: #dc2626;
 }
 
-.status-pendente {
+.status-cancelado {
   background-color: #f59e0b;
   color: white;
 }
 
-.status-pendente:hover:not(:disabled) {
+.status-cancelado:hover:not(:disabled) {
   background-color: #d97706;
 }
 

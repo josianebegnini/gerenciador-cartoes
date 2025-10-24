@@ -16,7 +16,7 @@ export class ClienteDetalhesComponent {
   @Input() cartao: Cartao | null = null
   @Input() isOpen = false
   @Output() fechar = new EventEmitter<void>()
-  
+
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['cliente'] || changes['cartao']) {
@@ -31,18 +31,20 @@ export class ClienteDetalhesComponent {
 
   getStatusTexto(status: string): string {
     const statusMap: Record<string, string> = {
-      ativo: "Ativo",
-      bloqueado: "Bloqueado",
-      pendente: "Pendente",
+      ativado: "ativado",
+      bloqueado: "bloqueado",
+      cancelado: "cancelado",
+      desativado: "desativado",
     }
     return statusMap[status] || "Sem Cartão"
   }
 
   getStatusClass(status: string): string {
     const classes: Record<string, string> = {
-      ativo: "badge-ativo",
+      ativado: "badge-ativado",
       bloqueado: "badge-bloqueado",
-      pendente: "badge-pendente",
+      cancelado: "badge-cancelado",
+      desativado: "badge-desativado",
     }
     return classes[status] || "badge-sem-cartao"
   }
@@ -94,7 +96,7 @@ export class ClienteDetalhesComponent {
       doc.text("Cartão:", 14, y); y += 7;
       doc.text(`Número: ${this.formatarNumeroCartao(this.cartao.numero)}`, 14, y); y += 7;
       doc.text(`Vencimento: ${this.cartao.dataVencimento}`, 14, y); y += 7;
-      doc.text(`Tipo de Conta: ${this.cartao.tipoConta}`, 14, y); y += 7;
+      doc.text(`Tipo de Conta: ${this.cartao.tipoCartao}`, 14, y); y += 7;
       doc.text(`Status: ${this.getStatusTexto(this.cartao.status)}`, 14, y);
     } else {
       doc.text("Cartão: Não associado", 14, y);
@@ -113,7 +115,7 @@ export class ClienteDetalhesComponent {
       <cartao>
         <numero>${this.cartao.numero}</numero>
         <dataVencimento>${this.cartao.dataVencimento}</dataVencimento>
-        <tipoConta>${this.cartao.tipoConta}</tipoConta>
+        <tipoCartao>${this.cartao.tipoCartao}</tipoCartao>
         <status>${this.cartao.status}</status>
       </cartao>`
       : `<cartao>Nenhum</cartao>`;
