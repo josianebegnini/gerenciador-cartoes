@@ -155,6 +155,49 @@
           </div>
         </section>
 
+        <section class="form-section">
+          <h2>Conta</h2>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="agencia">Agência *</label>
+              <input
+                type="text"
+                id="agencia"
+                [(ngModel)]="cliente.conta.agencia"
+                name="agencia"
+                placeholder="Agência"
+                [disabled]="isLoading"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="tipo">Tipo da Conta *</label>
+              <input
+                type="text"
+                id="tipo"
+                [(ngModel)]="cliente.conta.tipo"
+                name="tipo"
+                placeholder="tipo da Conta"
+                [disabled]="isLoading"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="saldo">Deseja depositar algum saldo inicial? *</label>
+              <input
+                type="text"
+                id="saldo"
+                [(ngModel)]="cliente.conta.saldo"
+                name="saldo"
+                placeholder="saldo"
+                (input)="formatarSaldo($event)"
+                [disabled]="isLoading"
+                required
+              />
+            </div>
+          </div>
+        </section>
+
         <div class="form-actions">
           <button
             type="button"

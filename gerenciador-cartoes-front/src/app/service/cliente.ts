@@ -22,6 +22,11 @@ export class ClienteService {
         cep: '04548-000',
         complemento: 'Apto 12',
         numero: '1500'
+      },
+      conta:{
+        agencia: '001',
+        tipo: 'corrente',
+        saldo: 10000.00
       }
     },
     {
@@ -38,6 +43,11 @@ export class ClienteService {
         cep: '22011-001',
         complemento: 'Cobertura',
         numero: '300'
+      },
+      conta:{
+        agencia: '002',
+        tipo: 'corrente',
+        saldo: 10000.00
       }
     },
     {
@@ -54,6 +64,11 @@ export class ClienteService {
         cep: '30130-150',
         complemento: 'Sala 5',
         numero: '450'
+      },
+      conta:{
+        agencia: '002',
+        tipo: 'corrente',
+        saldo: 10000.00
       }
     }
   ];

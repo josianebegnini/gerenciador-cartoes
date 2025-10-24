@@ -30,7 +30,12 @@ export class CadastroCliente implements OnDestroy {
       cep: '',
       complemento: '',
       numero: ''
-    }
+    },
+    conta:{
+        agencia: '',
+        tipo: '',
+        saldo: 0
+      }
   };
 
   isLoading = false;
@@ -64,6 +69,23 @@ export class CadastroCliente implements OnDestroy {
       valor = valor.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
       this.cliente.cpf = valor;
     }
+  }
+
+  valor: string = '';
+
+  formatarSaldo(event: Event): void {
+   const input = event.target as HTMLInputElement;
+
+    let valorNumerico = input.value.replace(/\D/g, '');
+
+    const numero = parseFloat(valorNumerico) / 100;
+
+    this.valor = numero.toLocaleString('pt-BR', {
+      style: 'currency',
+      currency: 'BRL'
+    });
+
+    input.value = this.valor;
   }
 
   formatarCEP(event: Event): void {
