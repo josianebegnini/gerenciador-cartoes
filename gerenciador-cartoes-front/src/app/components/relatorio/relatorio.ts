@@ -8,6 +8,7 @@ import { Cartao } from '../../models/cartao';
 import { Subject, combineLatest, takeUntil } from 'rxjs';
 import { MenuLateral } from '../menu-lateral/menu-lateral';
 import { jsPDF } from 'jspdf';
+import { Router } from '@angular/router';
 import autoTable from 'jspdf-autotable';
 
 
@@ -33,7 +34,8 @@ export class RelatorioComponent implements OnInit, OnDestroy {
 
   constructor(
     private clienteService: ClienteService,
-    private cartaoService: CartaoService
+    private cartaoService: CartaoService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -194,7 +196,24 @@ exportarPDF(): void {
     URL.revokeObjectURL(url);
   }
 
-  onNavegarHome(): void {
-    window.location.href = '/home';
+  novoCliente(): void {
+    this.router.navigate(['/cadastro-cliente']);
   }
+
+  onNavegarHome(): void {
+    this.router.navigate(['/home']);
+  }
+
+  onNavegarCartoes(): void {
+    this.router.navigate(['cadastro-cartao']);
+  }
+
+  onNavegarRelatorios(): void {
+    this.router.navigate(['/relatorio']);
+  }
+
+   onNavegarLogout(): void {
+    this.router.navigate(['/login']);
+  }
+
 }

@@ -245,6 +245,10 @@ export class Home implements OnInit, OnDestroy {
     this.router.navigate(['/relatorio']);
   }
 
+  onNavegarLogout(): void {
+    this.router.navigate(['/login']);
+  }
+
   // 🧩 Adicionados para corrigir o erro no HTML:
   getStatusClass(status?: string): string {
     switch (status) {

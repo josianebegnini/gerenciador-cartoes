@@ -1,5 +1,11 @@
 <div class="layout">
-  <app-menu-lateral (navegarHome)="onNavegarHome()"></app-menu-lateral>
+  <app-menu-lateral
+    (novoCliente)="novoCliente()"
+    (navegarHome)="onNavegarHome()"
+    (navegarCartoes)="onNavegarCartoes()"
+    (navegarRelatorios)="onNavegarRelatorios()"
+    (irLogin)="onNavegarLogout()">
+  </app-menu-lateral>
 
   <main class="main-content">
     <header class="header">
