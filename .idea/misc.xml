@@ -6,6 +6,7 @@
       <list>
         <option value="$PROJECT_DIR$/ms-cartao/pom.xml" />
         <option value="$PROJECT_DIR$/ms-cliente/pom.xml" />
+        <option value="$PROJECT_DIR$/mail/pom.xml" />
       </list>
     </option>
   </component>
