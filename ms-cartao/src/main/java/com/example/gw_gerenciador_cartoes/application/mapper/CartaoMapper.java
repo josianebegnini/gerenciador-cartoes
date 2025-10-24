@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class CartaoMapper {
 
-    public static Cartao toDomain(CartaoEntity entity) {
+    public Cartao toDomain(CartaoEntity entity) {
         Cartao cartao = new Cartao();
         cartao.setId(entity.getId());
         cartao.setClienteId(entity.getClienteId());
@@ -21,7 +21,7 @@ public class CartaoMapper {
         return cartao;
     }
 
-    public static CartaoEntity fromDomain(Cartao cartao) {
+    public CartaoEntity fromDomain(Cartao cartao) {
         CartaoEntity entity = new CartaoEntity();
         entity.setId(cartao.getId());
         entity.setClienteId(cartao.getClienteId());

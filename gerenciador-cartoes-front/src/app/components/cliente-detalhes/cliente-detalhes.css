@@ -26,7 +26,7 @@
   background-color: white;
   border-radius: 12px;
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-  max-width: 600px;
+  max-width: 700px;
   width: 100%;
   max-height: 90vh;
   overflow-y: auto;
@@ -137,9 +137,30 @@
   color: #92400e;
 }
 
+/* <CHANGE> Adicionado estilo para quando não há cartão */
+.badge-sem-cartao {
+  background-color: #e5e7eb;
+  color: #374151;
+}
+
+/* <CHANGE> Adicionado título de seção */
+.section-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 16px;
+  margin-top: 24px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.detail-section:first-of-type .section-title {
+  margin-top: 0;
+}
+
 .detail-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 20px;
   margin-bottom: 24px;
 }
@@ -166,6 +187,7 @@
   font-weight: 500;
   color: #111827;
   margin: 0;
+  word-break: break-word;
 }
 
 .detail-info-box {
@@ -175,6 +197,13 @@
   background-color: #eff6ff;
   border-left: 4px solid #3b82f6;
   border-radius: 6px;
+  margin-top: 20px;
+}
+
+/* <CHANGE> Adicionado estilo para aviso quando não há cartão */
+.detail-info-box.info-warning {
+  background-color: #fffbeb;
+  border-left-color: #f59e0b;
 }
 
 .detail-info-box svg {
@@ -187,6 +216,10 @@
   color: #1e40af;
   margin: 0;
   line-height: 1.5;
+}
+
+.info-warning .detail-info-text {
+  color: #92400e;
 }
 
 .detail-info-text strong {

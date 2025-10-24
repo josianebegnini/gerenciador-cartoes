@@ -31,8 +31,12 @@
   gap: 12px;
 }
 
-.logo {
-  flex-shrink: 0;
+.logo{
+    width: 70px;
+    border-radius: 10px;
+    margin-right: 10px;
+    margin-left: 10%;
+    margin-top: 10%;
 }
 
 .title {
@@ -157,11 +161,11 @@
   flex-shrink: 0;
 }
 
-.bulk-btn-ativo {
+.bulk-btn-ativado {
   background-color: #10b981;
 }
 
-.bulk-btn-ativo:hover {
+.bulk-btn-ativado:hover {
   background-color: #059669;
   transform: translateY(-1px);
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
@@ -177,11 +181,11 @@
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
 }
 
-.bulk-btn-pendente {
+.bulk-btn-cancelado {
   background-color: #f59e0b;
 }
 
-.bulk-btn-pendente:hover {
+.bulk-btn-cancelado:hover {
   background-color: #d97706;
   transform: translateY(-1px);
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
@@ -258,6 +262,11 @@
   accent-color: #3b82f6;
 }
 
+.checkbox:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
 .td-nome {
   font-weight: 500;
 }
@@ -273,12 +282,17 @@
   font-family: inherit;
 }
 
-.status-ativo {
+.btn-status:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.status-ativado {
   background-color: #10b981;
   color: white;
 }
 
-.status-ativo:hover {
+.status-ativado:hover:not(:disabled) {
   background-color: #059669;
 }
 
@@ -287,17 +301,22 @@
   color: white;
 }
 
-.status-bloqueado:hover {
+.status-bloqueado:hover:not(:disabled) {
   background-color: #dc2626;
 }
 
-.status-pendente {
+.status-cancelado {
   background-color: #f59e0b;
   color: white;
 }
 
-.status-pendente:hover {
+.status-cancelado:hover:not(:disabled) {
   background-color: #d97706;
+}
+
+.status-sem-cartao {
+  background-color: #6b7280;
+  color: white;
 }
 
 .action-buttons {
@@ -319,8 +338,14 @@
   font-family: inherit;
 }
 
-.btn-acao:hover {
+.btn-acao:hover:not(:disabled) {
   background-color: #E2725B;
+}
+
+.btn-acao:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+  background-color: #9ca3af;
 }
 
 .btn-detalhes {

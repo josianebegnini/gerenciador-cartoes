@@ -17,7 +17,7 @@ public class CartaoRabbitListener {
     @RabbitListener(queues = "cliente-conta-criado")
     public void handleMensagem(ClienteContaCriadoDTO dto) {
         Long clienteId = dto.getClienteId();
-        service.gerarCartao(clienteId);
+        service.gerar(clienteId);
     }
 
 }

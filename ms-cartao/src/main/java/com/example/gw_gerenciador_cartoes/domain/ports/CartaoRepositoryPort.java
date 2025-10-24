@@ -6,7 +6,7 @@ import java.util.Optional;
 
 public interface CartaoRepositoryPort {
     Optional<Cartao> salvar(Cartao cartao);
-    Optional<Cartao> buscarPorId(Long id);
     Optional<Cartao> atualizar(Cartao cartao);
+    Optional<Cartao> buscarPorNumeroECvv(String numero, String cvv);
     boolean existePorNumero(String numero);
 }
