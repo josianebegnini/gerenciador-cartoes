@@ -1,10 +1,7 @@
 package com.example.gw_gerenciador_cartoes.infra.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.amqp.core.Binding;
-import org.springframework.amqp.core.BindingBuilder;
-import org.springframework.amqp.core.Queue;
-import org.springframework.amqp.core.TopicExchange;
+import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -19,11 +16,14 @@ public class RabbitMQConfig {
     @Value("${broker.exchange.cartao}")
     private String cartaoExchange;
 
-    @Value("${broker.queue.cartao-criar-cartao}")
-    private String cartaoCriarCartaoQueue;
+    @Value("${broker.queue.cartao-criar}")
+    private String cartaoCriarQueue;
 
-    @Value("${broker.routing-key.cartao-criar-cartao}")
-    private String cartaoCriarCartaoRoutingKey;
+    @Value("${broker.routing-key.cartao-criar}")
+    private String cartaoCriarRoutingKey;
+
+    @Value("${broker.queue.cartao-dlq}")
+    private String cartaoDlqQueue;
 
     @Bean
     public TopicExchange cartaoExchange() {
@@ -31,22 +31,43 @@ public class RabbitMQConfig {
     }
 
     @Bean
-    public Queue cartaoCriarCartaoQueue() {
-        return new Queue(cartaoCriarCartaoQueue, true);
+    public DirectExchange cartaoDlqExchange() {
+        return new DirectExchange("cartao-dlq-exchange");
     }
 
     @Bean
-    public Binding bindingCartaoCriarCartao() {
+    public Queue cartaoCriarQueue() {
+        return QueueBuilder.durable(cartaoCriarQueue)
+                .withArgument("x-dead-letter-exchange", "cartao-dlq-exchange")
+                .withArgument("x-dead-letter-routing-key", cartaoDlqQueue)
+                .build();
+    }
+
+    @Bean
+    public Queue cartaoDlqQueue() {
+        return QueueBuilder.durable(cartaoDlqQueue).build();
+    }
+
+    @Bean
+    public Binding bindingCartaoCriar() {
         return BindingBuilder
-                .bind(cartaoCriarCartaoQueue())
+                .bind(cartaoCriarQueue())
                 .to(cartaoExchange())
-                .with(cartaoCriarCartaoRoutingKey);
+                .with(cartaoCriarRoutingKey);
+    }
+
+    @Bean
+    public Binding bindingCartaoDlq() {
+        return BindingBuilder
+                .bind(cartaoDlqQueue())
+                .to(cartaoDlqExchange())
+                .with(cartaoDlqQueue);
     }
 
     @Bean
     public Jackson2JsonMessageConverter messageConverter() {
         ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.findAndRegisterModules(); // Suporte a tipos como LocalDate, BigDecimal etc.
+        objectMapper.findAndRegisterModules();
         return new Jackson2JsonMessageConverter(objectMapper);
     }
 
@@ -59,14 +80,29 @@ public class RabbitMQConfig {
     }
 
     @Bean
-    public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory(
-            ConnectionFactory connectionFactory,
-            Jackson2JsonMessageConverter messageConverter) {
-
+    public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory(ConnectionFactory connectionFactory) {
         SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
         factory.setConnectionFactory(connectionFactory);
-        factory.setMessageConverter(messageConverter);
+        factory.setMessageConverter(new Jackson2JsonMessageConverter());
         return factory;
+    }
+
+    @Bean
+    public TopicExchange cartaoRespostaExchange() {
+        return new TopicExchange("cartao-resposta-exchange");
+    }
+
+    @Bean
+    public Queue cartaoCriarRespostaQueue() {
+        return QueueBuilder.durable("cartao-criar-resposta-queue").build();
+    }
+
+    @Bean
+    public Binding bindingCartaoCriarResposta() {
+        return BindingBuilder
+                .bind(cartaoCriarRespostaQueue())
+                .to(cartaoRespostaExchange())
+                .with("cartao.criar.resposta");
     }
 
 }

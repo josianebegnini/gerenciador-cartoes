@@ -29,10 +29,10 @@ public class CartaoRepositoryAdapter implements CartaoRepositoryPort {
         entity.setNumero(cartao.getNumero());
         entity.setCvv(cartao.getCvv());
         entity.setDataVencimento(cartao.getDataVencimento());
-        entity.setCategoria(cartao.getCategoriaCartao());
         entity.setStatus(cartao.getStatus());
-        entity.setTipo(cartao.getTipoCartao());
-        entity.setMotivoSegundaVia(cartao.getMotivoSegundaVia());
+        entity.setMotivoStatus(cartao.getMotivoStatus());
+        entity.setTipoCartao(cartao.getTipoCartao());
+        entity.setTipoEmissao(cartao.getTipoEmissao());
 
         CartaoEntity savedEntity = jpaRepository.save(entity);
         return Optional.of(mapper.toDomain(savedEntity));
@@ -53,9 +53,10 @@ public class CartaoRepositoryAdapter implements CartaoRepositoryPort {
         entity.setNumero(cartao.getNumero());
         entity.setCvv(cartao.getCvv());
         entity.setDataVencimento(cartao.getDataVencimento());
-        entity.setCategoria(cartao.getCategoriaCartao());
         entity.setStatus(cartao.getStatus());
-        entity.setTipo(cartao.getTipoCartao());
+        entity.setMotivoStatus(cartao.getMotivoStatus());
+        entity.setTipoCartao(cartao.getTipoCartao());
+        entity.setTipoEmissao(cartao.getTipoEmissao());
 
         CartaoEntity saved = jpaRepository.save(entity);
         return Optional.of(mapper.toDomain(saved));
@@ -72,6 +73,5 @@ public class CartaoRepositoryAdapter implements CartaoRepositoryPort {
         return jpaRepository.findByNumeroAndCvv(numero, cvv)
                 .map(mapper::toDomain);
     }
-
 
 }

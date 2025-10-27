@@ -1,13 +1,28 @@
 package com.example.gw_gerenciador_cartoes.application.dto;
 
+import java.util.Objects;
+
 public class CriarCartaoMessageDTO {
     private Long clienteId;
     private Long contaId;
     private String nome;
     private String cpf;
     private String email;
-    private String categoriaCartao;
     private String tipoCartao;
+    private String tipoEmissao;
+
+    public CriarCartaoMessageDTO() {
+    }
+
+    public CriarCartaoMessageDTO(Long clienteId, Long contaId, String nome, String cpf, String email, String tipoCartao, String tipoEmissao) {
+        this.clienteId = clienteId;
+        this.contaId = contaId;
+        this.nome = nome;
+        this.cpf = cpf;
+        this.email = email;
+        this.tipoCartao = tipoCartao;
+        this.tipoEmissao = tipoEmissao;
+    }
 
     public Long getClienteId() {
         return clienteId;
@@ -49,19 +64,45 @@ public class CriarCartaoMessageDTO {
         this.email = email;
     }
 
-    public String getCategoriaCartao() {
-        return categoriaCartao;
-    }
-
-    public void setCategoriaCartao(String categoriaCartao) {
-        this.categoriaCartao = categoriaCartao;
-    }
-
     public String getTipoCartao() {
         return tipoCartao;
     }
 
     public void setTipoCartao(String tipoCartao) {
         this.tipoCartao = tipoCartao;
+    }
+
+    public String getTipoEmissao() {
+        return tipoEmissao;
+    }
+
+    public void setTipoEmissao(String tipoEmissao) {
+        this.tipoEmissao = tipoEmissao;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CriarCartaoMessageDTO that = (CriarCartaoMessageDTO) o;
+        return Objects.equals(clienteId, that.clienteId) && Objects.equals(contaId, that.contaId) && Objects.equals(nome, that.nome) && Objects.equals(cpf, that.cpf) && Objects.equals(email, that.email) && Objects.equals(tipoCartao, that.tipoCartao) && Objects.equals(tipoEmissao, that.tipoEmissao);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(clienteId, contaId, nome, cpf, email, tipoCartao, tipoEmissao);
+    }
+
+    @Override
+    public String toString() {
+        return "CriarCartaoMessageDTO{" +
+                "clienteId=" + clienteId +
+                ", contaId=" + contaId +
+                ", nome='" + nome + '\'' +
+                ", cpf='" + cpf + '\'' +
+                ", email='" + email + '\'' +
+                ", tipoCartao='" + tipoCartao + '\'' +
+                ", tipoEmissao='" + tipoEmissao + '\'' +
+                '}';
     }
 }

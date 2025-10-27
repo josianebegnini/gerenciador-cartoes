@@ -15,11 +15,11 @@ public class CartaoMapperDTO {
         dto.setContaId(cartao.getContaId());
         dto.setNumero(cartao.getNumero().substring(cartao.getNumero().length() - 4));
         dto.setCvv(cartao.getCvv());
+        dto.setDataVencimento(cartao.getDataVencimento());
         dto.setStatus(cartao.getStatus());
         dto.setTipoCartao(cartao.getTipoCartao());
-        dto.setCategoriaCartao(cartao.getCategoriaCartao());
-        dto.setDataVencimento(cartao.getDataVencimento());
-        dto.setMotivoSegundaVia(cartao.getMotivoSegundaVia());
+        dto.setTipoEmissaoCartao(cartao.getTipoEmissao());
+        dto.setMotivoSegundaVia(cartao.getMotivoStatus());
         return dto;
     }
 

@@ -15,10 +15,10 @@ public class CartaoMapper {
         cartao.setNumero(entity.getNumero());
         cartao.setCvv(entity.getCvv());
         cartao.setDataVencimento(entity.getDataVencimento());
-        cartao.setCategoriaCartao(entity.getCategoria());
+        cartao.setTipoCartao(entity.getTipoCartao());
         cartao.setStatus(entity.getStatus());
-        cartao.setTipoCartao(entity.getTipo());
-        cartao.setMotivoSegundaVia(entity.getMotivoSegundaVia());
+        cartao.setTipoEmissao(entity.getTipoEmissao());
+        cartao.setMotivoStatus(entity.getMotivoStatus());
         return cartao;
     }
 
@@ -30,10 +30,10 @@ public class CartaoMapper {
         entity.setNumero(cartao.getNumero());
         entity.setCvv(cartao.getCvv());
         entity.setDataVencimento(cartao.getDataVencimento());
-        entity.setCategoria(cartao.getCategoriaCartao());
+        entity.setTipoCartao(cartao.getTipoCartao());
         entity.setStatus(cartao.getStatus());
-        entity.setTipo(cartao.getTipoCartao());
-        entity.setMotivoSegundaVia(cartao.getMotivoSegundaVia());
+        entity.setTipoEmissao(cartao.getTipoEmissao());
+        entity.setMotivoStatus(cartao.getMotivoStatus());
         return entity;
     }
 

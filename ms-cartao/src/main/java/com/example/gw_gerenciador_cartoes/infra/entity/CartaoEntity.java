@@ -1,8 +1,8 @@
 package com.example.gw_gerenciador_cartoes.infra.entity;
 
-import com.example.gw_gerenciador_cartoes.domain.enums.CategoriaCartao;
-import com.example.gw_gerenciador_cartoes.domain.enums.StatusCartao;
 import com.example.gw_gerenciador_cartoes.domain.enums.TipoCartao;
+import com.example.gw_gerenciador_cartoes.domain.enums.StatusCartao;
+import com.example.gw_gerenciador_cartoes.domain.enums.TipoEmissaoCartao;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -22,44 +22,44 @@ public class CartaoEntity {
     @Column(name = "conta_id", nullable = false)
     private Long contaId;
 
-    @Column(name = "numero", nullable = false, unique = true)
+    @Column(name = "numero", nullable = true, unique = true)
     private String numero;
 
-    @Column(name = "cvv", nullable = false)
+    @Column(name = "cvv", nullable = true)
     private String cvv;
 
-    @Column(name = "data_vencimento", nullable = false)
+    @Column(name = "data_vencimento", nullable = true)
     private LocalDate dataVencimento;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "categoria_cartao", nullable = false)
-    private CategoriaCartao categoria;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private StatusCartao status;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "tipo_cartao", nullable = false)
-    private TipoCartao tipo;
+    @Column(name = "motivo_status")
+    private String motivoStatus;
 
-    @Column(name = "motivo_segunda_via")
-    private String motivoSegundaVia;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tipo_cartao", nullable = true)
+    private TipoCartao tipoCartao;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tipo_emissao_cartao", nullable = true)
+    private TipoEmissaoCartao tipoEmissao;
 
     public CartaoEntity() {
     }
 
-    public CartaoEntity(Long id, Long clienteId, Long contaId, String numero, String cvv, LocalDate dataVencimento, CategoriaCartao categoria, StatusCartao status, TipoCartao tipo, String motivoSegundaVia) {
+    public CartaoEntity(Long id, Long clienteId, Long contaId, String numero, String cvv, LocalDate dataVencimento, StatusCartao status, String motivoStatus, TipoCartao tipoCartao, TipoEmissaoCartao tipoEmissao) {
         this.id = id;
         this.clienteId = clienteId;
         this.contaId = contaId;
         this.numero = numero;
         this.cvv = cvv;
         this.dataVencimento = dataVencimento;
-        this.categoria = categoria;
         this.status = status;
-        this.tipo = tipo;
-        this.motivoSegundaVia = motivoSegundaVia;
+        this.motivoStatus = motivoStatus;
+        this.tipoCartao = tipoCartao;
+        this.tipoEmissao = tipoEmissao;
     }
 
     public Long getId() {
@@ -110,14 +110,6 @@ public class CartaoEntity {
         this.dataVencimento = dataVencimento;
     }
 
-    public CategoriaCartao getCategoria() {
-        return categoria;
-    }
-
-    public void setCategoria(CategoriaCartao categoria) {
-        this.categoria = categoria;
-    }
-
     public StatusCartao getStatus() {
         return status;
     }
@@ -126,19 +118,27 @@ public class CartaoEntity {
         this.status = status;
     }
 
-    public TipoCartao getTipo() {
-        return tipo;
+    public String getMotivoStatus() {
+        return motivoStatus;
     }
 
-    public void setTipo(TipoCartao tipo) {
-        this.tipo = tipo;
+    public void setMotivoStatus(String motivoStatus) {
+        this.motivoStatus = motivoStatus;
     }
 
-    public String getMotivoSegundaVia() {
-        return motivoSegundaVia;
+    public TipoCartao getTipoCartao() {
+        return tipoCartao;
     }
 
-    public void setMotivoSegundaVia(String motivoSegundaVia) {
-        this.motivoSegundaVia = motivoSegundaVia;
+    public void setTipoCartao(TipoCartao tipoCartao) {
+        this.tipoCartao = tipoCartao;
+    }
+
+    public TipoEmissaoCartao getTipoEmissao() {
+        return tipoEmissao;
+    }
+
+    public void setTipoEmissao(TipoEmissaoCartao tipoEmissao) {
+        this.tipoEmissao = tipoEmissao;
     }
 }

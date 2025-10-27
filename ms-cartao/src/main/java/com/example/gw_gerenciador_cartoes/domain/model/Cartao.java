@@ -1,8 +1,8 @@
 package com.example.gw_gerenciador_cartoes.domain.model;
 
-import com.example.gw_gerenciador_cartoes.domain.enums.CategoriaCartao;
 import com.example.gw_gerenciador_cartoes.domain.enums.StatusCartao;
 import com.example.gw_gerenciador_cartoes.domain.enums.TipoCartao;
+import com.example.gw_gerenciador_cartoes.domain.enums.TipoEmissaoCartao;
 
 import java.time.LocalDate;
 
@@ -14,25 +14,34 @@ public class Cartao {
     private String numero;
     private String cvv;
     private LocalDate dataVencimento;
-    private CategoriaCartao categoriaCartao;
     private StatusCartao status;
+    private String motivoStatus;
     private TipoCartao tipoCartao;
-    private String motivoSegundaVia;
+    private TipoEmissaoCartao tipoEmissao;
 
     public Cartao() {
     }
 
-    public Cartao(Long id, Long clienteId, Long contaId, String numero, String cvv, LocalDate dataVencimento, CategoriaCartao categoriaCartao, StatusCartao status, TipoCartao tipoCartao, String motivoSegundaVia) {
+    public Cartao(Long id, Long clienteId, Long contaId, String numero, String cvv, LocalDate dataVencimento, StatusCartao status, String motivoStatus, TipoCartao tipoCartao, TipoEmissaoCartao tipoEmissao) {
         this.id = id;
         this.clienteId = clienteId;
         this.contaId = contaId;
         this.numero = numero;
         this.cvv = cvv;
         this.dataVencimento = dataVencimento;
-        this.categoriaCartao = categoriaCartao;
         this.status = status;
+        this.motivoStatus = motivoStatus;
         this.tipoCartao = tipoCartao;
-        this.motivoSegundaVia = motivoSegundaVia;
+        this.tipoEmissao = tipoEmissao;
+    }
+
+    //TODO nao pode dar exceção na entidade basica
+    public void atualizarStatus(StatusCartao novoStatus, String motivo) {
+        if (motivo == null || motivo.isBlank()) {
+            throw new IllegalArgumentException("Motivo do status não pode ser vazio.");
+        }
+        this.status = novoStatus;
+        this.motivoStatus = motivo;
     }
 
     public Long getId() {
@@ -83,20 +92,20 @@ public class Cartao {
         this.dataVencimento = dataVencimento;
     }
 
-    public CategoriaCartao getCategoriaCartao() {
-        return categoriaCartao;
-    }
-
-    public void setCategoriaCartao(CategoriaCartao categoriaCartao) {
-        this.categoriaCartao = categoriaCartao;
-    }
-
     public StatusCartao getStatus() {
         return status;
     }
 
     public void setStatus(StatusCartao status) {
         this.status = status;
+    }
+
+    public String getMotivoStatus() {
+        return motivoStatus;
+    }
+
+    public void setMotivoStatus(String motivoStatus) {
+        this.motivoStatus = motivoStatus;
     }
 
     public TipoCartao getTipoCartao() {
@@ -107,11 +116,11 @@ public class Cartao {
         this.tipoCartao = tipoCartao;
     }
 
-    public String getMotivoSegundaVia() {
-        return motivoSegundaVia;
+    public TipoEmissaoCartao getTipoEmissao() {
+        return tipoEmissao;
     }
 
-    public void setMotivoSegundaVia(String motivoSegundaVia) {
-        this.motivoSegundaVia = motivoSegundaVia;
+    public void setTipoEmissao(TipoEmissaoCartao tipoEmissao) {
+        this.tipoEmissao = tipoEmissao;
     }
 }
