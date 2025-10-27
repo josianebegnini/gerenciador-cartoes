@@ -16,6 +16,8 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="mail" />
+        <module name="gw-gerenciador-cartoes" />
+        <module name="ms-auth" />
       </profile>
       <profile name="Annotation profile for ms-cartao" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
@@ -30,7 +32,9 @@
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="gw-gerenciador-cartoes" options="-parameters" />
       <module name="mail" options="-parameters" />
+      <module name="ms-auth" options="-parameters" />
       <module name="ms-cartao" options="-parameters" />
       <module name="ms-cliente" options="-parameters" />
     </option>
