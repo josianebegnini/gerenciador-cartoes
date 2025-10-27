@@ -1,11 +1,20 @@
-<html>
-<body>
-<h2>Olá {{nome}},</h2>
-<p>Um novo cartão foi criado para você:</p>
-<ul>
-    <li>Número do cartão: {{numeroCartao}}</li>
-    <li>Data de emissão: {{dataEmissao}}</li>
-</ul>
-<p>Obrigado por confiar em nossos serviços!</p>
-</body>
-</html>
+<div th:fragment="content">
+    <h2>Olá, <span th:text="${nome}">Cliente</span>!</h2>
+
+    <p>Um novo cartão foi criado para você 🎉</p>
+
+    <div style="background-color: #F9F9F9; border: 1px solid #EEE; border-radius: 8px; padding: 15px; margin: 15px 0;">
+        <ul style="list-style: none; padding: 0; margin: 0;">
+            <li><strong>Número do cartão:</strong> <span th:text="${numeroCartao}">**** **** **** 1234</span></li>
+            <li><strong>Data de emissão:</strong> <span th:text="${dataEmissao}">10/10/2025</span></li>
+        </ul>
+    </div>
+
+    <p>Seu cartão será enviado para o endereço cadastrado.</p>
+
+    <p>
+        <a class="button" href="#" target="_blank">Acompanhar envio</a>
+    </p>
+
+    <p>Obrigado por confiar no <strong>Banco Digital</strong>!</p>
+</div>

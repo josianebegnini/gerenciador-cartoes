@@ -2,7 +2,7 @@ import { Component, Input, Output, EventEmitter, SimpleChanges } from "@angular/
 import { CommonModule } from "@angular/common"
 import type { Cliente } from "../../models/cliente"
 import type { Cartao } from "../../models/cartao"
-import jsPDF from "jspdf"
+import jsPDF from 'jspdf';
 
 @Component({
   selector: "app-cliente-detalhes",
@@ -66,6 +66,20 @@ export class ClienteDetalhesComponent {
       this.fecharModal()
     }
   }
+
+  formatarValorParaReal(valor: number | string): string {
+    let numero = Number(valor);
+
+    if (isNaN(numero)) {
+      return 'R$ 0,00';
+    }
+
+    return numero.toLocaleString('pt-BR', {
+      style: 'currency',
+      currency: 'BRL'
+    });
+  }
+
 
   exportarPDF(): void {
     if (!this.cliente) return;
@@ -146,4 +160,3 @@ export class ClienteDetalhesComponent {
 function saveAs(blob: Blob, arg1: string) {
   throw new Error("Function not implemented.")
 }
-

@@ -1,1 +1,4 @@
 @import '../login/login.css';
+* {
+  font-family: 'Poppins', sans-serif;
+}

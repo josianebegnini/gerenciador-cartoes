@@ -1,3 +1,7 @@
+* {
+  font-family: 'Poppins', sans-serif;
+}
+
 .sidebar {
   width: 260px;
   background: linear-gradient(to bottom, #7B2D26 0%, #B22222 100%);

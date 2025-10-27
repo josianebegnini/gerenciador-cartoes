@@ -1,1 +1,77 @@
-<p>relatorio works!</p>
+<div class="layout">
+  <app-menu-lateral
+    (novoCliente)="novoCliente()"
+    (navegarHome)="onNavegarHome()"
+    (navegarCartoes)="onNavegarCartoes()"
+    (navegarRelatorios)="onNavegarRelatorios()"
+    (irLogin)="onNavegarLogout()">
+  </app-menu-lateral>
+
+  <main class="main-content">
+    <header class="header">
+      <div class="header-content">
+        <div class="logo-container">
+              <img src="assets/logo.png" alt="Logo Cardin" class="logo" />
+          </div>
+        <h1 class="title">Relatório Clientes</h1>
+      </div>
+    </header>
+
+    <div class="filters">
+      <div class="filter-group">
+        <label class="filter-label">Filtrar por CPF</label>
+        <div class="input-wrapper">
+          <input type="text" class="filter-input" [(ngModel)]="filtroCpf" placeholder="Digite o CPF" />
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <label class="filter-label">Filtrar por Nome</label>
+        <div class="input-wrapper">
+          <input type="text" class="filter-input" [(ngModel)]="filtroNome" placeholder="Digite o nome" />
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <label class="filter-label">Status</label>
+        <select class="filter-input" [(ngModel)]="filtroStatus">
+          <option value="todos">Todos</option>
+          <option value="ativado">Ativado</option>
+          <option value="bloqueado">Bloqueado</option>
+          <option value="cancelado">Cancelado</option>
+          <option value="desativado">Desativado</option>
+        </select>
+      </div>
+
+      <div class="filter-actions">
+        <button class="btn-exportar" (click)="exportarPDF()">Exportar PDF</button>
+        <button class="btn-exportar" (click)="exportarXML()">Exportar XML</button>
+      </div>
+    </div>
+
+    <div class="table-container">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Nome</th>
+            <th>Email</th>
+            <th>CPF</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let cliente of clientesFiltrados">
+            <td>{{ cliente.nome }}</td>
+            <td>{{ cliente.email }}</td>
+            <td>{{ cliente.cpf }}</td>
+            <td>
+              <span [ngClass]="getStatusClass(cliente.cartao?.status)">
+                {{ getStatusLabel(cliente.cartao?.status) }}
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+</div>

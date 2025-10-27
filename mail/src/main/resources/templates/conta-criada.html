@@ -1,7 +1,16 @@
-<html>
-<body>
-<h2>Olá {{nome}},</h2>
-<p>Sua conta foi criada com sucesso em {{dataCriacao}}.</p>
-<p>Bem-vindo(a) ao nosso sistema!</p>
-</body>
-</html>
+<div th:fragment="content">
+    <h2>Olá, <span th:text="${nome}">Cliente</span>!</h2>
+
+    <p>
+        Sua conta foi criada com sucesso em
+        <strong th:text="${dataCriacao}"></strong>.
+    </p>
+
+    <p>Bem-vindo(a) ao <strong>Banco Digital</strong>! Estamos felizes em ter você conosco.</p>
+
+    <p>Agora você pode acessar nossos serviços e acompanhar suas movimentações com segurança e praticidade.</p>
+
+    <p>
+        <a class="button" href="#" target="_blank">Acessar minha conta</a>
+    </p>
+</div>
