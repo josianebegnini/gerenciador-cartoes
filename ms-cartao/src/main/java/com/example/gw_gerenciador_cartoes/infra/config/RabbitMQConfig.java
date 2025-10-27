@@ -19,11 +19,11 @@ public class RabbitMQConfig {
     @Value("${broker.exchange.cartao}")
     private String cartaoExchange;
 
-    @Value("${broker.queue.cartao-criar-cartao}")
-    private String cartaoCriarCartaoQueue;
+    @Value("${broker.queue.cartao-criar-queue}")
+    private String cartaoCriarQueue;
 
-    @Value("${broker.routing-key.cartao-criar-cartao}")
-    private String cartaoCriarCartaoRoutingKey;
+    @Value("${broker.routing-key.cartao-criar}")
+    private String cartaoCriarRoutingKey;
 
     @Bean
     public TopicExchange cartaoExchange() {
@@ -32,7 +32,7 @@ public class RabbitMQConfig {
 
     @Bean
     public Queue cartaoCriarCartaoQueue() {
-        return new Queue(cartaoCriarCartaoQueue, true);
+        return new Queue(cartaoCriarQueue, true);
     }
 
     @Bean
@@ -40,7 +40,7 @@ public class RabbitMQConfig {
         return BindingBuilder
                 .bind(cartaoCriarCartaoQueue())
                 .to(cartaoExchange())
-                .with(cartaoCriarCartaoRoutingKey);
+                .with(cartaoCriarRoutingKey);
     }
 
     @Bean
