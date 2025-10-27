@@ -1,8 +1,19 @@
-<html>
-<body>
-<h2>Olá {{nome}},</h2>
-<p>Recebemos uma notificação para você:</p>
-<p>{{mensagem}}</p>
-<p>Obrigado por usar nosso sistema!</p>
-</body>
-</html>
+<div th:fragment="content">
+    <h2>Olá, <span th:text="${nome}">Cliente</span>!</h2>
+
+    <p>
+        Recebemos uma nova notificação do <strong>Banco Digital</strong>.
+    </p>
+
+    <p th:if="${mensagem != null}" th:text="${mensagem}">
+        Aqui vai o conteúdo da sua mensagem genérica.
+    </p>
+
+    <p>
+        Caso tenha dúvidas, entre em contato com nossa central de atendimento.
+    </p>
+
+    <p>
+        <a class="button" href="#" target="_blank">Falar com o suporte</a>
+    </p>
+</div>
