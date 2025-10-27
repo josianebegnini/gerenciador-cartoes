@@ -1,27 +1,17 @@
-# Etapa 1: Build da aplicação Angular
-FROM node:20 AS builder
+# Etapa 1: build do Angular
+FROM node:20 AS build
 WORKDIR /app
-
-# Copia os arquivos de configuração do npm
 COPY package*.json ./
-
-# Instala as dependências
 RUN npm install
-
-# Copia o restante do código do projeto
 COPY . .
+RUN npm run build -- --configuration production
 
-# Gera o build de produção do Angular
-RUN npm run build --prod
-
-# Etapa 2: Servir o app com Nginx
+# Etapa 2: servir com Nginx
 FROM nginx:alpine
+# ⚠️ Copia a pasta de build Angular para o diretório que o Nginx serve
+COPY --from=build /app/dist/gerenciador-cartoes-front /usr/share/nginx/html
+# Copia o arquivo de configuração customizado do Nginx
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Copia os arquivos buildados para o servidor Nginx
-COPY --from=builder /app/dist/gerenciador-cartoes-front /usr/share/nginx/html
-
-# Expõe a porta padrão do Nginx
 EXPOSE 80
-
-# Comando para iniciar o servidor
 CMD ["nginx", "-g", "daemon off;"]
