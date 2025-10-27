@@ -81,10 +81,10 @@ services:
         condition: service_healthy
 
   # 🌐 API Gateway
-  gw-gerenciador-cartoes:
+  gateway:
     build:
-      context: ./gw-gerenciador-cartoes
-    container_name: gw-gerenciador-cartoes
+      context: ./gateway
+    container_name: gateway
     restart: always
     ports:
       - "8085:8085"
@@ -121,9 +121,9 @@ services:
     ports:
       - "4200:80"  # Porta externa 4200, interna 80 (Nginx)
     environment:
-      - APP_GATEWAY_BASE_URL=http://gw-gerenciador-cartoes:8085
+      - APP_GATEWAY_BASE_URL=http://gateway:8085
     depends_on:
-      gw-gerenciador-cartoes:
+      gateway:
         condition: service_started
 
 volumes:
