@@ -1,15 +1,11 @@
 import { Component, Input, Output, EventEmitter } from "@angular/core"
 import { CommonModule } from "@angular/common"
 import { FormsModule } from "@angular/forms"
+import { CartaoService } from "../../service/cartao"
 import type { Cliente } from "../../models/cliente"
 import type { Cartao } from "../../models/cartao"
-
-export interface SolicitacaoSegundaVia {
-  clienteId: number
-  cartaoId: number
-  motivo: string
-  dataSolicitacao: string
-}
+import type { SegundaViaCartaoRequestDTO, SegundaViaCartaoResponseDTO } from "../../models/cartao-dtos"
+import { Subject, takeUntil } from "rxjs"
 
 @Component({
   selector: "app-segunda-via-popup",
@@ -23,48 +19,49 @@ export class SegundaViaPopupComponent {
   @Input() cartao: Cartao | null = null
   @Input() isOpen = false
   @Output() fechar = new EventEmitter<void>()
-  @Output() confirmar = new EventEmitter<SolicitacaoSegundaVia>()
+  @Output() confirmar = new EventEmitter<SegundaViaCartaoRequestDTO>()
 
   motivo = ""
+  mensagemErro = ""
   isSubmitting = false
+
+  constructor(private cartaoService: CartaoService) {}
 
   fecharModal(): void {
     this.motivo = ""
+    this.mensagemErro = ""
+    this.isSubmitting = false
     this.fechar.emit()
   }
 
   confirmarSolicitacao(): void {
     if (!this.motivo.trim()) {
-      alert("Por favor, informe o motivo da solicitação.")
+      this.mensagemErro = "Por favor, informe o motivo da solicitação."
       return
     }
 
-    if (!this.cliente || !this.cartao) {
-      alert("Dados do cliente ou cartão não disponíveis.")
+    if (!this.cliente?.id || !this.cartao?.numero) {
+      this.mensagemErro = "Dados do cliente ou cartão não disponíveis."
       return
     }
 
-    this.isSubmitting = true
-
-    const solicitacao: SolicitacaoSegundaVia = {
-      clienteId: this.cliente!.id!,
-      cartaoId: Number(this.cartao.numero),
+    const solicitacao: SegundaViaCartaoRequestDTO = {
+      clienteId: this.cliente.id,
+      numeroCartao: this.cartao.numero,
       motivo: this.motivo.trim(),
-      dataSolicitacao: new Date().toISOString(),
     }
-
-    console.log("[v0] Solicitação de segunda via:", solicitacao)
 
     this.confirmar.emit(solicitacao)
 
     setTimeout(() => {
       this.motivo = ""
+      this.mensagemErro = ""
       this.isSubmitting = false
     }, 500)
   }
 
   formatarNumeroCartao(numero: string): string {
-    return numero.replace(/(\d{4})(?=\d)/g, "$1 ")
+    return this.cartaoService.formatarNumeroCartao(numero)
   }
 
   onOverlayClick(event: MouseEvent): void {

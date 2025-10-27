@@ -8,105 +8,146 @@
   ></app-menu-lateral>
 
   <main class="main-content">
+    <!-- Header -->
     <header class="header">
       <div class="header-content">
         <div class="logo-container">
-              <img src="assets/logo.png" alt="Logo Cardin" class="logo" />
-          </div>
+          <img src="assets/logo.png" alt="Logo Cardin" class="logo" />
+        </div>
         <h1 class="title">Gerenciamento de Cartões de Clientes</h1>
       </div>
     </header>
 
+    <!-- Loading state -->
+    <div *ngIf="isLoading" class="loading-overlay">
+      <div class="loading-spinner"></div>
+      <p class="loading-text">Carregando dados...</p>
+    </div>
+
+    <!-- Filtros -->
     <div class="filters">
       <div class="filter-group">
-        <label class="filter-label">Filtrar por CPF</label>
+        <label class="filter-label" for="filtro-cpf">Filtrar por CPF</label>
         <div class="input-wrapper">
-          <svg class="search-icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <svg class="search-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
             <circle cx="7" cy="7" r="5" stroke="#9CA3AF" stroke-width="2"/>
             <path d="M11 11L14 14" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round"/>
           </svg>
           <input
+            id="filtro-cpf"
             type="text"
             class="filter-input"
             [(ngModel)]="filtroCpf"
             placeholder="Digite o CPF"
+            [disabled]="isLoading"
           />
         </div>
       </div>
 
       <div class="filter-group">
-        <label class="filter-label">Filtrar por Nome</label>
+        <label class="filter-label" for="filtro-nome">Filtrar por Nome</label>
         <div class="input-wrapper">
-          <svg class="search-icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <svg class="search-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
             <circle cx="7" cy="7" r="5" stroke="#9CA3AF" stroke-width="2"/>
             <path d="M11 11L14 14" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round"/>
           </svg>
           <input
+            id="filtro-nome"
             type="text"
             class="filter-input"
             [(ngModel)]="filtroNome"
             placeholder="Digite o nome"
+            [disabled]="isLoading"
           />
         </div>
       </div>
     </div>
 
-    <div class="bulk-actions" *ngIf="temClientesSelecionados">
+    <!-- Ações em lote -->
+    <div class="bulk-actions" *ngIf="temClientesSelecionados && !isLoading">
       <div class="bulk-actions-content">
         <span class="bulk-actions-text">
           {{ quantidadeClientesSelecionados }} cliente(s) selecionado(s)
         </span>
         <div class="bulk-actions-buttons">
-          <button class="bulk-btn bulk-btn-ativado" (click)="mudarStatus('ativado')">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <button
+            class="bulk-btn bulk-btn-ativado"
+            (click)="mudarStatus('ativado')"
+            [disabled]="isProcessing"
+            aria-label="Ativar cartões selecionados"
+          >
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
               <path d="M13 4L6 11L3 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
-            ativado
+            Ativado
           </button>
-          <button class="bulk-btn bulk-btn-bloqueado" (click)="mudarStatus('bloqueado')">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <button
+            class="bulk-btn bulk-btn-bloqueado"
+            (click)="mudarStatus('bloqueado')"
+            [disabled]="isProcessing"
+            aria-label="Bloquear cartões selecionados"
+          >
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
               <path d="M12 4L4 12M4 4L12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
             </svg>
-            bloqueado
+            Bloqueado
           </button>
-          <button class="bulk-btn bulk-btn-cancelado" (click)="mudarStatus('cancelado')">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <button
+            class="bulk-btn bulk-btn-cancelado"
+            (click)="mudarStatus('cancelado')"
+            [disabled]="isProcessing"
+            aria-label="Cancelar cartões selecionados"
+          >
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
               <circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="2" fill="none"/>
               <path d="M8 5V8L10 10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
             </svg>
-            cancelado
+            Cancelado
           </button>
         </div>
       </div>
     </div>
 
+    <!-- Tabela de clientes -->
     <div class="table-container">
-      <table class="table">
+      <!-- Mensagem quando não há dados -->
+      <div *ngIf="!isLoading && clientesFiltrados.length === 0" class="empty-state">
+        <svg width="48" height="48" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+          <circle cx="24" cy="24" r="20" stroke="#D1D5DB" stroke-width="2"/>
+          <path d="M24 16V26M24 32V32.01" stroke="#D1D5DB" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <p class="empty-state-text">Nenhum cliente encontrado</p>
+      </div>
+
+      <table class="table" *ngIf="!isLoading && clientesFiltrados.length > 0">
         <thead>
           <tr>
-            <th class="th-checkbox"></th>
-            <th class="th-nome">
+            <th class="th-checkbox" scope="col">
+              <span class="sr-only">Selecionar</span>
+            </th>
+            <th class="th-nome" scope="col">
               <div class="th-content">
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
                   <path d="M2 4L6 8L10 4" stroke="#6B7280" stroke-width="1.5"/>
                 </svg>
                 Nome
               </div>
             </th>
-            <th>Email</th>
-            <th>CPF</th>
-            <th>Status do Cartão</th>
-            <th>Ações</th>
+            <th scope="col">Email</th>
+            <th scope="col">CPF</th>
+            <th scope="col">Status do Cartão</th>
+            <th scope="col">Ações</th>
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let cliente of clientesFiltrados" class="table-row">
+          <tr *ngFor="let cliente of clientesFiltrados; trackBy: trackByClienteId" class="table-row">
             <td class="td-checkbox">
               <input
                 type="checkbox"
                 [(ngModel)]="cliente.selecionado"
                 class="checkbox"
-                [disabled]="!cliente.cartao"
+                [disabled]="!cliente.cartao || isProcessing"
+                [attr.aria-label]="'Selecionar ' + cliente.nome"
               />
             </td>
             <td class="td-nome">{{ cliente.nome }}</td>
@@ -117,31 +158,31 @@
                 class="btn-status"
                 [ngClass]="getStatusClass(cliente.cartao?.status)"
                 (click)="alternarStatus(cliente)"
-                [disabled]="!cliente.cartao"
+                [disabled]="!cliente.cartao || isProcessing"
+                [attr.aria-label]="'Alterar status do cartão de ' + cliente.nome"
               >
                 {{ getStatusLabel(cliente.cartao?.status) }}
               </button>
             </td>
             <td>
               <div class="action-buttons">
-                <button class="btn-acao btn-detalhes" (click)="verDetalhes(cliente)">
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <button
+                  class="btn-acao btn-detalhes"
+                  (click)="verDetalhes(cliente)"
+                  [disabled]="isProcessing"
+                  [attr.aria-label]="'Ver detalhes de ' + cliente.nome"
+                >
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
                     <circle cx="8" cy="8" r="2" stroke="currentColor" stroke-width="1.5" fill="none"/>
                     <path d="M1 8C1 8 3.5 3 8 3C12.5 3 15 8 15 8C15 8 12.5 13 8 13C3.5 13 1 8 1 8Z" stroke="currentColor" stroke-width="1.5" fill="none"/>
                   </svg>
                   Detalhes
                 </button>
-                 <app-segunda-via-popup
-                    [isOpen]="modalSegundaViaAberto"
-                    [cliente]="clienteSegundaVia"
-                    [cartao]="cartaoSegundaVia"
-                    (fechar)="fecharSegundaVia()"
-                    (confirmar)="processarSegundaVia($event)"
-                  ></app-segunda-via-popup>
                 <button
                   class="btn-acao"
                   (click)="segundaVia(cliente)"
-                  [disabled]="!cliente.cartao"
+                  [disabled]="!cliente.cartao || isProcessing"
+                  [attr.aria-label]="'Solicitar segunda via para ' + cliente.nome"
                 >
                   2ª Via
                 </button>
@@ -154,9 +195,18 @@
   </main>
 </div>
 
+<!-- Modais -->
 <app-cliente-detalhes
   [cliente]="clienteSelecionadoDetalhes"
   [cartao]="cartaoSelecionado"
   [isOpen]="modalDetalhesAberto"
   (fechar)="fecharDetalhes()"
 ></app-cliente-detalhes>
+
+<app-segunda-via-popup
+  [isOpen]="modalSegundaViaAberto"
+  [cliente]="clienteSegundaVia"
+  [cartao]="cartaoSegundaVia"
+  (fechar)="fecharSegundaVia()"
+  (confirmar)="processarSegundaVia($event)"
+></app-segunda-via-popup>

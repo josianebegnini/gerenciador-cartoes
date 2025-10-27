@@ -1,184 +1,214 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { Cliente } from '../../models/cliente';
-import { Cartao } from '../../models/cartao';
-import { ClienteService } from '../../service/cliente';
-import { CartaoService } from '../../service/cartao';
-import { Subject, takeUntil, combineLatest } from 'rxjs';
-import { ClienteDetalhesComponent } from '../cliente-detalhes/cliente-detalhes';
-import { MenuLateral } from '../menu-lateral/menu-lateral';
-import { Router } from '@angular/router';
-import { SolicitacaoSegundaVia, SegundaViaPopupComponent } from '../cartao-segunda-via/cartao-segunda-via';
+import { Component, type OnDestroy, type OnInit } from "@angular/core"
+import { CommonModule } from "@angular/common"
+import { FormsModule } from "@angular/forms"
+import { Cliente } from "../../models/cliente"
+import { Cartao } from "../../models/cartao"
+import { ClienteService } from "../../service/cliente"
+import { CartaoService } from "../../service/cartao"
+import { Subject, takeUntil, combineLatest, finalize } from "rxjs"
+import { ClienteDetalhesComponent } from "../cliente-detalhes/cliente-detalhes"
+import { MenuLateral } from "../menu-lateral/menu-lateral"
+import { Router } from "@angular/router"
+import { SegundaViaPopupComponent } from "../cartao-segunda-via/cartao-segunda-via"
+import type { SegundaViaCartaoRequestDTO } from "../../models/cartao-dtos"
 
 interface ClienteComCartao extends Cliente {
-  cartao?: Cartao;
+  cartao?: Cartao
+  selecionado: boolean
 }
 
+type StatusCartao = "desativado" | "ativado" | "bloqueado" | "cancelado"
+
 @Component({
-  selector: 'app-home',
+  selector: "app-home",
   standalone: true,
   imports: [CommonModule, FormsModule, ClienteDetalhesComponent, MenuLateral, SegundaViaPopupComponent],
-  templateUrl: './home.html',
-  styleUrls: ['./home.css']
+  templateUrl: "./home.html",
+  styleUrls: ["./home.css"],
 })
 export class Home implements OnInit, OnDestroy {
-  filtroCpf = '';
-  filtroNome = '';
-  clientes: ClienteComCartao[] = [];
-  cartoes: Cartao[] = [];
+  isLoading = false
+  isProcessing = false
 
-  clienteSelecionadoDetalhes: ClienteComCartao | null = null;
-  cartaoSelecionado: Cartao | null = null;
-  modalDetalhesAberto: boolean = false;
+  filtroCpf = ""
+  filtroNome = ""
+  clientes: ClienteComCartao[] = []
+  cartoes: Cartao[] = []
+
+  clienteSelecionadoDetalhes: ClienteComCartao | null = null
+  cartaoSelecionado: Cartao | null = null
+  modalDetalhesAberto = false
 
   modalSegundaViaAberto = false
   clienteSegundaVia: ClienteComCartao | null = null
   cartaoSegundaVia: Cartao | null = null
 
-  private destroy$ = new Subject<void>();
+  private destroy$ = new Subject<void>()
 
   constructor(
     private clienteService: ClienteService,
     private cartaoService: CartaoService,
-    private router: Router
+    private router: Router,
   ) {}
 
   ngOnInit(): void {
-    this.carregarDados();
+    this.carregarDados()
   }
 
   ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
+    this.destroy$.next()
+    this.destroy$.complete()
   }
+
+  // ========== CARREGAMENTO DE DADOS ==========
 
   carregarDados(): void {
-    combineLatest([
-      this.clienteService.getClientes(),
-      this.cartaoService.getCartoes()
-    ])
-      .pipe(takeUntil(this.destroy$))
+    this.isLoading = true
+
+    combineLatest([this.clienteService.getClientes(), this.cartaoService.getCartoes()])
+      .pipe(
+        takeUntil(this.destroy$),
+        finalize(() => (this.isLoading = false)),
+      )
       .subscribe({
-        next: ([clientes, cartoes]) => {
-          this.cartoes = cartoes;
-          this.clientes = clientes.map(cliente => {
-            const cartaoEncontrado = cartoes.find(c => c.clienteId === cliente.id);
+        next: ([response, cartoes]) => {
+          this.cartoes = cartoes
+          const clientes = response.content || response
+
+          this.clientes = clientes.map((cliente: Cliente) => {
+            const cartaoEncontrado = cartoes.find((c) => c.clienteId === cliente.id)
             return {
               ...cliente,
-              cartao: cartaoEncontrado
-            };
-          });
+              cartao: cartaoEncontrado,
+              selecionado: false,
+            }
+          })
         },
         error: (error) => {
-          console.error('Erro ao carregar dados:', error);
-        }
-      });
+          console.error("[v0] Erro ao carregar dados:", error)
+          this.mostrarErro("Erro ao carregar dados. Tente novamente.")
+        },
+      })
   }
+
+  // ========== FILTROS ==========
 
   get clientesFiltrados(): ClienteComCartao[] {
-    return this.clientes.filter(cliente => {
-      const matchCpf = !this.filtroCpf || cliente.cpf.includes(this.filtroCpf);
-      const matchNome = !this.filtroNome ||
-        cliente.nome.toLowerCase().includes(this.filtroNome.toLowerCase());
-      return matchCpf && matchNome;
-    });
+    return this.clienteService.filtrarClientes(this.clientes, this.filtroCpf, this.filtroNome)
   }
 
+  // ========== SELEÇÃO ==========
+
   get temClientesSelecionados(): boolean {
-    return this.clientes.some(cliente => cliente.selecionado);
+    return this.clientes.some((cliente) => cliente.selecionado === true)
   }
 
   get quantidadeClientesSelecionados(): number {
-    return this.clientes.filter(cliente => cliente.selecionado).length;
+    return this.clientes.filter((cliente) => cliente.selecionado === true).length
   }
 
-  mudarStatus(novoStatus: 'desativado' | 'ativado' | 'bloqueado' | 'cancelado'): void {
-    const clientesSelecionados = this.clientes.filter(cliente => cliente.selecionado);
+  // ========== OPERAÇÕES DE STATUS ==========
+
+  mudarStatus(novoStatus: StatusCartao): void {
+    const clientesSelecionados = this.clientes.filter((cliente) => cliente.selecionado === true)
     const idsComCartao = clientesSelecionados
-      .filter(cliente => cliente.cartao && cliente.id)
-      .map(cliente => cliente.id!);
+      .filter((cliente) => cliente.cartao && cliente.id)
+      .map((cliente) => cliente.id!)
 
     if (idsComCartao.length === 0) {
-      alert('Nenhum cliente com cartão selecionado');
-      return;
+      this.mostrarErro("Nenhum cliente com cartão selecionado")
+      return
     }
 
-    let statusTexto = '';
-    switch (novoStatus) {
-      case 'ativado':
-        statusTexto = 'ativado';
-        break;
-      case 'bloqueado':
-        statusTexto = 'bloqueado';
-        break;
-      case 'cancelado':
-        statusTexto = 'cancelado';
-        break;
-      case 'desativado':
-        statusTexto = 'desativado';
-        break;
+    const statusTexto = this.cartaoService.getStatusTexto(novoStatus)
+
+    if (!confirm(`Deseja alterar o status de ${idsComCartao.length} cartão(ões) para ${statusTexto}?`)) {
+      return
     }
 
-    if (confirm(`Deseja alterar o status de ${idsComCartao.length} cartão(ões) para ${statusTexto}?`)) {
-      this.cartaoService.updateStatusEmLote(idsComCartao, novoStatus)
-        .pipe(takeUntil(this.destroy$))
-        .subscribe({
-          next: () => {
-            this.clientes.forEach(cliente => {
-              if (cliente.selecionado && cliente.cartao) {
-                cliente.cartao.status = novoStatus;
-              }
-              cliente.selecionado = false;
-            });
-          },
-          error: (error) => {
-            console.error('Erro ao alterar status:', error);
-          }
-        });
-    }
+    this.isProcessing = true
+
+    this.cartaoService
+      .updateStatusEmLote(idsComCartao, novoStatus)
+      .pipe(
+        takeUntil(this.destroy$),
+        finalize(() => (this.isProcessing = false)),
+      )
+      .subscribe({
+        next: () => {
+          this.clientes.forEach((cliente) => {
+            if (cliente.selecionado && cliente.cartao) {
+              cliente.cartao.status = novoStatus
+            }
+            cliente.selecionado = false
+          })
+          this.mostrarSucesso("Status alterado com sucesso!")
+        },
+        error: (error) => {
+          console.error("[v0] Erro ao alterar status:", error)
+          this.mostrarErro("Erro ao alterar status. Tente novamente.")
+        },
+      })
   }
 
   alternarStatus(cliente: ClienteComCartao): void {
     if (!cliente.id || !cliente.cartao) {
-      alert('Cliente não possui cartão');
-      return;
+      this.mostrarErro("Cliente não possui cartão")
+      return
     }
 
-    this.cartaoService.alternarStatus(cliente.id)
-      .pipe(takeUntil(this.destroy$))
+    if (!this.cartaoService.podeAlterarStatus(cliente.cartao.status)) {
+      this.mostrarErro("Cartão cancelado não pode ter status alterado")
+      return
+    }
+
+    this.isProcessing = true
+
+    this.cartaoService
+      .alternarStatus(cliente.id)
+      .pipe(
+        takeUntil(this.destroy$),
+        finalize(() => (this.isProcessing = false)),
+      )
       .subscribe({
-        next: () => console.log('Status alterado com sucesso'),
-        error: (error) => console.error('Erro ao alterar status:', error)
-      });
+        next: (cartaoAtualizado) => {
+          if (cliente.cartao) {
+            cliente.cartao.status = cartaoAtualizado.status
+          }
+        },
+        error: (error) => {
+          console.error("[v0] Erro ao alterar status:", error)
+          this.mostrarErro("Erro ao alterar status. Tente novamente.")
+        },
+      })
   }
 
+  // ========== MODAL DETALHES ==========
+
   verDetalhes(cliente: ClienteComCartao): void {
-    this.clienteSelecionadoDetalhes = cliente;
+    this.clienteSelecionadoDetalhes = cliente
 
     if (cliente.id) {
-      const cartaoAtualizado = this.cartoes.find(c => c.clienteId === cliente.id);
-      this.cartaoSelecionado = cartaoAtualizado || null;
+      const cartaoAtualizado = this.cartoes.find((c) => c.clienteId === cliente.id)
+      this.cartaoSelecionado = cartaoAtualizado || null
     } else {
-      this.cartaoSelecionado = null;
+      this.cartaoSelecionado = null
     }
 
-    this.modalDetalhesAberto = true;
+    this.modalDetalhesAberto = true
   }
 
   fecharDetalhes(): void {
-    this.modalDetalhesAberto = false;
-    this.clienteSelecionadoDetalhes = null;
-    this.cartaoSelecionado = null;
+    this.modalDetalhesAberto = false
+    this.clienteSelecionadoDetalhes = null
+    this.cartaoSelecionado = null
   }
 
-  novoCliente(): void {
-    this.router.navigate(['/cadastro-cliente']);
-  }
+  // ========== SEGUNDA VIA ==========
 
-   segundaVia(cliente: ClienteComCartao): void {
+  segundaVia(cliente: ClienteComCartao): void {
     if (!cliente.id || !cliente.cartao) {
-      alert("Cliente não possui cartão para solicitar 2ª via")
+      this.mostrarErro("Cliente não possui cartão para solicitar 2ª via")
       return
     }
 
@@ -193,90 +223,105 @@ export class Home implements OnInit, OnDestroy {
     this.cartaoSegundaVia = null
   }
 
-  processarSegundaVia(solicitacao: SolicitacaoSegundaVia): void {
-    console.log("[v0] Processando solicitação de segunda via:", solicitacao)
-
+  processarSegundaVia(solicitacao: SegundaViaCartaoRequestDTO): void {
     if (!solicitacao.clienteId) {
-      alert("Erro: ID do cliente não encontrado")
+      this.mostrarErro("Erro: ID do cliente não encontrado")
       return
     }
 
+    this.isProcessing = true
+
     this.cartaoService
-      .solicitarSegundaVia(solicitacao.clienteId)
-      .pipe(takeUntil(this.destroy$))
+      .solicitarSegundaVia(solicitacao.clienteId, solicitacao.numeroCartao, solicitacao.motivo)
+      .pipe(
+        takeUntil(this.destroy$),
+        finalize(() => (this.isProcessing = false)),
+      )
       .subscribe({
         next: () => {
-          alert(`2ª via solicitada com sucesso!\nMotivo: ${solicitacao.motivo}`)
+          this.mostrarSucesso(`2ª via solicitada com sucesso!\nMotivo: ${solicitacao.motivo}`)
           this.fecharSegundaVia()
-          this.carregarDados() // Recarrega os dados para atualizar a lista
+          this.carregarDados()
         },
         error: (error) => {
-          console.error("Erro ao solicitar 2ª via:", error)
-          alert("Erro ao solicitar 2ª via do cartão")
+          console.error("[v0] Erro ao solicitar 2ª via:", error)
+          this.mostrarErro("Erro ao solicitar 2ª via do cartão")
         },
       })
   }
 
-  excluirCliente(cliente: ClienteComCartao): void {
-    if (!cliente.id) return;
+  // ========== EXCLUSÃO ==========
 
-    if (confirm(`Deseja realmente excluir ${cliente.nome}?`)) {
-      this.clienteService.deleteCliente(cliente.id)
-        .pipe(takeUntil(this.destroy$))
-        .subscribe({
-          next: () => alert('Cliente excluído com sucesso!'),
-          error: (error) => {
-            console.error('Erro ao excluir cliente:', error);
-            alert('Erro ao excluir cliente');
-          }
-        });
+  excluirCliente(cliente: ClienteComCartao): void {
+    if (!cliente.id) return
+
+    if (!confirm(`Deseja realmente excluir ${cliente.nome}?`)) {
+      return
     }
+
+    this.isProcessing = true
+
+    this.clienteService
+      .deleteCliente(cliente.id)
+      .pipe(
+        takeUntil(this.destroy$),
+        finalize(() => (this.isProcessing = false)),
+      )
+      .subscribe({
+        next: () => {
+          this.mostrarSucesso("Cliente excluído com sucesso!")
+          this.carregarDados()
+        },
+        error: (error) => {
+          console.error("[v0] Erro ao excluir cliente:", error)
+          this.mostrarErro("Erro ao excluir cliente")
+        },
+      })
+  }
+
+  // ========== NAVEGAÇÃO ==========
+
+  novoCliente(): void {
+    this.router.navigate(["/cadastro-cliente"])
   }
 
   onNavegarHome(): void {
-    this.router.navigate(['/home']);
+    this.router.navigate(["/home"])
   }
 
   onNavegarCartoes(): void {
-    this.router.navigate(['/cadastro-cartao']);
+    this.router.navigate(["/cadastro-cartao"])
   }
 
   onNavegarRelatorios(): void {
-    this.router.navigate(['/relatorio']);
+    this.router.navigate(["/relatorio"])
   }
 
   onNavegarLogout(): void {
-    this.router.navigate(['/login']);
+    this.router.navigate(["/login"])
   }
 
-  // 🧩 Adicionados para corrigir o erro no HTML:
+  // ========== FORMATAÇÃO (delegada ao service) ==========
+
   getStatusClass(status?: string): string {
-    switch (status) {
-      case 'ativado':
-        return 'status-ativado';
-      case 'bloqueado':
-        return 'status-bloqueado';
-      case 'cancelado':
-        return 'status-cancelado';
-      case 'desativado':
-        return 'status-desativado';
-      default:
-        return 'status-desconhecido';
-    }
+    return this.cartaoService.getStatusClass(status || "")
   }
 
   getStatusLabel(status?: string): string {
-    switch (status) {
-      case 'ativado':
-        return 'Ativado';
-      case 'bloqueado':
-        return 'Bloqueado';
-      case 'cancelado':
-        return 'Cancelado';
-      case 'desativado':
-        return 'Desativado';
-      default:
-        return 'Sem cartão';
-    }
+    return this.cartaoService.getStatusTexto(status || "")
+  }
+
+  // ========== UTILITÁRIOS ==========
+
+  private mostrarSucesso(mensagem: string): void {
+    alert(mensagem)
+  }
+
+  private mostrarErro(mensagem: string): void {
+    alert(mensagem)
+  }
+
+  trackByClienteId(index: number, cliente: ClienteComCartao): number | undefined {
+    return cliente.id
   }
 }

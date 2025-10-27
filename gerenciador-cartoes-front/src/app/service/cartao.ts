@@ -1,201 +1,269 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Cartao } from '../models/cartao';
-import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
-import { map, delay } from 'rxjs/operators';
+import { Injectable } from "@angular/core"
+import { HttpClient } from "@angular/common/http"
+import type { Observable } from "rxjs"
+import type { Cartao } from "../models/cartao"
+import {
+  CartaoResponseDTO,
+  CartaoIdentificacaoRequestDTO,
+  SegundaViaCartaoRequestDTO,
+  SegundaViaCartaoResponseDTO,
+} from "../models/cartao-dtos"
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
-
 export class CartaoService {
-  private cartoes: Cartao[] = [
-    {
-      clienteId: 1,
-      numero: '4532 1234 5678 9010',
-      cvv: '123',
-      dataVencimento: '12/2027',
-      tipoCartao: 'Corrente',
-      status: 'ativado',
-      categoriaCartao: 'Visa'
-    },
-    {
-      clienteId: 2,
-      numero: '5425 2334 3010 9876',
-      cvv: '456',
-      dataVencimento: '08/2026',
-      tipoCartao: 'Poupança',
-      status: 'ativado',
-      categoriaCartao: 'Mastercard'
-    },
-    {
-      clienteId: 3,
-      numero: '3782 822463 10005',
-      cvv: '789',
-      dataVencimento: '03/2028',
-      tipoCartao: 'Corrente',
-      status: 'ativado',
-      categoriaCartao: 'American Express'
-    }
-  ];
+  private apiUrl = "http://ms-cartao:8081"
 
-  private cartoesSubject = new BehaviorSubject<Cartao[]>(this.cartoes);
-  public cartoes$ = this.cartoesSubject.asObservable();
-
-  constructor() {}
+  constructor(private http: HttpClient) {}
 
   getCartoes(): Observable<Cartao[]> {
-    return this.cartoes$.pipe(delay(100));
+    return this.http.get<Cartao[]>(this.apiUrl)
   }
 
-  getCartoesPorCliente(clienteId: number): Observable<Cartao[]> {
-    return this.cartoes$.pipe(
-      map(cartoes => cartoes.filter(c => c.clienteId === clienteId)),
-      delay(100)
-    );
-  }
-
-  getCartao(clienteId: number): Observable<Cartao> {
-    const cartao = this.cartoes.find(c => c.clienteId === clienteId);
-
-    if (!cartao) {
-      return throwError(() => new Error(`Cartão do cliente ${clienteId} não encontrado`));
-    }
-
-    return of(cartao).pipe(delay(100));
+  getCartaoByClienteId(clienteId: number): Observable<Cartao> {
+    return this.http.get<Cartao>(`${this.apiUrl}/cliente/${clienteId}`)
   }
 
   createCartao(cartao: Cartao): Observable<Cartao> {
-    const cartaoExistente = this.cartoes.find(c => c.clienteId === cartao.clienteId);
-
-    if (cartaoExistente) {
-      return throwError(() => new Error('Cliente já possui um cartão cadastrado'));
-    }
-
-    const novoCartao: Cartao = { ...cartao };
-
-    this.cartoes = [...this.cartoes, novoCartao];
-    this.cartoesSubject.next(this.cartoes);
-
-    return of(novoCartao).pipe(delay(100));
+    return this.http.post<Cartao>(this.apiUrl, cartao)
   }
 
-  updateCartao(clienteId: number, cartaoData: Partial<Cartao>): Observable<Cartao> {
-    const index = this.cartoes.findIndex(c => c.clienteId === clienteId);
-
-    if (index === -1) {
-      return throwError(() => new Error(`Cartão do cliente ${clienteId} não encontrado`));
-    }
-
-    const cartaoAtualizado: Cartao = {
-      ...this.cartoes[index],
-      ...cartaoData,
-      clienteId
-    };
-
-    this.cartoes = [
-      ...this.cartoes.slice(0, index),
-      cartaoAtualizado,
-      ...this.cartoes.slice(index + 1)
-    ];
-
-    this.cartoesSubject.next(this.cartoes);
-
-    return of(cartaoAtualizado).pipe(delay(100));
+  updateCartao(id: number, cartao: Cartao): Observable<Cartao> {
+    return this.http.put<Cartao>(`${this.apiUrl}/${id}`, cartao)
   }
 
-  updateStatus(clienteId: number, status: 'desativado' | 'ativado' | 'bloqueado' | 'cancelado'): Observable<Cartao> {
-    return this.updateCartao(clienteId, { status });
-  }
-
-  updateStatusEmLote(clienteIds: number[], status: 'desativado' | 'ativado' | 'bloqueado' | 'cancelado'): Observable<Cartao[]> {
-    const cartoesAtualizados: Cartao[] = [];
-
-    clienteIds.forEach(clienteId => {
-      const index = this.cartoes.findIndex(c => c.clienteId === clienteId);
-
-      if (index !== -1) {
-        this.cartoes[index] = {
-          ...this.cartoes[index],
-          status
-        };
-        cartoesAtualizados.push(this.cartoes[index]);
-      }
-    });
-
-    this.cartoesSubject.next([...this.cartoes]);
-
-    return of(cartoesAtualizados).pipe(delay(100));
+  deleteCartao(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`)
   }
 
   alternarStatus(clienteId: number): Observable<Cartao> {
-    const cartao = this.cartoes.find(c => c.clienteId === clienteId);
-
-    if (!cartao) {
-      return throwError(() => new Error(`Cartão do cliente ${clienteId} não encontrado`));
-    }
-
-    const statusAtual = cartao.status;
-    let novoStatus: 'desativado' | 'ativado' | 'bloqueado' | 'cancelado';
-
-    if (statusAtual === 'ativado') {
-      novoStatus = 'bloqueado';
-    } else if (statusAtual === 'bloqueado') {
-      novoStatus = 'cancelado';
-    } else {
-      novoStatus = 'desativado';
-    }
-
-    return this.updateStatus(clienteId, novoStatus);
+    return this.http.patch<Cartao>(`${this.apiUrl}/alternar-status/${clienteId}`, {})
   }
 
-  deleteCartao(clienteId: number): Observable<void> {
-    const index = this.cartoes.findIndex(c => c.clienteId === clienteId);
-
-    if (index === -1) {
-      return throwError(() => new Error(`Cartão do cliente ${clienteId} não encontrado`));
-    }
-
-    this.cartoes = [
-      ...this.cartoes.slice(0, index),
-      ...this.cartoes.slice(index + 1)
-    ];
-
-    this.cartoesSubject.next(this.cartoes);
-
-    return of(void 0).pipe(delay(100));
+  updateStatusEmLote(clienteIds: number[], novoStatus: string): Observable<void> {
+    return this.http.patch<void>(`${this.apiUrl}/status-lote`, {
+      clienteIds,
+      status: novoStatus,
+    })
   }
 
-  solicitarSegundaVia(clienteId: number): Observable<Cartao> {
-    const cartao = this.cartoes.find(c => c.clienteId === clienteId);
-
-    if (!cartao) {
-      return throwError(() => new Error(`Cartão do cliente ${clienteId} não encontrado`));
+  ativarCartao(clienteId: number, numeroCartao: string): Observable<CartaoResponseDTO> {
+    const request: CartaoIdentificacaoRequestDTO = {
+      clienteId,
+      numeroCartao,
     }
-
-    const novoNumero = this.gerarNumeroCartao(cartao.categoriaCartao);
-
-    return this.updateCartao(clienteId, {
-      numero: novoNumero,
-      status: 'ativado',
-    });
+    return this.http.put<CartaoResponseDTO>(`${this.apiUrl}/ativar`, request)
   }
 
-  private gerarNumeroCartao(formatoCartao: string): string {
-    const prefixos: { [key: string]: string } = {
-      'Visa': '4532',
-      'Mastercard': '5425',
-      'American Express': '3782',
-      'Elo': '6362'
-    };
+  solicitarSegundaVia(
+    clienteId: number,
+    numeroCartao: string,
+    motivo: string,
+  ): Observable<SegundaViaCartaoResponseDTO> {
+    const request: SegundaViaCartaoRequestDTO = {
+      clienteId,
+      numeroCartao,
+      motivo,
+    }
+    return this.http.post<SegundaViaCartaoResponseDTO>(`${this.apiUrl}/segunda-via`, request)
+  }
 
-    const prefixo = prefixos[formatoCartao] || '4532';
-    const randomDigits = Math.floor(Math.random() * 1000000000000).toString().padStart(12, '0');
+  formatarNumeroCartao(numero: string): string {
+    return numero.replace(/(\d{4})(?=\d)/g, "$1 ")
+  }
 
-    if (formatoCartao === 'American Express') {
-      return `${prefixo} ${randomDigits.substring(0, 6)} ${randomDigits.substring(6, 11)}`;
+  formatarDataVencimento(data: string): string {
+    // Formato esperado: MM/YYYY
+    if (!data) return ""
+
+    const partes = data.split("/")
+    if (partes.length === 2) {
+      return data
     }
 
-    return `${prefixo} ${randomDigits.substring(0, 4)} ${randomDigits.substring(4, 8)} ${randomDigits.substring(8, 12)}`;
+    // Se vier no formato YYYY-MM-DD, converte
+    if (data.includes("-")) {
+      const [ano, mes] = data.split("-")
+      return `${mes}/${ano}`
+    }
+
+    return data
+  }
+
+  mascaraNumeroCartao(numero: string): string {
+    if (numero.length < 4) return numero
+    const ultimosQuatro = numero.slice(-4)
+    return `**** **** **** ${ultimosQuatro}`
+  }
+
+  getStatusTexto(status: string): string {
+    const statusMap: Record<string, string> = {
+      ativado: "Ativado",
+      bloqueado: "Bloqueado",
+      cancelado: "Cancelado",
+      desativado: "Desativado",
+    }
+    return statusMap[status] || "Sem Cartão"
+  }
+
+  getStatusClass(status: string): string {
+    const classes: Record<string, string> = {
+      ativado: "status-ativado",
+      bloqueado: "status-bloqueado",
+      cancelado: "status-cancelado",
+      desativado: "status-desativado",
+    }
+    return classes[status] || "status-desconhecido"
+  }
+
+  getStatusBadgeClass(status: string): string {
+    const classes: Record<string, string> = {
+      ativado: "badge-ativado",
+      bloqueado: "badge-bloqueado",
+      cancelado: "badge-cancelado",
+      desativado: "badge-desativado",
+    }
+    return classes[status] || "badge-sem-cartao"
+  }
+
+  obterProximoStatus(statusAtual: string): string {
+    const cicloStatus: Record<string, string> = {
+      ativado: "bloqueado",
+      bloqueado: "ativado",
+      desativado: "ativado",
+      cancelado: "cancelado", // Cancelado não pode mudar
+    }
+    return cicloStatus[statusAtual] || "ativado"
+  }
+
+  podeAlterarStatus(status: string): boolean {
+    return status !== "cancelado"
+  }
+
+  validarNumeroCartao(numero: string): boolean {
+    const numeroLimpo = numero.replace(/\s/g, "")
+
+    if (!/^\d{16}$/.test(numeroLimpo)) {
+      return false
+    }
+
+    // Algoritmo de Luhn
+    let soma = 0
+    let alternar = false
+
+    for (let i = numeroLimpo.length - 1; i >= 0; i--) {
+      let digito = Number.parseInt(numeroLimpo.charAt(i), 10)
+
+      if (alternar) {
+        digito *= 2
+        if (digito > 9) {
+          digito -= 9
+        }
+      }
+
+      soma += digito
+      alternar = !alternar
+    }
+
+    return soma % 10 === 0
+  }
+
+  validarDataVencimento(data: string): boolean {
+    if (!data) return false
+
+    const [mes, ano] = data.split("/")
+
+    if (!mes || !ano) return false
+
+    const mesNum = Number.parseInt(mes, 10)
+    const anoNum = Number.parseInt(ano, 10)
+
+    if (mesNum < 1 || mesNum > 12) return false
+
+    const hoje = new Date()
+    const anoAtual = hoje.getFullYear()
+    const mesAtual = hoje.getMonth() + 1
+
+    if (anoNum < anoAtual) return false
+    if (anoNum === anoAtual && mesNum < mesAtual) return false
+
+    return true
+  }
+
+  validarCVV(cvv: string): boolean {
+    return /^\d{3,4}$/.test(cvv)
+  }
+
+  validarCartao(cartao: Cartao): { valido: boolean; erros: string[] } {
+    const erros: string[] = []
+
+    if (!cartao.numero || !this.validarNumeroCartao(cartao.numero)) {
+      erros.push("Número do cartão inválido")
+    }
+
+    if (!cartao.dataVencimento || !this.validarDataVencimento(cartao.dataVencimento)) {
+      erros.push("Data de vencimento inválida")
+    }
+
+    if (!cartao.tipoCartao) {
+      erros.push("Tipo de cartão é obrigatório")
+    }
+
+    if (!cartao.clienteId) {
+      erros.push("Cliente é obrigatório")
+    }
+
+    return {
+      valido: erros.length === 0,
+      erros,
+    }
+  }
+
+  identificarBandeira(numero: string): string {
+    const numeroLimpo = numero.replace(/\s/g, "")
+
+    if (/^4/.test(numeroLimpo)) return "Visa"
+    if (/^5[1-5]/.test(numeroLimpo)) return "Mastercard"
+    if (/^3[47]/.test(numeroLimpo)) return "American Express"
+    if (/^6(?:011|5)/.test(numeroLimpo)) return "Discover"
+    if (/^35/.test(numeroLimpo)) return "JCB"
+
+    return "Desconhecida"
+  }
+
+  getTipoCartaoLabel(tipo: string): string {
+    const tipos: Record<string, string> = {
+      debito: "Débito",
+      credito: "Crédito",
+      multiplo: "Múltiplo",
+    }
+    return tipos[tipo] || tipo
+  }
+
+  aplicarMascaraNumeroCartao(valor: string): string {
+    let numeroLimpo = valor.replace(/\D/g, "")
+
+    if (numeroLimpo.length <= 16) {
+      numeroLimpo = numeroLimpo.replace(/(\d{4})(?=\d)/g, "$1 ")
+    }
+
+    return numeroLimpo
+  }
+
+  aplicarMascaraCVV(valor: string): string {
+    return valor.replace(/\D/g, "").substring(0, 4)
+  }
+
+  aplicarMascaraDataVencimento(valor: string): string {
+    let numeroLimpo = valor.replace(/\D/g, "")
+
+    if (numeroLimpo.length <= 4) {
+      if (numeroLimpo.length >= 2) {
+        numeroLimpo = numeroLimpo.replace(/(\d{2})(\d)/, "$1/$2")
+      }
+    }
+
+    return numeroLimpo
   }
 }
