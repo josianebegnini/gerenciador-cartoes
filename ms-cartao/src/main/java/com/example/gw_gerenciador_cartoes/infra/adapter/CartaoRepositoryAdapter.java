@@ -5,6 +5,8 @@ import com.example.gw_gerenciador_cartoes.domain.ports.CartaoRepositoryPort;
 import com.example.gw_gerenciador_cartoes.infra.entity.CartaoEntity;
 import com.example.gw_gerenciador_cartoes.infra.repository.CartaoRepositoryJpa;
 import com.example.gw_gerenciador_cartoes.application.mapper.CartaoMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -71,5 +73,9 @@ public class CartaoRepositoryAdapter implements CartaoRepositoryPort {
                 .map(mapper::toDomain);
     }
 
-
+    @Override
+    public Page<Cartao> buscarPorIdCliente(Long idCliente, Pageable pageable) {
+        return jpaRepository.findByClienteId(idCliente, pageable)
+                .map(mapper::toDomain);
+    }
 }
