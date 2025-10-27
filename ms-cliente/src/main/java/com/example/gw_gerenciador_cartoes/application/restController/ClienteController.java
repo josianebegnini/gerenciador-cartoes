@@ -3,6 +3,7 @@ package com.example.gw_gerenciador_cartoes.application.restController;
 import com.example.gw_gerenciador_cartoes.application.util.ClienteMapper;
 import com.example.gw_gerenciador_cartoes.domain.model.Cliente;
 import com.example.gw_gerenciador_cartoes.application.dto.ClienteDTO;
+import com.example.gw_gerenciador_cartoes.domain.ports.ClienteServicePort;
 import com.example.gw_gerenciador_cartoes.service.ClienteServiceImpl;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -15,8 +16,8 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/clientes")
 public class ClienteController {
 
-    ClienteServiceImpl clienteService;
 
+    ClienteServicePort clienteService;
 
     public ClienteController(ClienteServiceImpl clienteService) {
         this.clienteService = clienteService;
