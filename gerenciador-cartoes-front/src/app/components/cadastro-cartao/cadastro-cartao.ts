@@ -62,6 +62,11 @@ export class CadastroCartaoComponent implements OnDestroy {
   }
 
   onNavegarRelatorios(): void {
+    this.router.navigate(['/relatorio']);
+  }
+
+   onNavegarLogout(): void {
+    this.router.navigate(['/login']);
   }
 
   formatarCPF(event: Event): void {
