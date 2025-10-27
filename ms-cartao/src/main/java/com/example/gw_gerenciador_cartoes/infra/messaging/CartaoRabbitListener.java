@@ -29,6 +29,5 @@ public class CartaoRabbitListener {
             log.error("Erro ao processar mensagem: {}", dto, e);
             throw new AmqpRejectAndDontRequeueException("Erro ao processar mensagem", e);
         }
-
     }
 }

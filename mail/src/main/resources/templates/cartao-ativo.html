@@ -1,7 +1,5 @@
-<html>
-<body>
-<h2>Olá {{nome}},</h2>
-<p>Seu cartão número {{numeroCartao}} foi ativado em {{dataAtivacao}}.</p>
-<p>Você já pode utilizá-lo normalmente.</p>
-</body>
-</html>
+<div th:fragment="content">
+    <h2>Olá, <span th:text="${nome}">Cliente</span>!</h2>
+    <p>Seu cartão final <strong th:text="${finalCartao}">0000</strong> foi ativado com sucesso 🎉</p>
+    <p>Obrigado por escolher o Banco Digital!</p>
+</div>

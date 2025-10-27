@@ -12,6 +12,8 @@ import com.example.gw_gerenciador_cartoes.infra.exception.CartaoNotFoundExceptio
 import com.example.gw_gerenciador_cartoes.infra.exception.MensagensErroConstantes;
 import com.example.gw_gerenciador_cartoes.infra.exception.RegraNegocioException;
 import com.example.gw_gerenciador_cartoes.infra.messaging.CartaoRespostaPublisher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -122,6 +124,25 @@ public class CartaoService implements CartaoServicePort {
     }
 
     @Override
+    public CartaoResponseDTO bloquear(CartaoIdentificacaoRequestDTO dto) {
+
+        Cartao cartao = repository.buscarPorNumeroECvv(dto.getNumero(), dto.getCvv())
+                .orElseThrow(() -> new CartaoNotFoundException(MensagensErroConstantes.CARTAO_NAO_ENCONTRADO));
+
+        if (cartao.getStatus() != StatusCartao.ATIVADO) {
+            throw new RegraNegocioException(MensagensErroConstantes.CARTAO_BLOQUEAR_STATUS_INVALIDO);
+        }
+
+        cartao.setStatus(StatusCartao.BLOQUEADO);
+
+        Cartao atualizado = repository.atualizar(cartao)
+                .orElseThrow(() -> new RegraNegocioException(MensagensErroConstantes.CARTAO_ERRO_AO_BLOQUEAR));
+
+        return mapper.toCartaoResponseDTO(atualizado);
+
+    }
+
+    @Override
     public SegundaViaCartaoResponseDTO solicitarSegundaVia(SegundaViaCartaoRequestDTO dto) {
 
         Cartao original = buscarCartaoPorNumeroECvv(dto.getNumero(), dto.getCvv())
@@ -217,8 +238,6 @@ public class CartaoService implements CartaoServicePort {
         validarEnumObrigatorio(TipoEmissaoCartao.class, dto.getTipoEmissao(), "TipoEmissaoCartao");
     }
 
-
-
     private <T extends Enum<T>> T validarEnumObrigatorio(Class<T> enumClass, String value, String campo) {
         try {
             return Enum.valueOf(enumClass, value.toUpperCase());
@@ -239,4 +258,9 @@ public class CartaoService implements CartaoServicePort {
         }
     }
 
+    @Override
+    public Page<CartaoResponseDTO> buscarPorCliente(Long idCliente, Pageable pageable) {
+        Page<Cartao> cartoes = repository.buscarPorIdCliente(idCliente, pageable);
+        return cartoes.map(mapper::toCartaoResponseDTO);
+    }
 }

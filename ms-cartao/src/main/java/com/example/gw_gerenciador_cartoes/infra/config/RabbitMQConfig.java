@@ -33,6 +33,7 @@ public class RabbitMQConfig {
     @Bean
     public DirectExchange cartaoDlqExchange() {
         return new DirectExchange("cartao-dlq-exchange");
+
     }
 
     @Bean

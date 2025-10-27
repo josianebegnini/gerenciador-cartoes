@@ -1,4 +1,4 @@
-package com.example.gw_gerenciador_cartoes.security;
+package gerenciador.cartoes.com.gateway.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;

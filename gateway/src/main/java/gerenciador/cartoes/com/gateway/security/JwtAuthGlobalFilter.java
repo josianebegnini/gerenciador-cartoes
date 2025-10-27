@@ -1,4 +1,4 @@
-package com.example.gw_gerenciador_cartoes.security;
+package gerenciador.cartoes.com.gateway.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
