@@ -7,38 +7,39 @@ spring:
 
   cloud:
     gateway:
-      routes:
-        - id: ms-cartao
-          uri: http://ms-cartao:8081
-          predicates:
-            - Path=/api/cartoes/**
+      server:
+        webflux:
+          routes:
+            - id: ms-cartao
+              uri: http://ms-cartao:8081
+              predicates:
+                - Path=/api/cartoes/**
 
-        - id: ms-cliente
-          uri: http://ms-cliente:8082
-          predicates:
-            - Path=/api/clientes/**
+            - id: ms-cliente
+              uri: http://ms-cliente:8082
+              predicates:
+                - Path=/api/clientes/**
 
-        - id: ms-auth
-          uri: http://ms-auth:8084
-          predicates:
-            - Path=/api/auth/**
+            - id: ms-auth
+              uri: http://ms-auth:8084
+              predicates:
+                - Path=/api/auth/**
 
-      # 🌍 Configuração global de CORS
-      globalcors:
-        cors-configurations:
-          '[/**]':
-            allowedOrigins:
-              - "http://localhost:8080"
-            allowedMethods:
-              - GET
-              - POST
-              - PUT
-              - PATCH
-              - DELETE
-              - OPTIONS
-            allowedHeaders:
-              - "*"
-            allowCredentials: true
+          globalcors:
+            cors-configurations:
+              '[/**]':
+                allowedOrigins:
+                  - "http://localhost:4200"
+                allowedMethods:
+                  - GET
+                  - POST
+                  - PUT
+                  - PATCH
+                  - DELETE
+                  - OPTIONS
+                allowedHeaders:
+                  - "*"
+                allowCredentials: true
 
 jwt:
   secret: mySecretKeyForJWTGenerationThatIsAtLeast32BytesLong

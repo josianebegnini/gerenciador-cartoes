@@ -1,120 +1,106 @@
-import { Injectable } from "@angular/core"
-import { HttpClient } from "@angular/common/http"
-import type { Observable } from "rxjs"
-import type { Cartao } from "../models/cartao"
-import type {
+import { Injectable } from "@angular/core";
+import { HttpClient } from "@angular/common/http";
+import { Observable } from "rxjs";
+import { Cartao } from "../models/cartao";
+import {
   CartaoResponseDTO,
   CartaoIdentificacaoRequestDTO,
   SegundaViaCartaoRequestDTO,
   SegundaViaCartaoResponseDTO,
-} from "../models/cartao-dtos"
-import { environment } from "../enviroments/enviroment"
+} from "../models/cartao-dtos";
+import { environment } from "../enviroments/enviroment";
 
 @Injectable({
   providedIn: "root",
 })
 export class CartaoService {
-  aplicarMascaraCVV(value: string): string {
-    throw new Error("Method not implemented.")
-  }
-   private apiUrl = `${environment.apiUrl}/cartoes`
+  private apiUrl = `${environment.apiUrl}/cartoes`;
 
   constructor(private http: HttpClient) {}
 
   // ========== OPERAÇÕES HTTP ==========
 
   getCartoes(): Observable<Cartao[]> {
-    return this.http.get<Cartao[]>(this.apiUrl)
+    return this.http.get<Cartao[]>(this.apiUrl);
   }
 
   getCartaoByClienteId(clienteId: number): Observable<Cartao> {
-    return this.http.get<Cartao>(`${this.apiUrl}/cliente/${clienteId}`)
+    return this.http.get<Cartao>(`${this.apiUrl}/cliente/${clienteId}`);
   }
 
   createCartao(cartao: Cartao): Observable<Cartao> {
-    return this.http.post<Cartao>(this.apiUrl, cartao)
+    return this.http.post<Cartao>(this.apiUrl, cartao);
   }
 
   updateCartao(id: number, cartao: Cartao): Observable<Cartao> {
-    return this.http.put<Cartao>(`${this.apiUrl}/${id}`, cartao)
+    return this.http.put<Cartao>(`${this.apiUrl}/${id}`, cartao);
   }
 
   deleteCartao(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`)
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 
   alternarStatus(clienteId: number): Observable<Cartao> {
-    return this.http.patch<Cartao>(`${this.apiUrl}/alternar-status/${clienteId}`, {})
+    return this.http.patch<Cartao>(`${this.apiUrl}/alternar-status/${clienteId}`, {});
   }
 
   updateStatusEmLote(clienteIds: number[], novoStatus: string): Observable<any> {
     return this.http.patch<any>(`${this.apiUrl}/status-lote`, {
       clienteIds,
       status: novoStatus,
-    })
+    });
   }
 
   ativarCartao(clienteId: number, numeroCartao: string): Observable<CartaoResponseDTO> {
-    const request: CartaoIdentificacaoRequestDTO = {
-      clienteId,
-      numeroCartao,
-    }
-    return this.http.put<CartaoResponseDTO>(`${this.apiUrl}/ativar`, request)
+    const request: CartaoIdentificacaoRequestDTO = { clienteId, numeroCartao };
+    return this.http.put<CartaoResponseDTO>(`${this.apiUrl}/ativar`, request);
   }
 
   solicitarSegundaVia(
     clienteId: number,
     numeroCartao: string,
-    motivo: string,
+    motivo: string
   ): Observable<SegundaViaCartaoResponseDTO> {
-    const request: SegundaViaCartaoRequestDTO = {
-      clienteId,
-      numeroCartao,
-      motivo,
-    }
-    return this.http.post<SegundaViaCartaoResponseDTO>(`${this.apiUrl}/segunda-via`, request)
+    const request: SegundaViaCartaoRequestDTO = { clienteId, numeroCartao, motivo };
+    return this.http.post<SegundaViaCartaoResponseDTO>(`${this.apiUrl}/segunda-via`, request);
   }
 
   // ========== FORMATAÇÃO ==========
 
   formatarNumeroCartao(numero: string): string {
-    return numero.replace(/(\d{4})(?=\d)/g, "$1 ")
+    return numero.replace(/(\d{4})(?=\d)/g, "$1 ");
   }
 
   formatarDataVencimento(data: string): string {
-    // Formato esperado: MM/YYYY
-    if (!data) return ""
-
-    const partes = data.split("/")
-    if (partes.length === 2) {
-      return data
-    }
-
-    // Se vier no formato YYYY-MM-DD, converte
+    if (!data) return "";
+    const partes = data.split("/");
+    if (partes.length === 2) return data;
     if (data.includes("-")) {
-      const [ano, mes] = data.split("-")
-      return `${mes}/${ano}`
+      const [ano, mes] = data.split("-");
+      return `${mes}/${ano}`;
     }
-
-    return data
+    return data;
   }
 
   mascaraNumeroCartao(numero: string): string {
-    if (numero.length < 4) return numero
-    const ultimosQuatro = numero.slice(-4)
-    return `**** **** **** ${ultimosQuatro}`
+    if (numero.length < 4) return numero;
+    const ultimosQuatro = numero.slice(-4);
+    return `**** **** **** ${ultimosQuatro}`;
+  }
+
+  aplicarMascaraCVV(value: string): string {
+    return value.replace(/\D/g, "").slice(0, 4);
   }
 
   // ========== STATUS ==========
-
   getStatusTexto(status: string): string {
     const statusMap: Record<string, string> = {
       ativado: "Ativado",
       bloqueado: "Bloqueado",
       cancelado: "Cancelado",
       desativado: "Desativado",
-    }
-    return statusMap[status] || "Sem Cartão"
+    };
+    return statusMap[status] || "Sem Cartão";
   }
 
   getStatusClass(status: string): string {
@@ -123,8 +109,8 @@ export class CartaoService {
       bloqueado: "status-bloqueado",
       cancelado: "status-cancelado",
       desativado: "status-desativado",
-    }
-    return classes[status] || "status-desconhecido"
+    };
+    return classes[status] || "status-desconhecido";
   }
 
   getStatusBadgeClass(status: string): string {
@@ -133,8 +119,8 @@ export class CartaoService {
       bloqueado: "badge-bloqueado",
       cancelado: "badge-cancelado",
       desativado: "badge-desativado",
-    }
-    return classes[status] || "badge-sem-cartao"
+    };
+    return classes[status] || "badge-sem-cartao";
   }
 
   obterProximoStatus(statusAtual: string): string {
@@ -142,126 +128,96 @@ export class CartaoService {
       ativado: "bloqueado",
       bloqueado: "ativado",
       desativado: "ativado",
-      cancelado: "cancelado", // Cancelado não pode mudar
-    }
-    return cicloStatus[statusAtual] || "ativado"
+      cancelado: "cancelado",
+    };
+    return cicloStatus[statusAtual] || "ativado";
   }
 
   podeAlterarStatus(status: string): boolean {
-    return status !== "cancelado"
+    return status !== "cancelado";
   }
 
   // ========== VALIDAÇÃO ==========
 
   validarNumeroCartao(numero: string): boolean {
-    const numeroLimpo = numero.replace(/\s/g, "")
+    const numeroLimpo = numero.replace(/\s/g, "");
+    if (!/^\d{16}$/.test(numeroLimpo)) return false;
 
-    if (!/^\d{16}$/.test(numeroLimpo)) {
-      return false
-    }
-
-    // Algoritmo de Luhn
-    let soma = 0
-    let alternar = false
+    let soma = 0;
+    let alternar = false;
 
     for (let i = numeroLimpo.length - 1; i >= 0; i--) {
-      let digito = Number.parseInt(numeroLimpo.charAt(i), 10)
-
+      let digito = parseInt(numeroLimpo.charAt(i), 10);
       if (alternar) {
-        digito *= 2
-        if (digito > 9) {
-          digito -= 9
-        }
+        digito *= 2;
+        if (digito > 9) digito -= 9;
       }
-
-      soma += digito
-      alternar = !alternar
+      soma += digito;
+      alternar = !alternar;
     }
 
-    return soma % 10 === 0
+    return soma % 10 === 0;
   }
 
   validarDataVencimento(data: string): boolean {
-    if (!data) return false
+    if (!data) return false;
+    const [mes, ano] = data.split("/");
+    if (!mes || !ano) return false;
 
-    const [mes, ano] = data.split("/")
+    const mesNum = parseInt(mes, 10);
+    const anoNum = parseInt(ano, 10);
+    if (mesNum < 1 || mesNum > 12) return false;
 
-    if (!mes || !ano) return false
+    const hoje = new Date();
+    const anoAtual = hoje.getFullYear();
+    const mesAtual = hoje.getMonth() + 1;
 
-    const mesNum = Number.parseInt(mes, 10)
-    const anoNum = Number.parseInt(ano, 10)
+    if (anoNum < anoAtual) return false;
+    if (anoNum === anoAtual && mesNum < mesAtual) return false;
 
-    if (mesNum < 1 || mesNum > 12) return false
-
-    const hoje = new Date()
-    const anoAtual = hoje.getFullYear()
-    const mesAtual = hoje.getMonth() + 1
-
-    if (anoNum < anoAtual) return false
-    if (anoNum === anoAtual && mesNum < mesAtual) return false
-
-    return true
+    return true;
   }
 
   validarCVV(cvv: string): boolean {
-    return /^\d{3,4}$/.test(cvv)
+    return /^\d{3,4}$/.test(cvv);
   }
 
   validarCartao(cartao: Cartao): { valido: boolean; erros: string[] } {
-    const erros: string[] = []
+    const erros: string[] = [];
 
     if (!cartao.numero || !this.validarNumeroCartao(cartao.numero)) {
-      erros.push("Número do cartão inválido")
+      erros.push("Número do cartão inválido");
     }
 
     if (!cartao.dataVencimento || !this.validarDataVencimento(cartao.dataVencimento)) {
-      erros.push("Data de vencimento inválida")
+      erros.push("Data de vencimento inválida");
     }
 
     if (!cartao.tipoCartao) {
-      erros.push("Tipo de cartão é obrigatório")
+      erros.push("Tipo de cartão é obrigatório");
     }
 
     if (!cartao.clienteId) {
-      erros.push("Cliente é obrigatório")
+      erros.push("Cliente é obrigatório");
     }
 
     return {
       valido: erros.length === 0,
       erros,
-    }
+    };
   }
 
   // ========== IDENTIFICAÇÃO DE BANDEIRA ==========
 
   identificarBandeira(numero: string): string {
-    const numeroLimpo = numero.replace(/\s/g, "")
+    const numeroLimpo = numero.replace(/\s/g, "");
 
-    // Visa: começa com 4
-    if (/^4/.test(numeroLimpo)) {
-      return "Visa"
-    }
+    if (/^4/.test(numeroLimpo)) return "Visa";
+    if (/^5[1-5]/.test(numeroLimpo) || /^2(22[1-9]|2[3-9][0-9]|[3-6][0-9]{2}|7[0-1][0-9]|720)/.test(numeroLimpo)) return "Mastercard";
+    if (/^3[47]/.test(numeroLimpo)) return "American Express";
+    if (/^6011|^622(12[6-9]|1[3-9][0-9]|[2-8][0-9]{2}|9[0-1][0-9]|92[0-5])|^64[4-9]|^65/.test(numeroLimpo)) return "Discover";
+    if (/^636368|^438935|^504175|^451416|^636297|^5067|^4576|^4011/.test(numeroLimpo)) return "Elo";
 
-    // Mastercard: começa com 51-55 ou 2221-2720
-    if (/^5[1-5]/.test(numeroLimpo) || /^2(22[1-9]|2[3-9][0-9]|[3-6][0-9]{2}|7[0-1][0-9]|720)/.test(numeroLimpo)) {
-      return "Mastercard"
-    }
-
-    // American Express: começa com 34 ou 37
-    if (/^3[47]/.test(numeroLimpo)) {
-      return "American Express"
-    }
-
-    // Discover: começa com 6011, 622126-622925, 644-649, ou 65
-    if (/^6011|^622(12[6-9]|1[3-9][0-9]|[2-8][0-9]{2}|9[0-1][0-9]|92[0-5])|^64[4-9]|^65/.test(numeroLimpo)) {
-      return "Discover"
-    }
-
-    // Elo: começa com 636368, 438935, 504175, 451416, 636297, 5067, 4576, 4011
-    if (/^636368|^438935|^504175|^451416|^636297|^5067|^4576|^4011/.test(numeroLimpo)) {
-      return "Elo"
-    }
-
-    return "Desconhecida"
+    return "Desconhecida";
   }
 }

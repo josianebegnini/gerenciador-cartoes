@@ -11,24 +11,4 @@ import { User } from './models/auth.models';
   styleUrls: ['./app.css']
 })
 export class AppComponent {
-  title = "Gerenciador de Cartões"
-  currentUser: User | null = null
-
-  constructor(
-    public authService: AuthService,
-    private router: Router,
-  ) {
-    this.authService.currentUser$.subscribe((user) => {
-      this.currentUser = user
-    })
-  }
-
-  logout(): void {
-    this.authService.logout()
-    this.router.navigate(["/login"])
-  }
-
-  isLoginPage(): boolean {
-    return this.router.url === "/login"
-  }
 }

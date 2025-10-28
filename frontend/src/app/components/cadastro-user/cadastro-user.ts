@@ -30,13 +30,13 @@ export class CadastroUserComponent {
   onSubmit() {
     if (this.cadastroForm.valid && !this.senhasDiferentes()) {
       console.log('Usuário cadastrado com sucesso!', this.cadastroForm.value);
-      this.router.navigate(['/']);
+      this.router.navigate(['/login']);
     } else {
       this.cadastroForm.markAllAsTouched();
     }
   }
 
   voltarLogin() {
-    this.router.navigate(['/']);
+    this.router.navigate(['/login']);
   }
 }

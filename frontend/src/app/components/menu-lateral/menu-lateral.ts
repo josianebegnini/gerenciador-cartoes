@@ -9,30 +9,29 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./menu-lateral.css']
 })
 export class MenuLateral {
-  @Output() novoCliente = new EventEmitter<void>()
-  @Output() navegarHome = new EventEmitter<void>()
-  @Output() navegarCartoes = new EventEmitter<void>()
-  @Output() navegarRelatorios = new EventEmitter<void>()
-  @Output() irLogin = new EventEmitter<void>()
-
+  @Output() novoCliente = new EventEmitter<void>();
+  @Output() navegarHome = new EventEmitter<void>();
+  @Output() navegarCartoes = new EventEmitter<void>();
+  @Output() navegarRelatorios = new EventEmitter<void>();
+  @Output() irLogin = new EventEmitter<void>();
 
   onNovoCliente(): void {
-    this.novoCliente.emit()
+    this.novoCliente.emit();
   }
 
   onNavegarHome(): void {
-    this.navegarHome.emit()
+    this.navegarHome.emit();
   }
 
   onNavegarCartoes(): void {
-    this.navegarCartoes.emit()
+    this.navegarCartoes.emit();
   }
 
   onNavegarRelatorios(): void {
-    this.navegarRelatorios.emit()
+    this.navegarRelatorios.emit();
   }
 
-  onNavegarLogout(): void{
-    this.irLogin.emit()
+  onNavegarLogout(): void {
+    this.irLogin.emit();
   }
 }
