@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core"
 import { HttpClient } from "@angular/common/http"
 import type { Observable } from "rxjs"
 import type { Cartao } from "../models/cartao"
-import {
+import type {
   CartaoResponseDTO,
   CartaoIdentificacaoRequestDTO,
   SegundaViaCartaoRequestDTO,
@@ -13,9 +13,11 @@ import {
   providedIn: "root",
 })
 export class CartaoService {
-  private apiUrl = "http://localhost:8081/cartoes"
+  private apiUrl = "http://localhost:8085/api/cartoes"
 
   constructor(private http: HttpClient) {}
+
+  // ========== OPERAÇÕES HTTP ==========
 
   getCartoes(): Observable<Cartao[]> {
     return this.http.get<Cartao[]>(this.apiUrl)
@@ -41,8 +43,8 @@ export class CartaoService {
     return this.http.patch<Cartao>(`${this.apiUrl}/alternar-status/${clienteId}`, {})
   }
 
-  updateStatusEmLote(clienteIds: number[], novoStatus: string): Observable<void> {
-    return this.http.patch<void>(`${this.apiUrl}/status-lote`, {
+  updateStatusEmLote(clienteIds: number[], novoStatus: string): Observable<any> {
+    return this.http.patch<any>(`${this.apiUrl}/status-lote`, {
       clienteIds,
       status: novoStatus,
     })
@@ -68,6 +70,8 @@ export class CartaoService {
     }
     return this.http.post<SegundaViaCartaoResponseDTO>(`${this.apiUrl}/segunda-via`, request)
   }
+
+  // ========== FORMATAÇÃO ==========
 
   formatarNumeroCartao(numero: string): string {
     return numero.replace(/(\d{4})(?=\d)/g, "$1 ")
@@ -96,6 +100,8 @@ export class CartaoService {
     const ultimosQuatro = numero.slice(-4)
     return `**** **** **** ${ultimosQuatro}`
   }
+
+  // ========== STATUS ==========
 
   getStatusTexto(status: string): string {
     const statusMap: Record<string, string> = {
@@ -140,6 +146,8 @@ export class CartaoService {
   podeAlterarStatus(status: string): boolean {
     return status !== "cancelado"
   }
+
+  // ========== VALIDAÇÃO ==========
 
   validarNumeroCartao(numero: string): boolean {
     const numeroLimpo = numero.replace(/\s/g, "")
@@ -220,50 +228,36 @@ export class CartaoService {
     }
   }
 
+  // ========== IDENTIFICAÇÃO DE BANDEIRA ==========
+
   identificarBandeira(numero: string): string {
     const numeroLimpo = numero.replace(/\s/g, "")
 
-    if (/^4/.test(numeroLimpo)) return "Visa"
-    if (/^5[1-5]/.test(numeroLimpo)) return "Mastercard"
-    if (/^3[47]/.test(numeroLimpo)) return "American Express"
-    if (/^6(?:011|5)/.test(numeroLimpo)) return "Discover"
-    if (/^35/.test(numeroLimpo)) return "JCB"
+    // Visa: começa com 4
+    if (/^4/.test(numeroLimpo)) {
+      return "Visa"
+    }
+
+    // Mastercard: começa com 51-55 ou 2221-2720
+    if (/^5[1-5]/.test(numeroLimpo) || /^2(22[1-9]|2[3-9][0-9]|[3-6][0-9]{2}|7[0-1][0-9]|720)/.test(numeroLimpo)) {
+      return "Mastercard"
+    }
+
+    // American Express: começa com 34 ou 37
+    if (/^3[47]/.test(numeroLimpo)) {
+      return "American Express"
+    }
+
+    // Discover: começa com 6011, 622126-622925, 644-649, ou 65
+    if (/^6011|^622(12[6-9]|1[3-9][0-9]|[2-8][0-9]{2}|9[0-1][0-9]|92[0-5])|^64[4-9]|^65/.test(numeroLimpo)) {
+      return "Discover"
+    }
+
+    // Elo: começa com 636368, 438935, 504175, 451416, 636297, 5067, 4576, 4011
+    if (/^636368|^438935|^504175|^451416|^636297|^5067|^4576|^4011/.test(numeroLimpo)) {
+      return "Elo"
+    }
 
     return "Desconhecida"
-  }
-
-  getTipoCartaoLabel(tipo: string): string {
-    const tipos: Record<string, string> = {
-      debito: "Débito",
-      credito: "Crédito",
-      multiplo: "Múltiplo",
-    }
-    return tipos[tipo] || tipo
-  }
-
-  aplicarMascaraNumeroCartao(valor: string): string {
-    let numeroLimpo = valor.replace(/\D/g, "")
-
-    if (numeroLimpo.length <= 16) {
-      numeroLimpo = numeroLimpo.replace(/(\d{4})(?=\d)/g, "$1 ")
-    }
-
-    return numeroLimpo
-  }
-
-  aplicarMascaraCVV(valor: string): string {
-    return valor.replace(/\D/g, "").substring(0, 4)
-  }
-
-  aplicarMascaraDataVencimento(valor: string): string {
-    let numeroLimpo = valor.replace(/\D/g, "")
-
-    if (numeroLimpo.length <= 4) {
-      if (numeroLimpo.length >= 2) {
-        numeroLimpo = numeroLimpo.replace(/(\d{2})(\d)/, "$1/$2")
-      }
-    }
-
-    return numeroLimpo
   }
 }

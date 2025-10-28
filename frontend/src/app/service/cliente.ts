@@ -7,10 +7,7 @@ import type { Cliente } from "../models/cliente"
   providedIn: "root",
 })
 export class ClienteService {
-  aplicarMascaraCPF(value: string): string {
-    throw new Error("Method not implemented.")
-  }
-  private apiUrl = "http://localhost:8082/clientes"
+  private apiUrl = "http://localhost:8085/api/clientes"
 
   constructor(private http: HttpClient) {}
 
@@ -49,6 +46,8 @@ export class ClienteService {
     return this.http.delete<void>(`${this.apiUrl}/${id}`)
   }
 
+  // ========== FORMATAÇÃO ==========
+
   formatarCPF(cpf: string): string {
     const cpfLimpo = this.limparCPF(cpf)
     return cpfLimpo.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4")
@@ -68,6 +67,10 @@ export class ClienteService {
     }
 
     return cpfLimpo
+  }
+
+  aplicarMascaraCPF(value: string): string {
+    return this.formatarCPFAoDigitar(value)
   }
 
   formatarCEP(cep: string): string {
@@ -111,6 +114,8 @@ export class ClienteService {
       currency: "BRL",
     })
   }
+
+  // ========== VALIDAÇÃO ==========
 
   validarCPF(cpf: string): boolean {
     const cpfLimpo = this.limparCPF(cpf)
@@ -207,40 +212,18 @@ export class ClienteService {
       erros.push("Data de nascimento inválida ou cliente menor de 18 anos")
     }
 
-    if (!cliente.endereco.rua || !cliente.endereco.rua.trim()) {
-      erros.push("Rua é obrigatória")
-    }
-
-    if (!cliente.endereco.cidade || !cliente.endereco.cidade.trim()) {
-      erros.push("Cidade é obrigatória")
-    }
-
-    if (!cliente.endereco.bairro || !cliente.endereco.bairro.trim()) {
-      erros.push("Bairro é obrigatório")
-    }
-
     if (!cliente.endereco.cep || !cliente.endereco.cep.trim()) {
       erros.push("CEP é obrigatório")
     } else if (!this.validarCEP(cliente.endereco.cep)) {
       erros.push("CEP inválido")
     }
 
-    if (!cliente.endereco.numero || !cliente.endereco.numero.trim()) {
-      erros.push("Número é obrigatório")
+    if (!cliente.endereco || !cliente.endereco.cidade.trim()) {
+      erros.push("Endereço é obrigatório")
     }
 
-    if (cliente.conta) {
-      if (!cliente.conta.agencia || !cliente.conta.agencia.trim()) {
-        erros.push("Agência é obrigatória")
-      }
-
-      if (!cliente.conta.tipo || !cliente.conta.tipo.trim()) {
-        erros.push("Tipo de conta é obrigatório")
-      }
-
-      if (cliente.conta.saldo < 0) {
-        erros.push("Saldo não pode ser negativo")
-      }
+    if (!cliente.endereco.cidade || !cliente.endereco.cidade.trim()) {
+      erros.push("Cidade é obrigatória")
     }
 
     return {
@@ -249,22 +232,23 @@ export class ClienteService {
     }
   }
 
-  filtrarClientes(clientes: Cliente[], filtroCpf: string, filtroNome: string, _filtroStatus?: string): Cliente[] {
+  // ========== FILTROS ==========
+
+  filtrarClientes(clientes: any[], filtroCpf: string, filtroNome: string): any[] {
     return clientes.filter((cliente) => {
-      const matchCpf = !filtroCpf || cliente.cpf.includes(filtroCpf)
-      const matchNome = !filtroNome || cliente.nome.toLowerCase().includes(filtroNome.toLowerCase())
-      return matchCpf && matchNome
+      const cpfMatch = !filtroCpf || this.limparCPF(cliente.cpf).includes(this.limparCPF(filtroCpf))
+      const nomeMatch = !filtroNome || cliente.nome.toLowerCase().includes(filtroNome.toLowerCase())
+      return cpfMatch && nomeMatch
     })
   }
 
-  private prepararClienteParaEnvio(cliente: Cliente): Cliente {
+  // ========== PREPARAÇÃO DE DADOS ==========
+
+  private prepararClienteParaEnvio(cliente: Cliente): any {
     return {
       ...cliente,
       cpf: this.limparCPF(cliente.cpf),
-      endereco: {
-        ...cliente.endereco,
-        cep: this.limparCEP(cliente.endereco.cep),
-      },
+      cep: this.limparCEP(cliente.endereco.cep),
     }
   }
 }
