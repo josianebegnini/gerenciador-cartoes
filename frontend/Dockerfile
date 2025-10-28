@@ -10,7 +10,7 @@ RUN npm run build -- --configuration production
 FROM nginx:alpine
 # ⚠️ Copia a pasta de build Angular para o diretório que o Nginx serve
 #COPY --from=build /app/dist/gerenciador-cartoes-front /usr/share/nginx/html
-COPY --from=build /app/dist/gerenciador-cartoes-front/browser /usr/share/nginx/html
+COPY --from=build /app/dist/frontend/browser /usr/share/nginx/html
 # Copia o arquivo de configuração customizado do Nginx
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 

@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "gerenciador-cartoes-front": {
+    "frontend": {
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -58,10 +58,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "gerenciador-cartoes-front:build:production"
+              "buildTarget": "frontend:build:production"
             },
             "development": {
-              "buildTarget": "gerenciador-cartoes-front:build:development"
+              "buildTarget": "frontend:build:development"
             }
           },
           "defaultConfiguration": "development"
