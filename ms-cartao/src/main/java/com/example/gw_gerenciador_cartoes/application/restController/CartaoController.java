@@ -1,6 +1,9 @@
 package com.example.gw_gerenciador_cartoes.application.restController;
 
-import com.example.gw_gerenciador_cartoes.application.dto.*;
+import com.example.gw_gerenciador_cartoes.application.dto.cartao.CartaoIdentificacaoRequestDTO;
+import com.example.gw_gerenciador_cartoes.application.dto.cartao.CartaoResponseDTO;
+import com.example.gw_gerenciador_cartoes.application.dto.cartao.SegundaViaCartaoRequestDTO;
+import com.example.gw_gerenciador_cartoes.application.dto.cartao.SegundaViaCartaoResponseDTO;
 import com.example.gw_gerenciador_cartoes.domain.ports.CartaoServicePort;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;

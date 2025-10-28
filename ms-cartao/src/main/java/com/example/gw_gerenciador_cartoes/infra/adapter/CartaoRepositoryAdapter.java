@@ -1,10 +1,12 @@
 package com.example.gw_gerenciador_cartoes.infra.adapter;
 
+import com.example.gw_gerenciador_cartoes.application.mapper.CartaoMapper;
+import com.example.gw_gerenciador_cartoes.domain.enums.StatusCartao;
 import com.example.gw_gerenciador_cartoes.domain.model.Cartao;
 import com.example.gw_gerenciador_cartoes.domain.ports.CartaoRepositoryPort;
 import com.example.gw_gerenciador_cartoes.infra.entity.CartaoEntity;
+import com.example.gw_gerenciador_cartoes.infra.exception.CartaoNotFoundException;
 import com.example.gw_gerenciador_cartoes.infra.repository.CartaoRepositoryJpa;
-import com.example.gw_gerenciador_cartoes.application.mapper.CartaoMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
@@ -23,47 +25,24 @@ public class CartaoRepositoryAdapter implements CartaoRepositoryPort {
     }
 
     @Override
-    public Optional<Cartao> salvar(Cartao cartao) {
-
-        CartaoEntity entity = new CartaoEntity();
-        entity.setClienteId(cartao.getClienteId());
-        entity.setContaId(cartao.getContaId());
-        entity.setNumero(cartao.getNumero());
-        entity.setCvv(cartao.getCvv());
-        entity.setDataVencimento(cartao.getDataVencimento());
-        entity.setStatus(cartao.getStatus());
-        entity.setMotivoStatus(cartao.getMotivoStatus());
-        entity.setTipoCartao(cartao.getTipoCartao());
-        entity.setTipoEmissao(cartao.getTipoEmissao());
-
+    public Cartao salvar(Cartao cartao) {
+        CartaoEntity entity = mapper.toEntity(cartao);
         CartaoEntity savedEntity = jpaRepository.save(entity);
-        return Optional.of(mapper.toDomain(savedEntity));
+        return mapper.toDomain(savedEntity);
 
     }
 
+    @Override
     public Optional<Cartao> atualizar(Cartao cartao) {
-
-        CartaoEntity entity = jpaRepository.findById(cartao.getId())
-                .orElse(null);
-
-        if (entity == null) {
-            return Optional.empty();
-        }
-
-        entity.setClienteId(cartao.getClienteId());
-        entity.setContaId(cartao.getContaId());
-        entity.setNumero(cartao.getNumero());
-        entity.setCvv(cartao.getCvv());
-        entity.setDataVencimento(cartao.getDataVencimento());
-        entity.setStatus(cartao.getStatus());
-        entity.setMotivoStatus(cartao.getMotivoStatus());
-        entity.setTipoCartao(cartao.getTipoCartao());
-        entity.setTipoEmissao(cartao.getTipoEmissao());
-
-        CartaoEntity saved = jpaRepository.save(entity);
-        return Optional.of(mapper.toDomain(saved));
-
+        return jpaRepository.findById(cartao.getId())
+                .map(entity -> {
+                    CartaoEntity atualizado = mapper.toEntity(cartao);
+                    atualizado.setId(entity.getId());
+                    CartaoEntity saved = jpaRepository.save(atualizado);
+                    return mapper.toDomain(saved);
+                });
     }
+
 
     @Override
     public boolean existePorNumero(String numero) {
@@ -80,5 +59,17 @@ public class CartaoRepositoryAdapter implements CartaoRepositoryPort {
     public Page<Cartao> buscarPorIdCliente(Long idCliente, Pageable pageable) {
         return jpaRepository.findByClienteId(idCliente, pageable)
                 .map(mapper::toDomain);
+    }
+
+    @Override
+    public Optional<Cartao> atualizarStatus(Long cartaoId, StatusCartao novoStatus, String motivo) {
+        return jpaRepository.findById(cartaoId)
+                .map(entity -> {
+                    Cartao cartao = mapper.toDomain(entity);
+                    cartao.atualizarStatus(novoStatus, motivo);
+                    CartaoEntity atualizado = mapper.toEntity(cartao);
+                    CartaoEntity saved = jpaRepository.save(atualizado);
+                    return mapper.toDomain(saved);
+                });
     }
 }

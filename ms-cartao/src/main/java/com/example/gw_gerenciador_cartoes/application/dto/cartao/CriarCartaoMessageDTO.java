@@ -1,4 +1,4 @@
-package com.example.gw_gerenciador_cartoes.application.dto;
+package com.example.gw_gerenciador_cartoes.application.dto.cartao;
 
 import java.util.Objects;
 

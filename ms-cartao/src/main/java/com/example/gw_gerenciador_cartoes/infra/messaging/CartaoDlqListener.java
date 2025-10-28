@@ -1,7 +1,6 @@
 package com.example.gw_gerenciador_cartoes.infra.messaging;
 
-import com.example.gw_gerenciador_cartoes.application.dto.CriarCartaoMessageDTO;
-import com.example.gw_gerenciador_cartoes.service.CartaoRespostaService;
+import com.example.gw_gerenciador_cartoes.application.dto.cartao.CriarCartaoMessageDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,12 +13,8 @@ public class CartaoDlqListener {
     private static final Logger log = LoggerFactory.getLogger(CartaoDlqListener.class);
     private final ObjectMapper objectMapper;
 
-
-    private final CartaoRespostaService rejeitadoService;
-
-    public CartaoDlqListener(ObjectMapper objectMapper, CartaoRespostaService rejeitadoService) {
+    public CartaoDlqListener(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
-        this.rejeitadoService = rejeitadoService;
     }
 
     @RabbitListener(queues = "${broker.queue.cartao-dlq}")

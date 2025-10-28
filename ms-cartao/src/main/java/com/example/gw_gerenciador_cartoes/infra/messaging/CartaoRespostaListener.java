@@ -1,6 +1,6 @@
 package com.example.gw_gerenciador_cartoes.infra.messaging;
 
-import com.example.gw_gerenciador_cartoes.application.dto.CriarCartaoResponseDTO;
+import com.example.gw_gerenciador_cartoes.application.dto.cartao.CriarCartaoResponseDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;

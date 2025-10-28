@@ -4,68 +4,45 @@ import com.example.gw_gerenciador_cartoes.domain.enums.StatusCartao;
 import com.example.gw_gerenciador_cartoes.domain.enums.TipoCartao;
 import com.example.gw_gerenciador_cartoes.domain.enums.TipoEmissaoCartao;
 
-import java.time.LocalDate;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
-public class Cartao {
+public class Cartao extends AbstractCartao{
 
-    private Long id;
-    private Long clienteId;
-    private Long contaId;
+    private Long solicitacaoId;
     private String numero;
     private String cvv;
-    private LocalDate dataVencimento;
+    private String nome;
+    private LocalDateTime dataVencimento;
+    private LocalDateTime dataCriacao;
     private StatusCartao status;
     private String motivoStatus;
     private TipoCartao tipoCartao;
     private TipoEmissaoCartao tipoEmissao;
+    private BigDecimal limite;
 
     public Cartao() {
     }
 
-    public Cartao(Long id, Long clienteId, Long contaId, String numero, String cvv, LocalDate dataVencimento, StatusCartao status, String motivoStatus, TipoCartao tipoCartao, TipoEmissaoCartao tipoEmissao) {
-        this.id = id;
-        this.clienteId = clienteId;
-        this.contaId = contaId;
-        this.numero = numero;
-        this.cvv = cvv;
-        this.dataVencimento = dataVencimento;
-        this.status = status;
-        this.motivoStatus = motivoStatus;
-        this.tipoCartao = tipoCartao;
-        this.tipoEmissao = tipoEmissao;
+    public boolean eCredito() {
+        return TipoCartao.CREDITO.equals(this.tipoCartao);
     }
 
-    //TODO nao pode dar exceção na entidade basica
+    public boolean eDebito() {
+        return TipoCartao.DEBITO.equals(this.tipoCartao);
+    }
+
     public void atualizarStatus(StatusCartao novoStatus, String motivo) {
-        if (motivo == null || motivo.isBlank()) {
-            throw new IllegalArgumentException("Motivo do status não pode ser vazio.");
-        }
         this.status = novoStatus;
         this.motivoStatus = motivo;
     }
 
-    public Long getId() {
-        return id;
+    public Long getSolicitacaoId() {
+        return solicitacaoId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getClienteId() {
-        return clienteId;
-    }
-
-    public void setClienteId(Long clienteId) {
-        this.clienteId = clienteId;
-    }
-
-    public Long getContaId() {
-        return contaId;
-    }
-
-    public void setContaId(Long contaId) {
-        this.contaId = contaId;
+    public void setSolicitacaoId(Long solicitacaoId) {
+        this.solicitacaoId = solicitacaoId;
     }
 
     public String getNumero() {
@@ -84,12 +61,28 @@ public class Cartao {
         this.cvv = cvv;
     }
 
-    public LocalDate getDataVencimento() {
+    public String getNome() {
+        return nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public LocalDateTime getDataVencimento() {
         return dataVencimento;
     }
 
-    public void setDataVencimento(LocalDate dataVencimento) {
+    public void setDataVencimento(LocalDateTime dataVencimento) {
         this.dataVencimento = dataVencimento;
+    }
+
+    public LocalDateTime getDataCriacao() {
+        return dataCriacao;
+    }
+
+    public void setDataCriacao(LocalDateTime dataCriacao) {
+        this.dataCriacao = dataCriacao;
     }
 
     public StatusCartao getStatus() {
@@ -122,5 +115,13 @@ public class Cartao {
 
     public void setTipoEmissao(TipoEmissaoCartao tipoEmissao) {
         this.tipoEmissao = tipoEmissao;
+    }
+
+    public BigDecimal getLimite() {
+        return limite;
+    }
+
+    public void setLimite(BigDecimal limite) {
+        this.limite = limite;
     }
 }
