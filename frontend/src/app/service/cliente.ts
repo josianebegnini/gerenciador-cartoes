@@ -10,7 +10,7 @@ export class ClienteService {
   aplicarMascaraCPF(value: string): string {
     throw new Error("Method not implemented.")
   }
-  private apiUrl = "http://ms-cliente:8082"
+  private apiUrl = "http://localhost:8082/clientes"
 
   constructor(private http: HttpClient) {}
 

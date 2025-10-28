@@ -5,10 +5,10 @@ import { routes } from './app/app.routes';
 import { appConfig } from './app/app.config';
 
 
-bootstrapApplication(AppComponent, {
+/*bootstrapApplication(AppComponent, {
   providers: [
     provideRouter(routes)
   ]
-}).catch(err => console.error(err));
+}).catch(err => console.error(err));*/
 
-
+bootstrapApplication(AppComponent, appConfig).catch((err) => console.error(err));

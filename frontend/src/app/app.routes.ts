@@ -5,14 +5,16 @@ import { CadastroCartaoComponent } from './components/cadastro-cartao/cadastro-c
 import { LoginComponent } from './components/login/login';
 import { CadastroUserComponent } from './components/cadastro-user/cadastro-user';
 import { RelatorioComponent } from './components/relatorio/relatorio';
+import { authGuard } from './auth/auth-guard';
 
 
 export const routes: Routes = [
-   { path: 'login', component: LoginComponent },
-  { path: 'home', component: Home },
-  { path: 'cadastro-cliente', component: CadastroCliente },
-   { path: 'relatorio', component: RelatorioComponent },
-  { path: 'cadastro-cartao', component: CadastroCartaoComponent },
-  { path: 'cadastro-user', component: CadastroUserComponent },
-  { path: '**', redirectTo: 'login', pathMatch: 'full' }
+  { path: 'login', component: LoginComponent},
+  { path: 'home', component: Home, canActivate: [authGuard]  },
+  { path: 'cadastro-cliente', component: CadastroCliente, canActivate: [authGuard]  },
+  { path: 'relatorio', component: RelatorioComponent, canActivate: [authGuard]  },
+  { path: 'cadastro-cartao', component: CadastroCartaoComponent, canActivate: [authGuard]  },
+  { path: 'cadastro-user', component: CadastroUserComponent, canActivate: [authGuard]  },
+  { path: '**', redirectTo: '/login', pathMatch: 'full' },
+  { path: "**", redirectTo: "/home" },
 ];

@@ -13,7 +13,7 @@ import {
   providedIn: "root",
 })
 export class CartaoService {
-  private apiUrl = "http://ms-cartao:8081"
+  private apiUrl = "http://localhost:8081/cartoes"
 
   constructor(private http: HttpClient) {}
 
