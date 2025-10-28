@@ -8,6 +8,7 @@ import com.example.gw_gerenciador_cartoes.infra.adapter.util.UtilsMapper;
 import com.example.gw_gerenciador_cartoes.infra.entity.ClienteEntity;
 import com.example.gw_gerenciador_cartoes.infra.entity.ContaEntity;
 import com.example.gw_gerenciador_cartoes.infra.entity.EnderecoEntity;
+import com.example.gw_gerenciador_cartoes.infra.messaging.CriarCartaoProducer;
 import com.example.gw_gerenciador_cartoes.infra.repository.ClienteJpaRepository;
 import com.example.gw_gerenciador_cartoes.infra.repository.ContaJpaRepository;
 import com.example.gw_gerenciador_cartoes.infra.repository.EnderecoJpaRepository;
@@ -25,11 +26,13 @@ public class ClienteRepositoryAdapter implements ClienteRepositoryPort {
     private final ClienteJpaRepository clienteJpaRepository;
     private final EnderecoJpaRepository enderecoJpaRepository;
     private final ContaJpaRepository contaJpaRepository;
+    private final CriarCartaoProducer criarCartaoProducer;
 
-    public ClienteRepositoryAdapter(ClienteJpaRepository clienteJpaRepository, EnderecoJpaRepository enderecoJpaRepository, ContaJpaRepository contaJpaRepository) {
+    public ClienteRepositoryAdapter(ClienteJpaRepository clienteJpaRepository, EnderecoJpaRepository enderecoJpaRepository, ContaJpaRepository contaJpaRepository, CriarCartaoProducer criarCartaoProducer) {
         this.clienteJpaRepository = clienteJpaRepository;
         this.enderecoJpaRepository = enderecoJpaRepository;
         this.contaJpaRepository = contaJpaRepository;
+        this.criarCartaoProducer = criarCartaoProducer;
     }
 
     @Override
@@ -45,9 +48,10 @@ public class ClienteRepositoryAdapter implements ClienteRepositoryPort {
         ClienteEntity clienteEntity = FromDomainToEntity(cliente);
         clienteEntity.setEndereco(enderecoEntity);
         clienteEntity.setConta(contaEntity);
-        return fromEntityToDomain(clienteJpaRepository.save(clienteEntity));
 
+        return fromEntityToDomain(clienteJpaRepository.save(clienteEntity));
     }
+
 
     @Override
     public List<Cliente> findAll() {
