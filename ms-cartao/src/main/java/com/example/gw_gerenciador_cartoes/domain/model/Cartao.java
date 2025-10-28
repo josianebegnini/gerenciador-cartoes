@@ -1,52 +1,48 @@
 package com.example.gw_gerenciador_cartoes.domain.model;
 
-import com.example.gw_gerenciador_cartoes.domain.enums.CategoriaCartao;
 import com.example.gw_gerenciador_cartoes.domain.enums.StatusCartao;
 import com.example.gw_gerenciador_cartoes.domain.enums.TipoCartao;
+import com.example.gw_gerenciador_cartoes.domain.enums.TipoEmissaoCartao;
 
-import java.time.LocalDate;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
-public class Cartao {
+public class Cartao extends AbstractCartao{
 
-    private Long id;
-    private Long clienteId;
+    private Long solicitacaoId;
     private String numero;
     private String cvv;
-    private LocalDate dataVencimento;
-    private CategoriaCartao categoriaCartao;
+    private String nome;
+    private LocalDateTime dataVencimento;
+    private LocalDateTime dataCriacao;
     private StatusCartao status;
+    private String motivoStatus;
     private TipoCartao tipoCartao;
-    private String motivoSegundaVia;
+    private TipoEmissaoCartao tipoEmissao;
+    private BigDecimal limite;
 
     public Cartao() {
     }
 
-    public Cartao(Long id, Long clienteId, String numero, String cvv, LocalDate dataVencimento, CategoriaCartao categoriaCartao, StatusCartao status, TipoCartao tipoCartao, String motivoSegundaVia) {
-        this.id = id;
-        this.clienteId = clienteId;
-        this.numero = numero;
-        this.cvv = cvv;
-        this.dataVencimento = dataVencimento;
-        this.categoriaCartao = categoriaCartao;
-        this.status = status;
-        this.tipoCartao = tipoCartao;
-        this.motivoSegundaVia = motivoSegundaVia;
+    public boolean eCredito() {
+        return TipoCartao.CREDITO.equals(this.tipoCartao);
     }
 
-    public Long getId() {
-        return id;
+    public boolean eDebito() {
+        return TipoCartao.DEBITO.equals(this.tipoCartao);
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void atualizarStatus(StatusCartao novoStatus, String motivo) {
+        this.status = novoStatus;
+        this.motivoStatus = motivo;
     }
 
-    public Long getClienteId() {
-        return clienteId;
+    public Long getSolicitacaoId() {
+        return solicitacaoId;
     }
 
-    public void setClienteId(Long clienteId) {
-        this.clienteId = clienteId;
+    public void setSolicitacaoId(Long solicitacaoId) {
+        this.solicitacaoId = solicitacaoId;
     }
 
     public String getNumero() {
@@ -65,20 +61,28 @@ public class Cartao {
         this.cvv = cvv;
     }
 
-    public LocalDate getDataVencimento() {
+    public String getNome() {
+        return nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public LocalDateTime getDataVencimento() {
         return dataVencimento;
     }
 
-    public void setDataVencimento(LocalDate dataVencimento) {
+    public void setDataVencimento(LocalDateTime dataVencimento) {
         this.dataVencimento = dataVencimento;
     }
 
-    public CategoriaCartao getCategoriaCartao() {
-        return categoriaCartao;
+    public LocalDateTime getDataCriacao() {
+        return dataCriacao;
     }
 
-    public void setCategoriaCartao(CategoriaCartao categoriaCartao) {
-        this.categoriaCartao = categoriaCartao;
+    public void setDataCriacao(LocalDateTime dataCriacao) {
+        this.dataCriacao = dataCriacao;
     }
 
     public StatusCartao getStatus() {
@@ -89,6 +93,14 @@ public class Cartao {
         this.status = status;
     }
 
+    public String getMotivoStatus() {
+        return motivoStatus;
+    }
+
+    public void setMotivoStatus(String motivoStatus) {
+        this.motivoStatus = motivoStatus;
+    }
+
     public TipoCartao getTipoCartao() {
         return tipoCartao;
     }
@@ -97,12 +109,19 @@ public class Cartao {
         this.tipoCartao = tipoCartao;
     }
 
-    public String getMotivoSegundaVia() {
-        return motivoSegundaVia;
+    public TipoEmissaoCartao getTipoEmissao() {
+        return tipoEmissao;
     }
 
-    public void setMotivoSegundaVia(String motivoSegundaVia) {
-        this.motivoSegundaVia = motivoSegundaVia;
+    public void setTipoEmissao(TipoEmissaoCartao tipoEmissao) {
+        this.tipoEmissao = tipoEmissao;
     }
 
+    public BigDecimal getLimite() {
+        return limite;
+    }
+
+    public void setLimite(BigDecimal limite) {
+        this.limite = limite;
+    }
 }
