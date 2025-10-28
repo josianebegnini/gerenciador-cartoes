@@ -14,7 +14,7 @@ public class CartaoRabbitListener {
         this.service = service;
     }
 
-    @RabbitListener(queues = "${broker.queue.cartao-criar-cartao}")
+    @RabbitListener(queues = "${broker.queue.cartao-criar-queue}")
     public void handleMensagem(ClienteContaCriadoDTO dto) {
         Long clienteId = dto.getClienteId();
         service.gerar(clienteId);
