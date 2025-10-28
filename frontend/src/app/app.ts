@@ -7,19 +7,8 @@ import { User } from './models/auth.models';
   selector: 'app-root',
   standalone: true,
   imports: [RouterOutlet],
-    template: `
-    <div class="app-container">
-      <router-outlet></router-outlet>
-    </div>
-  `,
-   styles: [
-    `
-    .app-container {
-      min-height: 100vh;
-      background-color: #f5f5f5;
-    }
-  `,
-  ],
+  templateUrl: './app.html',
+  styleUrls: ['./app.css']
 })
 export class AppComponent {
   title = "Gerenciador de Cartões"

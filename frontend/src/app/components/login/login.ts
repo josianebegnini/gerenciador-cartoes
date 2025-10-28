@@ -23,7 +23,6 @@ export class LoginComponent {
   onSubmit() {
     if (this.loginForm.valid) {
       console.log('Login efetuado com sucesso!', this.loginForm.value);
-      // aqui depois você pode integrar o AuthService
       this.router.navigate(['/home']);
     } else {
       this.loginForm.markAllAsTouched();

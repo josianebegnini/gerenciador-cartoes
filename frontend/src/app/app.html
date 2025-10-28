@@ -1,12 +1,12 @@
 <div class="app-container">
-  <!-- Header de navegação visível apenas quando autenticado -->
   <header class="app-header" *ngIf="authService.isLoggedIn() && !isLoginPage()">
     <div class="header-content">
       <div class="header-left">
         <h1 class="app-title">{{ title }}</h1>
       </div>
+    </div>
 
-      <nav class="header-nav">
+    <!-- <nav class="header-nav">
         <a routerLink="/home" routerLinkActive="active" class="nav-link">Home</a>
         <a routerLink="/cadastro-cliente" routerLinkActive="active" class="nav-link">Cadastrar Cliente</a>
         <a routerLink="/cadastro-cartao" routerLinkActive="active" class="nav-link">Cadastrar Cartão</a>
@@ -21,10 +21,9 @@
           Sair
         </button>
       </div>
-    </div>
+    </div> -->
   </header>
 
-  <!-- Conteúdo principal da aplicação -->
   <main class="app-main">
     <router-outlet></router-outlet>
   </main>
