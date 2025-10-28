@@ -113,10 +113,10 @@ services:
       - rabbitmq
 
   # 💻 Front-end (Spring Boot servindo Angular)
-  gerenciador-cartoes-front:
+  frontend:
     build:
-      context: ./gerenciador-cartoes-front
-    container_name: gerenciador-cartoes-front
+      context: ./frontend
+    container_name: frontend
     restart: always
     ports:
       - "4200:80"  # Porta externa 4200, interna 80 (Nginx)
