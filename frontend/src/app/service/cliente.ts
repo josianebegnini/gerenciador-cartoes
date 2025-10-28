@@ -2,12 +2,13 @@ import { Injectable } from "@angular/core"
 import { HttpClient, HttpParams } from "@angular/common/http"
 import type { Observable } from "rxjs"
 import type { Cliente } from "../models/cliente"
+import { environment } from "../enviroments/enviroment"
 
 @Injectable({
   providedIn: "root",
 })
 export class ClienteService {
-  private apiUrl = "http://localhost:8085/api/clientes"
+   private apiUrl = `${environment.apiUrl}/clientes`
 
   constructor(private http: HttpClient) {}
 
@@ -234,7 +235,7 @@ export class ClienteService {
 
   // ========== FILTROS ==========
 
-  filtrarClientes(clientes: any[], filtroCpf: string, filtroNome: string): any[] {
+  filtrarClientes(clientes: any[], filtroCpf: string, filtroNome: string, filtroStatus?: string): any[] {
     return clientes.filter((cliente) => {
       const cpfMatch = !filtroCpf || this.limparCPF(cliente.cpf).includes(this.limparCPF(filtroCpf))
       const nomeMatch = !filtroNome || cliente.nome.toLowerCase().includes(filtroNome.toLowerCase())

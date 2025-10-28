@@ -8,12 +8,16 @@ import type {
   SegundaViaCartaoRequestDTO,
   SegundaViaCartaoResponseDTO,
 } from "../models/cartao-dtos"
+import { environment } from "../enviroments/enviroment"
 
 @Injectable({
   providedIn: "root",
 })
 export class CartaoService {
-  private apiUrl = "http://localhost:8085/api/cartoes"
+  aplicarMascaraCVV(value: string): string {
+    throw new Error("Method not implemented.")
+  }
+   private apiUrl = `${environment.apiUrl}/cartoes`
 
   constructor(private http: HttpClient) {}
 

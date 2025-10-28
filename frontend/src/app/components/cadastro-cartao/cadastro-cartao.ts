@@ -76,7 +76,7 @@ export class CadastroCartaoComponent implements OnDestroy {
 
   formatarNumeroCartao(event: Event): void {
     const input = event.target as HTMLInputElement
-    this.cartao.numero = this.cartaoService.aplicarMascaraNumeroCartao(input.value)
+    this.cartao.numero = this.cartaoService.mascaraNumeroCartao(input.value)
   }
 
   formatarCVV(event: Event): void {
@@ -86,7 +86,7 @@ export class CadastroCartaoComponent implements OnDestroy {
 
   formatarDataVencimento(event: Event): void {
     const input = event.target as HTMLInputElement
-    this.cartao.dataVencimento = this.cartaoService.aplicarMascaraDataVencimento(input.value)
+    this.cartaoService.validarDataVencimento(input.value)
   }
 
   buscarClientePorCPF(): void {
