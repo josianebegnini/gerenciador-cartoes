@@ -98,10 +98,10 @@ services:
       ms-auth:
         condition: service_started
 
-  mail:
+  ms-mail:
     build:
-      context: ./mail
-    container_name: mail
+      context: ./ms-mail
+    container_name: ms-mail
     ports:
       - "8086:8086"
     environment:
