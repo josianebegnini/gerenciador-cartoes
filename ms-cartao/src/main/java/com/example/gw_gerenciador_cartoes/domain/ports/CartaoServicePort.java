@@ -1,16 +1,16 @@
 package com.example.gw_gerenciador_cartoes.domain.ports;
 
-import com.example.gw_gerenciador_cartoes.application.dto.CartaoIdentificacaoRequestDTO;
-import com.example.gw_gerenciador_cartoes.application.dto.CartaoResponseDTO;
-import com.example.gw_gerenciador_cartoes.application.dto.SegundaViaCartaoRequestDTO;
-import com.example.gw_gerenciador_cartoes.application.dto.SegundaViaCartaoResponseDTO;
+import com.example.gw_gerenciador_cartoes.application.dto.cartao.*;
+import com.example.gw_gerenciador_cartoes.domain.model.Cartao;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface CartaoServicePort {
-    void gerar(Long clienteId);
+    void processarSolicitacao(CriarCartaoMessageDTO dto);
     CartaoResponseDTO ativar(CartaoIdentificacaoRequestDTO dto);
     CartaoResponseDTO bloquear(CartaoIdentificacaoRequestDTO dto);
     SegundaViaCartaoResponseDTO solicitarSegundaVia(SegundaViaCartaoRequestDTO dto);
+    Cartao buscarCartaoPorNumeroECvv(String numero, String cvv);
     Page<CartaoResponseDTO> buscarPorCliente(Long idCliente, Pageable pageable);
+
 }

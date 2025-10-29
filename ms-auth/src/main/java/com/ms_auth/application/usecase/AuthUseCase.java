@@ -47,7 +47,7 @@ public class AuthUseCase {
         String token = tokenService.generateToken(savedUser.getUsername());
 
         return new AuthResponseDTO(
-                token,
+                "",
                 "Bearer",
                 3600L,
                 savedUser.getUsername()

@@ -17,7 +17,7 @@ public class CriarCartaoProducer implements CriarCartaoProducerPort {
 
     public void sendCriarCartao(ClienteContaCriadoDTO clienteContaCriadoDTO) {
         rabbitTemplate.convertAndSend(
-            RabbitMQConfig.EXCHANGE,
+            RabbitMQConfig.EXCHANGE_CARTAO,
             RabbitMQConfig.ROUTING_KEY_CRIAR_CARTAO,
             clienteContaCriadoDTO
         );
