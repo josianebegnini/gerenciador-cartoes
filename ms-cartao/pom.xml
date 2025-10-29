@@ -19,7 +19,7 @@
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-    <!-- 🔹 Gerenciamento de versão do Spring Cloud -->
+    <!-- Gerenciamento de versão do Spring Cloud -->
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -50,7 +50,7 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
-<!--        &lt;!&ndash; 🔹 OpenFeign &ndash;&gt;-->
+<!--        &lt;!&ndash;  OpenFeign &ndash;&gt;-->
 <!--        <dependency>-->
 <!--            <groupId>org.springframework.cloud</groupId>-->
 <!--            <artifactId>spring-cloud-starter-openfeign</artifactId>-->

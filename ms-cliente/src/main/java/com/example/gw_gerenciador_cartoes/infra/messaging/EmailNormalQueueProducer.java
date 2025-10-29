@@ -17,7 +17,7 @@ public class EmailNormalQueueProducer implements EmailNormalQueueProducerPort {
 
     public void sendEmailNormalQueue(EmailMessageDTO emailMessageDTO) {
         rabbitTemplate.convertAndSend(
-            RabbitMQConfig.EXCHANGE,
+            RabbitMQConfig.EXCHANGE_EMAIL,
             RabbitMQConfig.ROUTING_KEY_EMAIL_NORMAL_QUEUE,
                 emailMessageDTO
         );
