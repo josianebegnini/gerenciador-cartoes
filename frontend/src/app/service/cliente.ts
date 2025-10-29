@@ -8,7 +8,8 @@ import { environment } from "../enviroments/enviroment";
   providedIn: "root",
 })
 export class ClienteService {
-  private apiUrl = `${environment.apiUrl}/clientes`;
+  //private apiUrl = `${environment.apiUrl}/clientes`;
+  private apiUrl = `http://localhost:8082/clientes`;
 
   constructor(private http: HttpClient) {}
 
