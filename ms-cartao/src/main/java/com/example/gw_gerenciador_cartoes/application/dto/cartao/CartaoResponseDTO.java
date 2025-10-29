@@ -1,81 +1,45 @@
-package com.example.gw_gerenciador_cartoes.infra.entity;
+package com.example.gw_gerenciador_cartoes.application.dto.cartao;
 
-import com.example.gw_gerenciador_cartoes.domain.enums.StatusCartao;
 import com.example.gw_gerenciador_cartoes.domain.enums.TipoCartao;
+import com.example.gw_gerenciador_cartoes.domain.enums.StatusCartao;
 import com.example.gw_gerenciador_cartoes.domain.enums.TipoEmissaoCartao;
-import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "cartao")
-public class CartaoEntity {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
+public class CartaoResponseDTO {
     private Long id;
-
-    @Column(name = "cliente_id", nullable = false)
     private Long clienteId;
-
-    @Column(name = "conta_id", nullable = false)
     private Long contaId;
-
-    @Column(name = "solicitacao_id", nullable = false)
     private Long solicitacaoId;
-
-    @Column(name = "numero", nullable = true, unique = false)
     private String numero;
-
-    @Column(name = "cvv", nullable = false)
     private String cvv;
-
-    @Column(name = "data_vencimento", nullable = false)
-    private LocalDateTime dataVencimento;
-
-    @Column(name = "nome", nullable = false)
     private String nome;
-
-    @Column(name = "data_criacao", nullable = false)
+    private LocalDateTime dataVencimento;
     private LocalDateTime dataCriacao;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
     private StatusCartao status;
-
-    @Column(name = "motivo_status")
     private String motivoStatus;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "tipo_cartao", nullable = false)
     private TipoCartao tipoCartao;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "tipo_emissao_cartao", nullable = false)
-    private TipoEmissaoCartao tipoEmissao;
-
-    @Column(name = "limite", nullable = true)
+    private TipoEmissaoCartao tipoEmissaoCartao;
     private BigDecimal limite;
 
-    public CartaoEntity() {
+    public CartaoResponseDTO() {
     }
 
-    public CartaoEntity(Long id, Long clienteId, Long contaId, Long solicitacaoId, String numero, String cvv, LocalDateTime dataVencimento, String nome, LocalDateTime dataCriacao, StatusCartao status, String motivoStatus, TipoCartao tipoCartao, TipoEmissaoCartao tipoEmissao, BigDecimal limite) {
+    public CartaoResponseDTO(Long id, Long clienteId, Long contaId, Long solicitacaoId, String numero, String cvv, String nome, LocalDateTime dataVencimento, LocalDateTime dataCriacao, StatusCartao status, String motivoStatus, TipoCartao tipoCartao, TipoEmissaoCartao tipoEmissaoCartao, BigDecimal limite) {
         this.id = id;
         this.clienteId = clienteId;
         this.contaId = contaId;
         this.solicitacaoId = solicitacaoId;
         this.numero = numero;
         this.cvv = cvv;
-        this.dataVencimento = dataVencimento;
         this.nome = nome;
+        this.dataVencimento = dataVencimento;
         this.dataCriacao = dataCriacao;
         this.status = status;
         this.motivoStatus = motivoStatus;
         this.tipoCartao = tipoCartao;
-        this.tipoEmissao = tipoEmissao;
+        this.tipoEmissaoCartao = tipoEmissaoCartao;
         this.limite = limite;
     }
 
@@ -127,20 +91,20 @@ public class CartaoEntity {
         this.cvv = cvv;
     }
 
-    public LocalDateTime getDataVencimento() {
-        return dataVencimento;
-    }
-
-    public void setDataVencimento(LocalDateTime dataVencimento) {
-        this.dataVencimento = dataVencimento;
-    }
-
     public String getNome() {
         return nome;
     }
 
     public void setNome(String nome) {
         this.nome = nome;
+    }
+
+    public LocalDateTime getDataVencimento() {
+        return dataVencimento;
+    }
+
+    public void setDataVencimento(LocalDateTime dataVencimento) {
+        this.dataVencimento = dataVencimento;
     }
 
     public LocalDateTime getDataCriacao() {
@@ -175,12 +139,12 @@ public class CartaoEntity {
         this.tipoCartao = tipoCartao;
     }
 
-    public TipoEmissaoCartao getTipoEmissao() {
-        return tipoEmissao;
+    public TipoEmissaoCartao getTipoEmissaoCartao() {
+        return tipoEmissaoCartao;
     }
 
-    public void setTipoEmissao(TipoEmissaoCartao tipoEmissao) {
-        this.tipoEmissao = tipoEmissao;
+    public void setTipoEmissaoCartao(TipoEmissaoCartao tipoEmissaoCartao) {
+        this.tipoEmissaoCartao = tipoEmissaoCartao;
     }
 
     public BigDecimal getLimite() {

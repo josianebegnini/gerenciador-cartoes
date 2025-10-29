@@ -1,6 +1,8 @@
-package com.example.gw_gerenciador_cartoes.application.dto;
+package com.example.gw_gerenciador_cartoes.application.dto.cartao;
 
 import jakarta.validation.constraints.NotBlank;
+
+import java.util.Objects;
 
 public class SegundaViaCartaoRequestDTO {
 
@@ -44,5 +46,27 @@ public class SegundaViaCartaoRequestDTO {
 
     public void setMotivoSegundaVia(String motivoSegundaVia) {
         this.motivoSegundaVia = motivoSegundaVia;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        SegundaViaCartaoRequestDTO that = (SegundaViaCartaoRequestDTO) o;
+        return Objects.equals(numero, that.numero) && Objects.equals(cvv, that.cvv) && Objects.equals(motivoSegundaVia, that.motivoSegundaVia);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(numero, cvv, motivoSegundaVia);
+    }
+
+    @Override
+    public String toString() {
+        return "SegundaViaCartaoRequestDTO{" +
+                "numero='" + numero + '\'' +
+                ", cvv='" + cvv + '\'' +
+                ", motivoSegundaVia='" + motivoSegundaVia + '\'' +
+                '}';
     }
 }

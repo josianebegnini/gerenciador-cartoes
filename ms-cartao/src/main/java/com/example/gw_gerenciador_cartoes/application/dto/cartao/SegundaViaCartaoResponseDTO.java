@@ -1,14 +1,24 @@
-package com.example.gw_gerenciador_cartoes.application.dto;
+package com.example.gw_gerenciador_cartoes.application.dto.cartao;
 
 import com.example.gw_gerenciador_cartoes.domain.enums.StatusCartao;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class SegundaViaCartaoResponseDTO {
     private String numero;
     private String cvv;
-    private LocalDate dataVencimento;
+    private LocalDateTime dataVencimento;
     private StatusCartao status;
+
+    public SegundaViaCartaoResponseDTO() {
+    }
+
+    public SegundaViaCartaoResponseDTO(String numero, String cvv, LocalDateTime dataVencimento, StatusCartao status) {
+        this.numero = numero;
+        this.cvv = cvv;
+        this.dataVencimento = dataVencimento;
+        this.status = status;
+    }
 
     public String getNumero() {
         return numero;
@@ -26,11 +36,11 @@ public class SegundaViaCartaoResponseDTO {
         this.cvv = cvv;
     }
 
-    public LocalDate getDataVencimento() {
+    public LocalDateTime getDataVencimento() {
         return dataVencimento;
     }
 
-    public void setDataVencimento(LocalDate dataVencimento) {
+    public void setDataVencimento(LocalDateTime dataVencimento) {
         this.dataVencimento = dataVencimento;
     }
 
