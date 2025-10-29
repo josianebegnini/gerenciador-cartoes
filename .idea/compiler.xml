@@ -15,7 +15,6 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="mail" />
         <module name="gw-gerenciador-cartoes" />
         <module name="ms-auth" />
       </profile>
@@ -29,6 +28,9 @@
         <module name="ms-cartao" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="mail" target="17" />
+    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
