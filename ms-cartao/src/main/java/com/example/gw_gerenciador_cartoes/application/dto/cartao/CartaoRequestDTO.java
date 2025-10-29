@@ -4,17 +4,17 @@ import jakarta.validation.constraints.NotBlank;
 
 import java.util.Objects;
 
-public class CartaoIdentificacaoRequestDTO {
+public class CartaoRequestDTO {
     @NotBlank(message = "O número é obrigatório")
     private String numero;
 
     @NotBlank(message = "O cvv é obrigatório")
     private String cvv;
 
-    public CartaoIdentificacaoRequestDTO() {
+    public CartaoRequestDTO() {
     }
 
-    public CartaoIdentificacaoRequestDTO(String numero, String cvv) {
+    public CartaoRequestDTO(String numero, String cvv) {
         this.numero = numero;
         this.cvv = cvv;
     }
@@ -39,7 +39,7 @@ public class CartaoIdentificacaoRequestDTO {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        CartaoIdentificacaoRequestDTO that = (CartaoIdentificacaoRequestDTO) o;
+        CartaoRequestDTO that = (CartaoRequestDTO) o;
         return Objects.equals(numero, that.numero) && Objects.equals(cvv, that.cvv);
     }
 

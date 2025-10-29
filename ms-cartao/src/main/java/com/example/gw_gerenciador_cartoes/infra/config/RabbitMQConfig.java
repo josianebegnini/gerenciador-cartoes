@@ -86,27 +86,7 @@ public class RabbitMQConfig {
         factory.setConnectionFactory(connectionFactory);
         factory.setAcknowledgeMode(AcknowledgeMode.AUTO);
         factory.setDefaultRequeueRejected(false);
-//        factory.setPrefetchCount(10);
         factory.setMessageConverter(new Jackson2JsonMessageConverter());
         return factory;
     }
-
-    @Bean
-    public TopicExchange cartaoRespostaExchange() {
-        return new TopicExchange("cartao-resposta-exchange");
-    }
-
-    @Bean
-    public Queue cartaoCriarRespostaQueue() {
-        return QueueBuilder.durable("cartao-criar-resposta-queue").build();
-    }
-
-    @Bean
-    public Binding bindingCartaoCriarResposta() {
-        return BindingBuilder
-                .bind(cartaoCriarRespostaQueue())
-                .to(cartaoRespostaExchange())
-                .with("cartao.criar.resposta");
-    }
-
 }

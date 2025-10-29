@@ -1,8 +1,8 @@
-package com.example.gw_gerenciador_cartoes.infra.messaging;
+package com.example.gw_gerenciador_cartoes.application.dto.cartao;
 
 import java.util.Objects;
 
-public class SolicitacaoCartaoMessage {
+public class SolicitacaoCartaoMessageDTO {
     private Long clienteId;
     private Long contaId;
     private String nome;
@@ -11,10 +11,10 @@ public class SolicitacaoCartaoMessage {
     private String tipoCartao;
     private String tipoEmissao;
 
-    public SolicitacaoCartaoMessage() {
+    public SolicitacaoCartaoMessageDTO() {
     }
 
-    public SolicitacaoCartaoMessage(Long clienteId, Long contaId, String nome, String cpf, String email, String tipoCartao, String tipoEmissao) {
+    public SolicitacaoCartaoMessageDTO(Long clienteId, Long contaId, String nome, String cpf, String email, String tipoCartao, String tipoEmissao) {
         this.clienteId = clienteId;
         this.contaId = contaId;
         this.nome = nome;
@@ -84,7 +84,7 @@ public class SolicitacaoCartaoMessage {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        SolicitacaoCartaoMessage that = (SolicitacaoCartaoMessage) o;
+        SolicitacaoCartaoMessageDTO that = (SolicitacaoCartaoMessageDTO) o;
         return Objects.equals(clienteId, that.clienteId) && Objects.equals(contaId, that.contaId) && Objects.equals(nome, that.nome) && Objects.equals(cpf, that.cpf) && Objects.equals(email, that.email) && Objects.equals(tipoCartao, that.tipoCartao) && Objects.equals(tipoEmissao, that.tipoEmissao);
     }
 
