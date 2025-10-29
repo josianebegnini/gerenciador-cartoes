@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { AuthService } from '../../service/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -13,23 +14,36 @@ import { Router } from '@angular/router';
 export class LoginComponent {
   loginForm: FormGroup;
 
-  constructor(private fb: FormBuilder, private router: Router) {
+  constructor(
+    private fb: FormBuilder,
+    private router: Router,
+    private authService: AuthService
+  ) {
     this.loginForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
-      senha: ['', [Validators.required, Validators.minLength(6)]]
+      username: ['', Validators.required],
+      password: ['', [Validators.required, Validators.minLength(6)]],
     });
   }
 
-  onSubmit() {
-    if (this.loginForm.valid) {
-      console.log('Login efetuado com sucesso!', this.loginForm.value);
-      this.router.navigate(['/home']);
-    } else {
+  onSubmit(): void {
+    if (this.loginForm.invalid) {
       this.loginForm.markAllAsTouched();
+      return;
     }
+
+    const credentials = this.loginForm.value;
+    this.authService.login(credentials).subscribe({
+      next: (response) => {
+        console.log('Login realizado com sucesso:', response);
+        this.router.navigate(['/home']);
+      },
+      error: (err) => {
+        console.error('Erro no login:', err);
+      },
+    });
   }
 
-  irParaCadastro() {
+  irParaCadastro(): void {
     this.router.navigate(['/cadastro-user']);
   }
 }
