@@ -1,11 +1,9 @@
 package com.example.gw_gerenciador_cartoes.infra.adapter;
 
 import com.example.gw_gerenciador_cartoes.application.mapper.CartaoMapper;
-import com.example.gw_gerenciador_cartoes.domain.enums.StatusCartao;
 import com.example.gw_gerenciador_cartoes.domain.model.Cartao;
 import com.example.gw_gerenciador_cartoes.domain.ports.CartaoRepositoryPort;
 import com.example.gw_gerenciador_cartoes.infra.entity.CartaoEntity;
-import com.example.gw_gerenciador_cartoes.infra.exception.CartaoNotFoundException;
 import com.example.gw_gerenciador_cartoes.infra.repository.CartaoRepositoryJpa;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -43,7 +41,6 @@ public class CartaoRepositoryAdapter implements CartaoRepositoryPort {
                 });
     }
 
-
     @Override
     public boolean existePorNumero(String numero) {
         return jpaRepository.existsByNumero(numero);
@@ -61,15 +58,4 @@ public class CartaoRepositoryAdapter implements CartaoRepositoryPort {
                 .map(mapper::toDomain);
     }
 
-    @Override
-    public Optional<Cartao> atualizarStatus(Long cartaoId, StatusCartao novoStatus, String motivo) {
-        return jpaRepository.findById(cartaoId)
-                .map(entity -> {
-                    Cartao cartao = mapper.toDomain(entity);
-                    cartao.atualizarStatus(novoStatus, motivo);
-                    CartaoEntity atualizado = mapper.toEntity(cartao);
-                    CartaoEntity saved = jpaRepository.save(atualizado);
-                    return mapper.toDomain(saved);
-                });
-    }
 }

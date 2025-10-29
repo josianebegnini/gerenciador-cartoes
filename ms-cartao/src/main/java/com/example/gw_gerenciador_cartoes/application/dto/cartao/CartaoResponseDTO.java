@@ -12,9 +12,10 @@ public class CartaoResponseDTO {
     private Long clienteId;
     private Long contaId;
     private Long solicitacaoId;
+    private String nome;
+    private String email;
     private String numero;
     private String cvv;
-    private String nome;
     private LocalDateTime dataVencimento;
     private LocalDateTime dataCriacao;
     private StatusCartao status;
@@ -26,14 +27,15 @@ public class CartaoResponseDTO {
     public CartaoResponseDTO() {
     }
 
-    public CartaoResponseDTO(Long id, Long clienteId, Long contaId, Long solicitacaoId, String numero, String cvv, String nome, LocalDateTime dataVencimento, LocalDateTime dataCriacao, StatusCartao status, String motivoStatus, TipoCartao tipoCartao, TipoEmissaoCartao tipoEmissaoCartao, BigDecimal limite) {
+    public CartaoResponseDTO(Long id, Long clienteId, Long contaId, Long solicitacaoId, String nome, String email, String numero, String cvv, LocalDateTime dataVencimento, LocalDateTime dataCriacao, StatusCartao status, String motivoStatus, TipoCartao tipoCartao, TipoEmissaoCartao tipoEmissaoCartao, BigDecimal limite) {
         this.id = id;
         this.clienteId = clienteId;
         this.contaId = contaId;
         this.solicitacaoId = solicitacaoId;
+        this.nome = nome;
+        this.email = email;
         this.numero = numero;
         this.cvv = cvv;
-        this.nome = nome;
         this.dataVencimento = dataVencimento;
         this.dataCriacao = dataCriacao;
         this.status = status;
@@ -75,6 +77,22 @@ public class CartaoResponseDTO {
         this.solicitacaoId = solicitacaoId;
     }
 
+    public String getNome() {
+        return nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     public String getNumero() {
         return numero;
     }
@@ -89,14 +107,6 @@ public class CartaoResponseDTO {
 
     public void setCvv(String cvv) {
         this.cvv = cvv;
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
     }
 
     public LocalDateTime getDataVencimento() {

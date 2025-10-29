@@ -10,9 +10,10 @@ import java.time.LocalDateTime;
 public class Cartao extends AbstractCartao{
 
     private Long solicitacaoId;
+    private String nome;
+    private String email;
     private String numero;
     private String cvv;
-    private String nome;
     private LocalDateTime dataVencimento;
     private LocalDateTime dataCriacao;
     private StatusCartao status;
@@ -45,6 +46,22 @@ public class Cartao extends AbstractCartao{
         this.solicitacaoId = solicitacaoId;
     }
 
+    public String getNome() {
+        return nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     public String getNumero() {
         return numero;
     }
@@ -59,14 +76,6 @@ public class Cartao extends AbstractCartao{
 
     public void setCvv(String cvv) {
         this.cvv = cvv;
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
     }
 
     public LocalDateTime getDataVencimento() {
