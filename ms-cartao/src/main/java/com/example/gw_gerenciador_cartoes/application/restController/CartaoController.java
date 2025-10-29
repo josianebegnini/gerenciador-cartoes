@@ -1,11 +1,12 @@
 package com.example.gw_gerenciador_cartoes.application.restController;
 
-import com.example.gw_gerenciador_cartoes.application.dto.CartaoIdentificacaoRequestDTO;
-import com.example.gw_gerenciador_cartoes.application.dto.SegundaViaCartaoResponseDTO;
+import com.example.gw_gerenciador_cartoes.application.dto.*;
 import com.example.gw_gerenciador_cartoes.domain.ports.CartaoServicePort;
-import com.example.gw_gerenciador_cartoes.application.dto.SegundaViaCartaoRequestDTO;
-import com.example.gw_gerenciador_cartoes.application.dto.CartaoResponseDTO;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,9 +26,23 @@ public class CartaoController {
         return ResponseEntity.ok(response);
     }
 
+    @PutMapping("/bloquear")
+    public ResponseEntity<CartaoResponseDTO> bloquear(@Valid @RequestBody CartaoIdentificacaoRequestDTO dto) {
+        CartaoResponseDTO response = cartaoService.bloquear(dto);
+        return ResponseEntity.ok(response);
+    }
+
     @PostMapping("/segunda-via")
     public ResponseEntity<SegundaViaCartaoResponseDTO> solicitarSegundaVia(@Valid @RequestBody SegundaViaCartaoRequestDTO dto) {
         return ResponseEntity.ok(cartaoService.solicitarSegundaVia(dto));
     }
 
+    @GetMapping("/cliente/{idCliente}")
+    public ResponseEntity<Page<CartaoResponseDTO>> buscarPorCliente(
+            @PathVariable Long idCliente,
+            @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+
+        Page<CartaoResponseDTO> cartoes = cartaoService.buscarPorCliente(idCliente, pageable);
+        return ResponseEntity.ok(cartoes);
+    }
 }

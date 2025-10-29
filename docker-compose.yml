@@ -71,7 +71,7 @@ services:
     ports:
       - "8084:8084"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/cartao
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/cartoes
       SPRING_DATASOURCE_USERNAME: user
       SPRING_DATASOURCE_PASSWORD: pass
       JWT_SECRET: mySecretKeyForJWTGenerationThatIsAtLeast32BytesLong
@@ -81,10 +81,10 @@ services:
         condition: service_healthy
 
   # 🌐 API Gateway
-  gw-gerenciador-cartoes:
+  gateway:
     build:
-      context: ./gw-gerenciador-cartoes
-    container_name: gw-gerenciador-cartoes
+      context: ./gateway
+    container_name: gateway
     restart: always
     ports:
       - "8085:8085"
@@ -98,10 +98,10 @@ services:
       ms-auth:
         condition: service_started
 
-  mail:
+  ms-mail:
     build:
-      context: ./mail
-    container_name: mail
+      context: ./ms-mail
+    container_name: ms-mail
     ports:
       - "8086:8086"
     environment:
@@ -113,17 +113,17 @@ services:
       - rabbitmq
 
   # 💻 Front-end (Spring Boot servindo Angular)
-  gerenciador-cartoes-front:
+  frontend:
     build:
-      context: ./gerenciador-cartoes-front
-    container_name: gerenciador-cartoes-front
+      context: ./frontend
+    container_name: frontend
     restart: always
     ports:
       - "4200:80"  # Porta externa 4200, interna 80 (Nginx)
     environment:
-      - APP_GATEWAY_BASE_URL=http://gw-gerenciador-cartoes:8085
+      - APP_GATEWAY_BASE_URL=http://gateway:8085
     depends_on:
-      gw-gerenciador-cartoes:
+      gateway:
         condition: service_started
 
 volumes:

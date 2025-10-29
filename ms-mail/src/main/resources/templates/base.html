@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${titulo}">Notificação</title>
+    <style>
+        /* ====== Paleta Bradesco ====== */
+        :root {
+          --bradesco-red: #CC092F;
+          --bradesco-blue: #0033A0;
+          --text-dark: #333333;
+          --bg-light: #F5F5F5;
+          --white: #FFFFFF;
+        }
+
+        /* ====== Layout ====== */
+        body {
+          font-family: 'Segoe UI', Arial, sans-serif;
+          background-color: var(--bg-light);
+          color: var(--text-dark);
+          margin: 0;
+          padding: 20px;
+        }
+
+        .container {
+          background-color: var(--white);
+          border-radius: 12px;
+          padding: 30px 40px;
+          max-width: 640px;
+          margin: 30px auto;
+          box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+          border-top: 6px solid var(--bradesco-red);
+        }
+
+        header {
+          text-align: center;
+          margin-bottom: 25px;
+        }
+
+        header h1 {
+          color: var(--bradesco-red);
+          margin: 0;
+          font-size: 24px;
+          letter-spacing: 0.5px;
+        }
+
+        header .subtitle {
+          color: var(--bradesco-blue);
+          font-size: 14px;
+          margin-top: 4px;
+          letter-spacing: 0.3px;
+        }
+
+        h2 {
+          color: var(--bradesco-blue);
+          margin-top: 0;
+        }
+
+        p {
+          font-size: 15px;
+          line-height: 1.5;
+        }
+
+        strong {
+          color: var(--bradesco-red);
+        }
+
+        footer {
+          margin-top: 30px;
+          border-top: 1px solid #ddd;
+          padding-top: 15px;
+          text-align: center;
+          font-size: 12px;
+          color: #777;
+        }
+
+        a {
+          color: var(--bradesco-blue);
+          text-decoration: none;
+          font-weight: bold;
+        }
+
+        a:hover {
+          text-decoration: underline;
+        }
+
+        /* Botão padrão */
+        .button {
+          display: inline-block;
+          background-color: var(--bradesco-red);
+          color: var(--white);
+          padding: 10px 18px;
+          border-radius: 6px;
+          text-decoration: none;
+          margin-top: 10px;
+        }
+
+        .button:hover {
+          background-color: #b20729;
+        }
+
+    </style>
+</head>
+
+<body>
+<div class="container">
+    <header>
+        <h1>Banco Digital</h1>
+        <div class="subtitle">Notificação Automática</div>
+    </header>
+
+    <!-- Conteúdo dinâmico -->
+    <main th:replace="${conteudo} :: content"></main>
+
+    <footer>
+        <p>© 2025 Banco Digital S.A. Todos os direitos reservados.</p>
+        <p>Esta é uma mensagem automática, por favor, não responda este e-mail.</p>
+    </footer>
+</div>
+</body>
+</html>
