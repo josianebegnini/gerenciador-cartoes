@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { AuthService } from '../../service/auth.service';
 
 @Component({
   selector: 'app-cadastro-user',
@@ -13,9 +14,13 @@ import { Router } from '@angular/router';
 export class CadastroUserComponent {
   cadastroForm: FormGroup;
 
-  constructor(private fb: FormBuilder, private router: Router) {
+  constructor(
+    private fb: FormBuilder,
+    private router: Router,
+    private authService: AuthService
+  ) {
     this.cadastroForm = this.fb.group({
-      nome: ['', [Validators.required, Validators.minLength(3)]],
+      nomeCompleto: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
       senha: ['', [Validators.required, Validators.minLength(6)]],
       confirmarSenha: ['', Validators.required],
@@ -23,20 +28,33 @@ export class CadastroUserComponent {
   }
 
   senhasDiferentes(): boolean {
-    const { senha, confirmarSenha } = this.cadastroForm.value;
-    return senha && confirmarSenha && senha !== confirmarSenha;
+    const senha = this.cadastroForm.get('senha')?.value;
+    const confirmar = this.cadastroForm.get('confirmarSenha')?.value;
+    return senha && confirmar && senha !== confirmar;
   }
 
-  onSubmit() {
-    if (this.cadastroForm.valid && !this.senhasDiferentes()) {
-      console.log('Usuário cadastrado com sucesso!', this.cadastroForm.value);
-      this.router.navigate(['/login']);
-    } else {
+  onSubmit(): void {
+    if (this.cadastroForm.invalid || this.senhasDiferentes()) {
       this.cadastroForm.markAllAsTouched();
+      return;
     }
+
+    const dados = this.cadastroForm.value;
+    this.authService.register({
+      username: dados.email,
+      password: dados.senha,
+    }).subscribe({
+      next: (res) => {
+        console.log('Cadastro realizado com sucesso:', res);
+        this.router.navigate(['/login']);
+      },
+      error: (err) => {
+        console.error('Erro no cadastro:', err);
+      }
+    });
   }
 
-  voltarLogin() {
+  voltarLogin(): void {
     this.router.navigate(['/login']);
   }
 }
