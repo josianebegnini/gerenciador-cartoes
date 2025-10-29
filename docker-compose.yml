@@ -26,6 +26,7 @@ services:
       - "5672:5672"       # porta de comunicação do broker
       - "15672:15672"     # painel web do RabbitMQ
     environment:
+      SPRING_RABBITMQ_HOST: rabbitmq
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
 
@@ -41,9 +42,15 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/cartoes
       SPRING_DATASOURCE_USERNAME: user
       SPRING_DATASOURCE_PASSWORD: pass
-    depends_on:
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: guest
+      SPRING_RABBITMQ_PASSWORD: guest
+    depends_on:  
       postgres:
         condition: service_healthy
+      rabbitmq:
+        condition: service_started
 
   # 👩‍⚕️ Microserviço de Clientes
   ms-cliente:
@@ -57,6 +64,10 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/cartoes
       SPRING_DATASOURCE_USERNAME: user
       SPRING_DATASOURCE_PASSWORD: pass
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: guest
+      SPRING_RABBITMQ_PASSWORD: guest
     depends_on:
       postgres:
         condition: service_healthy
@@ -105,18 +116,18 @@ services:
     ports:
       - "8086:8086"
     environment:
-      - SPRING_RABBITMQ_HOST=rabbitmq
-      - SPRING_RABBITMQ_PORT=5672
-      - SPRING_RABBITMQ_USERNAME=guest
-      - SPRING_RABBITMQ_PASSWORD=guest
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: guest
+      SPRING_RABBITMQ_PASSWORD: guest
     depends_on:
       - rabbitmq
 
   # 💻 Front-end (Spring Boot servindo Angular)
-  gerenciador-cartoes-front:
+  frontend:
     build:
-      context: ./gerenciador-cartoes-front
-    container_name: gerenciador-cartoes-front
+      context: ./frontend
+    container_name: frontend
     restart: always
     ports:
       - "4200:80"  # Porta externa 4200, interna 80 (Nginx)

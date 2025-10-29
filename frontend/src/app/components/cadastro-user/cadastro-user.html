@@ -1,0 +1,89 @@
+<div class="container">
+  <div class="card">
+    <div class="header">
+      <h2>Criar conta</h2>
+      <p>Preencha os dados abaixo para se cadastrar</p>
+    </div>
+
+    <form [formGroup]="cadastroForm" (ngSubmit)="onSubmit()" class="form">
+      <!-- Nome completo -->
+      <label for="nomeCompleto">Nome completo</label>
+      <input
+        id="nomeCompleto"
+        type="text"
+        formControlName="nomeCompleto"
+        placeholder="Digite seu nome"
+      />
+      <div
+        class="error"
+        *ngIf="
+          cadastroForm.get('nomeCompleto')?.invalid &&
+          cadastroForm.get('nomeCompleto')?.touched
+        "
+      >
+        O nome é obrigatório.
+      </div>
+
+      <!-- E-mail -->
+      <label for="email">E-mail</label>
+      <input
+        id="email"
+        type="email"
+        formControlName="email"
+        placeholder="Digite seu e-mail"
+      />
+      <div
+        class="error"
+        *ngIf="
+          cadastroForm.get('email')?.invalid &&
+          cadastroForm.get('email')?.touched
+        "
+      >
+        E-mail inválido.
+      </div>
+
+      <!-- Senha -->
+      <label for="senha">Senha</label>
+      <input
+        id="senha"
+        type="password"
+        formControlName="senha"
+        placeholder="Digite sua senha"
+      />
+      <div
+        class="error"
+        *ngIf="
+          cadastroForm.get('senha')?.invalid &&
+          cadastroForm.get('senha')?.touched
+        "
+      >
+        A senha deve ter no mínimo 6 caracteres.
+      </div>
+
+      <!-- Confirmar senha -->
+      <label for="confirmarSenha">Confirmar senha</label>
+      <input
+        id="confirmarSenha"
+        type="password"
+        formControlName="confirmarSenha"
+        placeholder="Confirme sua senha"
+      />
+      <div class="error" *ngIf="senhasDiferentes()">
+        As senhas não coincidem.
+      </div>
+
+      <!-- Botão -->
+      <button
+        type="submit"
+        class="btn-acessar"
+        [disabled]="cadastroForm.invalid || senhasDiferentes()"
+      >
+        Cadastrar
+      </button>
+    </form>
+
+    <div class="links">
+      <a (click)="voltarLogin()">Voltar ao login</a>
+    </div>
+  </div>
+</div>
