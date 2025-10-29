@@ -27,12 +27,18 @@ export class CadastroUserComponent {
     });
   }
 
+  /**
+   * Verifica se as senhas são diferentes
+   */
   senhasDiferentes(): boolean {
     const senha = this.cadastroForm.get('senha')?.value;
     const confirmar = this.cadastroForm.get('confirmarSenha')?.value;
     return senha && confirmar && senha !== confirmar;
   }
 
+  /**
+   * Envia os dados para o backend
+   */
   onSubmit(): void {
     if (this.cadastroForm.invalid || this.senhasDiferentes()) {
       this.cadastroForm.markAllAsTouched();
@@ -40,20 +46,27 @@ export class CadastroUserComponent {
     }
 
     const dados = this.cadastroForm.value;
+
+    // Requisição de registro usando AuthService
     this.authService.register({
       username: dados.email,
-      password: dados.senha,
+      password: dados.senha
     }).subscribe({
       next: (res) => {
-        console.log('Cadastro realizado com sucesso:', res);
+        console.log('✅ Cadastro realizado com sucesso:', res);
+        alert('Conta criada com sucesso! Faça login para continuar.');
         this.router.navigate(['/login']);
       },
       error: (err) => {
-        console.error('Erro no cadastro:', err);
+        console.error('❌ Erro no cadastro:', err);
+        alert('Erro ao cadastrar. Tente novamente mais tarde.');
       }
     });
   }
 
+  /**
+   * Retorna para a tela de login
+   */
   voltarLogin(): void {
     this.router.navigate(['/login']);
   }
