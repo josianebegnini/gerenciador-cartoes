@@ -7,7 +7,7 @@ import { CartaoService } from "../../service/cartao";
 import { ExportacaoService } from "../../service/exportacao";
 import { Cliente } from "../../models/cliente";
 import { Cartao } from "../../models/cartao";
-import { Subject, combineLatest, takeUntil } from "rxjs";
+import { Subject, combineLatest, finalize, takeUntil } from "rxjs";
 import { MenuLateral } from "../menu-lateral/menu-lateral";
 
 interface ClienteComCartao extends Cliente {
@@ -46,25 +46,37 @@ export class RelatorioComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  carregarDados(): void {
-    combineLatest([
-      this.clienteService.getClientes(),
-      this.cartaoService.getCartoes(),
-    ])
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: ([clientes, cartoes]) => {
-          this.cartoes = cartoes;
-          this.clientes = clientes.map((cliente: { id: number }) => ({
-            ...cliente,
-            cartao: cartoes.find((c) => c.clienteId === cliente.id),
-          }));
-        },
-        error: (error) => {
-          console.error("[v0] Erro ao carregar dados:", error);
-        },
-      });
-  }
+ carregarDados(): void {
+
+   this.clienteService.getClientes()
+     .subscribe({
+       next: (response) => {
+         const clientes = response.content || response;
+         this.clientes = clientes.map((cliente: any) => ({
+           ...cliente,
+           cartao: null,
+           selecionado: false
+         }));
+
+         // Para cada cliente, buscar os cartões
+         this.clientes.forEach(cliente => {
+           this.cartaoService.getCartaoByClienteId(cliente.id!).subscribe({
+             next: (cartoes) => {
+               const cartaoEncontrado = Array.isArray(cartoes) ? cartoes[0] : cartoes;
+               cliente.cartao = cartaoEncontrado;
+             },
+             error: (err) => {
+               console.error(`[v0] Erro ao buscar cartão do cliente ${cliente.id}:`, err);
+             }
+           });
+         });
+       },
+       error: (error) => {
+         console.error("[v0] Erro ao carregar dados:", error);
+         this.mostrarErro("Erro ao carregar dados. Tente novamente.");
+       }
+     });
+ }
 
   get clientesFiltrados(): ClienteComCartao[] {
     return this.clienteService.filtrarClientes(
@@ -111,5 +123,9 @@ export class RelatorioComponent implements OnInit, OnDestroy {
 
   onNavegarLogout(): void {
     this.router.navigate(["/login"]);
+  }
+
+  private mostrarErro(mensagem: string): void {
+    alert(mensagem)
   }
 }

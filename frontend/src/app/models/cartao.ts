@@ -4,7 +4,7 @@ export interface Cartao {
   numero: string;
   cvv: string;
   dataVencimento: string;
-  status: 'desativado' | 'ativado' | 'bloqueado' | 'cancelado' | '';
+  status:  'ativado' | 'bloqueado' | '';
   categoriaCartao: string;
   tipoCartao: string;
   motivoSegundaVia?: string;
