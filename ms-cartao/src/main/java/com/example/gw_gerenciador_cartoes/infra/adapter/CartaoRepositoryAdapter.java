@@ -47,7 +47,7 @@ public class CartaoRepositoryAdapter implements CartaoRepositoryPort {
     }
 
     @Override
-    public Optional<Cartao> buscarPorNumeroECvv(String numero, String cvv) {
+    public Optional<Cartao> buscarCartaoPorNumeroECvv(String numero, String cvv) {
         return jpaRepository.findByNumeroAndCvv(numero, cvv)
                 .map(mapper::toDomain);
     }
