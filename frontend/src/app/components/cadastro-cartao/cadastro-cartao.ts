@@ -30,7 +30,7 @@ export class CadastroCartaoComponent implements OnDestroy {
     cvv: "",
     dataVencimento: "",
     tipoCartao: "debito",
-    status: "desativado",
+    status: "",
     categoriaCartao: "fisico",
   };
 
@@ -145,7 +145,7 @@ export class CadastroCartaoComponent implements OnDestroy {
     return true;
   }
 
-  criarCartao(): void {
+  /*criarCartao(): void {
     this.mensagemErro = "";
     this.mensagemSucesso = "";
 
@@ -173,7 +173,7 @@ export class CadastroCartaoComponent implements OnDestroy {
           this.carregando = false;
         },
       });
-  }
+  }*/
 
   cancelar(): void {
     this.cpfBusca = "";
@@ -185,7 +185,7 @@ export class CadastroCartaoComponent implements OnDestroy {
       cvv: "",
       dataVencimento: "",
       tipoCartao: "debito",
-      status: "desativado",
+      status: "",
       categoriaCartao: "fisico",
     };
     this.mensagemErro = "";

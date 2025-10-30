@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpParams } from "@angular/common/http";
 import { Observable } from "rxjs";
 import { Cartao } from "../models/cartao";
 import {
@@ -20,15 +20,16 @@ export class CartaoService {
 
   // ========== OPERAÇÕES HTTP ==========
 
-  getCartoes(): Observable<Cartao[]> {
-    return this.http.get<Cartao[]>(this.apiUrl);
-  }
+ getCartoesByClienteId(clienteId: number, page: number = 0, size: number = 10): Observable<any> {
+  const params = new HttpParams()
+    .set('page', page.toString())
+    .set('size', size.toString())
+    .set('sort', 'id,DESC');
 
-  getCartaoByClienteId(clienteId: number): Observable<Cartao> {
-    return this.http.get<Cartao>(`${this.apiUrl}/cliente/${clienteId}`);
-  }
+  return this.http.get<any>(`${this.apiUrl}/cliente/${clienteId}`, { params });
+}
 
-  createCartao(cartao: Cartao): Observable<Cartao> {
+  /*createCartao(cartao: Cartao): Observable<Cartao> {
     return this.http.post<Cartao>(this.apiUrl, cartao);
   }
 
@@ -38,22 +39,16 @@ export class CartaoService {
 
   deleteCartao(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
-  }
-
-  alternarStatus(clienteId: number): Observable<Cartao> {
-    return this.http.patch<Cartao>(`${this.apiUrl}/alternar-status/${clienteId}`, {});
-  }
-
-  updateStatusEmLote(clienteIds: number[], novoStatus: string): Observable<any> {
-    return this.http.patch<any>(`${this.apiUrl}/status-lote`, {
-      clienteIds,
-      status: novoStatus,
-    });
-  }
+  }*/
 
   ativarCartao(clienteId: number, numeroCartao: string): Observable<CartaoResponseDTO> {
     const request: CartaoIdentificacaoRequestDTO = { clienteId, numeroCartao };
     return this.http.put<CartaoResponseDTO>(`${this.apiUrl}/ativar`, request);
+  }
+
+  bloquearCartao(clienteId: number, numeroCartao: string): Observable<CartaoResponseDTO> {
+    const request: CartaoIdentificacaoRequestDTO = { clienteId, numeroCartao };
+    return this.http.put<CartaoResponseDTO>(`${this.apiUrl}/bloquear`, request);
   }
 
   solicitarSegundaVia(
@@ -96,9 +91,7 @@ export class CartaoService {
   getStatusTexto(status: string): string {
     const statusMap: Record<string, string> = {
       ativado: "Ativado",
-      bloqueado: "Bloqueado",
-      cancelado: "Cancelado",
-      desativado: "Desativado",
+      bloqueado: "Bloqueado"
     };
     return statusMap[status] || "Sem Cartão";
   }
@@ -134,7 +127,7 @@ export class CartaoService {
   }
 
   podeAlterarStatus(status: string): boolean {
-    return status !== "cancelado";
+    return status !== " ";
   }
 
   // ========== VALIDAÇÃO ==========

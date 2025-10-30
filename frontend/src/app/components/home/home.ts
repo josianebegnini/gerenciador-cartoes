@@ -5,19 +5,19 @@ import { Cliente } from "../../models/cliente"
 import { Cartao } from "../../models/cartao"
 import { ClienteService } from "../../service/cliente"
 import { CartaoService } from "../../service/cartao"
-import { Subject, takeUntil, combineLatest, finalize } from "rxjs"
+import { Subject, takeUntil, combineLatest, finalize, of, forkJoin, Observable } from "rxjs"
 import { ClienteDetalhesComponent } from "../cliente-detalhes/cliente-detalhes"
 import { MenuLateral } from "../menu-lateral/menu-lateral"
 import { Router } from "@angular/router"
 import { SegundaViaPopupComponent } from "../cartao-segunda-via/cartao-segunda-via"
-import type { SegundaViaCartaoRequestDTO } from "../../models/cartao-dtos"
+import type { CartaoResponseDTO, SegundaViaCartaoRequestDTO } from "../../models/cartao-dtos"
 
 interface ClienteComCartao extends Cliente {
   cartao?: Cartao
   selecionado: boolean
 }
 
-type StatusCartao = "desativado" | "ativado" | "bloqueado" | "cancelado"
+type StatusCartao =  "ativado" | "bloqueado" | ""
 
 @Component({
   selector: "app-home",
@@ -63,33 +63,41 @@ export class Home implements OnInit, OnDestroy {
   // ========== CARREGAMENTO DE DADOS ==========
 
   carregarDados(): void {
-    this.isLoading = true
+  this.isLoading = true;
 
-    combineLatest([this.clienteService.getClientes(), this.cartaoService.getCartoes()])
-      .pipe(
-        takeUntil(this.destroy$),
-        finalize(() => (this.isLoading = false)),
-      )
-      .subscribe({
-        next: ([response, cartoes]) => {
-          this.cartoes = cartoes
-          const clientes = response.content || response
+  this.clienteService.getClientes()
+    .pipe(
+      takeUntil(this.destroy$),
+      finalize(() => (this.isLoading = false))
+    )
+    .subscribe({
+      next: (response) => {
+        const clientes = response.content || response;
+        this.clientes = clientes.map((cliente: any) => ({
+          ...cliente,
+          cartao: null,
+          selecionado: false
+        }));
 
-          this.clientes = clientes.map((cliente: Cliente) => {
-            const cartaoEncontrado = cartoes.find((c) => c.clienteId === cliente.id)
-            return {
-              ...cliente,
-              cartao: cartaoEncontrado,
-              selecionado: false,
+        // Para cada cliente, buscar os cartões
+        this.clientes.forEach(cliente => {
+          this.cartaoService.getCartaoByClienteId(cliente.id!).subscribe({
+            next: (cartoes) => {
+              const cartaoEncontrado = Array.isArray(cartoes) ? cartoes[0] : cartoes;
+              cliente.cartao = cartaoEncontrado;
+            },
+            error: (err) => {
+              console.error(`[v0] Erro ao buscar cartão do cliente ${cliente.id}:`, err);
             }
-          })
-        },
-        error: (error) => {
-          console.error("[v0] Erro ao carregar dados:", error)
-          this.mostrarErro("Erro ao carregar dados. Tente novamente.")
-        },
-      })
-  }
+          });
+        });
+      },
+      error: (error) => {
+        console.error("[v0] Erro ao carregar dados:", error);
+        this.mostrarErro("Erro ao carregar dados. Tente novamente.");
+      }
+    });
+}
 
   // ========== FILTROS ==========
 
@@ -110,78 +118,109 @@ export class Home implements OnInit, OnDestroy {
   // ========== OPERAÇÕES DE STATUS ==========
 
   mudarStatus(novoStatus: StatusCartao): void {
-    const clientesSelecionados = this.clientes.filter((cliente) => cliente.selecionado === true)
-    const idsComCartao = clientesSelecionados
-      .filter((cliente) => cliente.cartao && cliente.id)
-      .map((cliente) => cliente.id!)
+  const clientesSelecionados = this.clientes.filter(cliente => cliente.selecionado === true);
+  const clientesComCartao = clientesSelecionados.filter(cliente => cliente.cartao && cliente.id);
 
-    if (idsComCartao.length === 0) {
-      this.mostrarErro("Nenhum cliente com cartão selecionado")
-      return
-    }
-
-    const statusTexto = this.cartaoService.getStatusTexto(novoStatus)
-
-    if (!confirm(`Deseja alterar o status de ${idsComCartao.length} cartão(ões) para ${statusTexto}?`)) {
-      return
-    }
-
-    this.isProcessing = true
-
-    this.cartaoService
-      .updateStatusEmLote(idsComCartao, novoStatus)
-      .pipe(
-        takeUntil(this.destroy$),
-        finalize(() => (this.isProcessing = false)),
-      )
-      .subscribe({
-        next: () => {
-          this.clientes.forEach((cliente) => {
-            if (cliente.selecionado && cliente.cartao) {
-              cliente.cartao.status = novoStatus
-            }
-            cliente.selecionado = false
-          })
-          this.mostrarSucesso("Status alterado com sucesso!")
-        },
-        error: (error) => {
-          console.error("[v0] Erro ao alterar status:", error)
-          this.mostrarErro("Erro ao alterar status. Tente novamente.")
-        },
-      })
+  if (clientesComCartao.length === 0) {
+    this.mostrarErro("Nenhum cliente com cartão selecionado");
+    return;
   }
+
+  const statusTexto = this.cartaoService.getStatusTexto(novoStatus);
+
+  if (!confirm(`Deseja alterar o status de ${clientesComCartao.length} cartão(ões) para ${statusTexto}?`)) {
+    return;
+  }
+
+  this.isProcessing = true;
+
+  const alteracoes = clientesComCartao.map(cliente => {
+    const { id, cartao } = cliente;
+    if (!id || !cartao?.numero) return of(null); // segurança
+    if (novoStatus === 'ativado') {
+      return this.cartaoService.ativarCartao(id, cartao.numero);
+    } else if (novoStatus === 'bloqueado') {
+      return this.cartaoService.bloquearCartao(id, cartao.numero);
+    } else {
+      return of(null);
+    }
+  });
+
+  forkJoin(alteracoes)
+    .pipe(
+      takeUntil(this.destroy$),
+      finalize(() => (this.isProcessing = false))
+    )
+    .subscribe({
+      next: () => {
+        this.clientes.forEach(cliente => {
+          if (cliente.selecionado && cliente.cartao) {
+            cliente.cartao.status = novoStatus;
+          }
+          cliente.selecionado = false;
+        });
+        this.mostrarSucesso("Status alterado com sucesso!");
+      },
+      error: (error) => {
+        console.error("[v1] Erro ao alterar status:", error);
+        this.mostrarErro("Erro ao alterar status. Tente novamente.");
+      }
+    });
+}
+
 
   alternarStatus(cliente: ClienteComCartao): void {
-    if (!cliente.id || !cliente.cartao) {
-      this.mostrarErro("Cliente não possui cartão")
-      return
-    }
-
-    if (!this.cartaoService.podeAlterarStatus(cliente.cartao.status)) {
-      this.mostrarErro("Cartão cancelado não pode ter status alterado")
-      return
-    }
-
-    this.isProcessing = true
-
-    this.cartaoService
-      .alternarStatus(cliente.id)
-      .pipe(
-        takeUntil(this.destroy$),
-        finalize(() => (this.isProcessing = false)),
-      )
-      .subscribe({
-        next: (cartaoAtualizado) => {
-          if (cliente.cartao) {
-            cliente.cartao.status = cartaoAtualizado.status
-          }
-        },
-        error: (error) => {
-          console.error("[v0] Erro ao alterar status:", error)
-          this.mostrarErro("Erro ao alterar status. Tente novamente.")
-        },
-      })
+  if (!cliente.id || !cliente.cartao) {
+    this.mostrarErro("Cliente não possui cartão");
+    return;
   }
+
+  if (!this.cartaoService.podeAlterarStatus(cliente.cartao.status)) {
+    this.mostrarErro("Cartão cancelado não pode ter status alterado");
+    return;
+  }
+
+  this.isProcessing = true;
+
+  const { id, cartao } = cliente;
+  const numeroCartao = cartao.numero;
+
+  let operacao$: Observable<CartaoResponseDTO>;
+
+  if (cartao.status === 'ativado') {
+    operacao$ = this.cartaoService.bloquearCartao(id, numeroCartao);
+  } else if (cartao.status === 'bloqueado') {
+    operacao$ = this.cartaoService.ativarCartao(id, numeroCartao);
+  } else {
+    this.mostrarErro("Status atual não permite alternância");
+    this.isProcessing = false;
+    return;
+  }
+
+  operacao$
+    .pipe(
+      takeUntil(this.destroy$),
+      finalize(() => (this.isProcessing = false))
+    )
+    .subscribe({
+      next: (cartaoAtualizado) => {
+
+      const status = cartaoAtualizado.status as "ativado" | "bloqueado";
+
+        if (status === "ativado" || status === "bloqueado") {
+          cliente.cartao!.status = status;
+          this.mostrarSucesso("Status alterado com sucesso!");
+        } else {
+          console.warn("Status inválido recebido:", status);
+          this.mostrarErro("Status recebido é inválido.");
+        }
+      },
+      error: (error) => {
+        console.error("[v1] Erro ao alterar status:", error);
+        this.mostrarErro("Erro ao alterar status. Tente novamente.");
+      }
+    });
+}
 
   // ========== MODAL DETALHES ==========
 
@@ -323,5 +362,10 @@ export class Home implements OnInit, OnDestroy {
 
   trackByClienteId(index: number, cliente: ClienteComCartao): number | undefined {
     return cliente.id
+  }
+
+   formatarCPF(cpf: string): string {
+    const cpfLimpo = this.clienteService.limparCPF(cpf);
+    return cpfLimpo.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
   }
 }

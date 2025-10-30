@@ -1,11 +1,11 @@
 package com.example.gw_gerenciador_cartoes.application.dto.cartao;
 
-import com.example.gw_gerenciador_cartoes.domain.enums.TipoCartao;
-import com.example.gw_gerenciador_cartoes.domain.enums.StatusCartao;
-import com.example.gw_gerenciador_cartoes.domain.enums.TipoEmissao;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+
+import com.example.gw_gerenciador_cartoes.domain.enums.StatusCartao;
+import com.example.gw_gerenciador_cartoes.domain.enums.TipoCartao;
+import com.example.gw_gerenciador_cartoes.domain.enums.TipoEmissao;
 
 public class CartaoResponseDTO {
     private Long id;

@@ -52,11 +52,6 @@ export class ClienteService {
 
   // ========== FORMATAÇÃO ==========
 
-  formatarCPF(cpf: string): string {
-    const cpfLimpo = this.limparCPF(cpf);
-    return cpfLimpo.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
-  }
-
   limparCPF(cpf: string): string {
     return cpf.replace(/\D/g, "");
   }
@@ -231,13 +226,23 @@ export class ClienteService {
   // ========== PREPARAÇÃO DE DADOS ==========
 
   private prepararClienteParaEnvio(cliente: Cliente): any {
-    return {
-      ...cliente,
-      cpf: this.limparCPF(cliente.cpf),
-      endereco: {
-        ...cliente.endereco,
-        cep: this.limparCEP(cliente.endereco.cep),
-      },
-    };
-  }
+  return {
+    nome: cliente.nome,
+    email: cliente.email,
+    dataNasc: new Date(cliente.dataNasc).toISOString().split('T')[0],
+    cpf: this.limparCPF(cliente.cpf),
+    enderecoDTO: {
+      cidade: cliente.endereco.cidade,
+      bairro: cliente.endereco.bairro,
+      rua: cliente.endereco.rua,
+      cep: this.formatarCEP(cliente.endereco.cep),
+      complemento: cliente.endereco.complemento,
+      numero: cliente.endereco.numero
+    },
+    contaDTO: {
+      agencia: cliente.conta.agencia,
+      tipo: cliente.conta.tipo.toLowerCase()
+    }
+  };
+}
 }

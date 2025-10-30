@@ -37,7 +37,6 @@ export class CadastroCliente implements OnDestroy {
     conta: {
       agencia: "",
       tipo: "",
-      saldo: 0,
     },
   };
 
