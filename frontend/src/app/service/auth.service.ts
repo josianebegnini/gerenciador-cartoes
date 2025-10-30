@@ -1,8 +1,8 @@
 import { Injectable } from "@angular/core";
-import { HttpClient } from "@angular/common/http";
-import { BehaviorSubject, Observable, tap } from "rxjs";
+import { HttpClient, HttpHeaders } from "@angular/common/http";
+import { BehaviorSubject, map, Observable, tap } from "rxjs";
 import { environment } from "../enviroments/enviroment";
-import type { LoginRequest, LoginResponse, User, RegisterRequest } from "../models/auth.models";
+import type { LoginRequest, LoginResponse, User, RegisterRequest, CadastroRequest } from "../models/auth.models";
 
 @Injectable({
   providedIn: "root",
@@ -22,7 +22,7 @@ export class AuthService {
   }
 
   // ---------- REGISTER ----------
-  register(data: RegisterRequest): Observable<LoginResponse> {
+  register(data: CadastroRequest): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(`${this.apiUrl}/register`, data).pipe(
       tap((res) => this.setSession(res))
     );
