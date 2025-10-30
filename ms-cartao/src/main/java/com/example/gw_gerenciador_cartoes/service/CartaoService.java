@@ -3,8 +3,6 @@ package com.example.gw_gerenciador_cartoes.service;
 import com.example.gw_gerenciador_cartoes.application.dto.cartao.*;
 import com.example.gw_gerenciador_cartoes.application.mapper.CartaoMapper;
 import com.example.gw_gerenciador_cartoes.domain.enums.StatusCartao;
-import com.example.gw_gerenciador_cartoes.domain.enums.TipoCartao;
-import com.example.gw_gerenciador_cartoes.domain.enums.TipoEmissaoCartao;
 import com.example.gw_gerenciador_cartoes.domain.model.Cartao;
 import com.example.gw_gerenciador_cartoes.domain.model.SolicitacaoCartao;
 import com.example.gw_gerenciador_cartoes.domain.ports.CartaoRepositoryPort;
@@ -40,8 +38,9 @@ public class CartaoService implements CartaoServicePort {
     }
 
     @Override
-    public void processarSolicitacao(CriarCartaoMessageDTO dto) {
-        SolicitacaoCartao solicitacao = solicitacaoCartaoService.salvar(dto.getClienteId(),
+    public void processarSolicitacao(ClienteContaCriadoDTO dto) {
+        SolicitacaoCartao solicitacao = solicitacaoCartaoService.salvar(
+                dto.getClienteId(),
                 dto.getContaId(),
                 dto.getTipoCartao(),
                 dto.getTipoEmissao(),
@@ -51,7 +50,7 @@ public class CartaoService implements CartaoServicePort {
         solicitacaoCartaoService.finalizarComoProcessada(solicitacao.getId(), cartaoId);
     }
 
-    private Long criarCartao(CriarCartaoMessageDTO dto, Long solicitacaoId) {
+    private Long criarCartao(ClienteContaCriadoDTO dto, Long solicitacaoId) {
         Cartao cartao = new Cartao();
         cartao.setSolicitacaoId(solicitacaoId);
         cartao.setClienteId(dto.getClienteId());
@@ -62,8 +61,8 @@ public class CartaoService implements CartaoServicePort {
         cartao.setCvv(cartaoGenerator.gerarCvv());
         cartao.setDataVencimento(calcularDataVencimentoNovoCartao());
         cartao.setDataCriacao(LocalDateTime.now());
-        cartao.setTipoCartao(TipoCartao.valueOf(dto.getTipoCartao().toUpperCase()));
-        cartao.setTipoEmissao(TipoEmissaoCartao.valueOf(dto.getTipoEmissao().toUpperCase()));
+        cartao.setTipoCartao(dto.getTipoCartao());
+        cartao.setTipoEmissao(dto.getTipoEmissao());
 
         cartao.atualizarStatus(StatusCartao.DESATIVADO, MensagensErroConstantes.MOTIVO_CARTAO_DESATIVADO_APOS_GERACAO);
 

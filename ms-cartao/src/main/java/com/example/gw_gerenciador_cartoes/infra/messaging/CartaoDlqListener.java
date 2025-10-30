@@ -1,6 +1,6 @@
 package com.example.gw_gerenciador_cartoes.infra.messaging;
 
-import com.example.gw_gerenciador_cartoes.application.dto.cartao.CriarCartaoMessageDTO;
+import com.example.gw_gerenciador_cartoes.application.dto.cartao.ClienteContaCriadoDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +20,7 @@ public class CartaoDlqListener {
     @RabbitListener(queues = "${broker.queue.cartao-dlq}")
     public void handleMensagemRejeitada(String payload) {
         try {
-            CriarCartaoMessageDTO dto = objectMapper.readValue(payload, CriarCartaoMessageDTO.class);
+            ClienteContaCriadoDTO dto = objectMapper.readValue(payload, ClienteContaCriadoDTO.class);
             log.warn("Mensagem rejeitada recebida na DLQ: {}", dto);
         } catch (Exception e) {
             log.error("Erro ao processar mensagem da DLQ: {}", payload, e);
