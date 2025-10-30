@@ -49,8 +49,9 @@ export class CadastroUserComponent {
 
     // Requisição de registro usando AuthService
     this.authService.register({
-      username: dados.email,
-      password: dados.senha
+      username: dados.nomeCompleto,
+      password: dados.senha,
+      email: dados.email
     }).subscribe({
       next: (res) => {
         console.log('✅ Cadastro realizado com sucesso:', res);
