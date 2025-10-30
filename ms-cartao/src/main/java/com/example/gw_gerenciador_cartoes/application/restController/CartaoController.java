@@ -1,9 +1,6 @@
 package com.example.gw_gerenciador_cartoes.application.restController;
 
-import com.example.gw_gerenciador_cartoes.application.dto.cartao.CartaoRequestDTO;
-import com.example.gw_gerenciador_cartoes.application.dto.cartao.CartaoResponseDTO;
-import com.example.gw_gerenciador_cartoes.application.dto.cartao.SegundaViaCartaoRequestDTO;
-import com.example.gw_gerenciador_cartoes.application.dto.cartao.SegundaViaCartaoResponseDTO;
+import com.example.gw_gerenciador_cartoes.application.dto.cartao.*;
 import com.example.gw_gerenciador_cartoes.domain.ports.CartaoServicePort;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -41,11 +38,11 @@ public class CartaoController {
     }
 
     @GetMapping("/cliente/{idCliente}")
-    public ResponseEntity<Page<CartaoResponseDTO>> buscarPorCliente(
+    public ResponseEntity<Page<CartaoClienteResponseDTO>> buscarPorCliente(
             @PathVariable Long idCliente,
             @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
 
-        Page<CartaoResponseDTO> cartoes = cartaoService.buscarPorCliente(idCliente, pageable);
+        Page<CartaoClienteResponseDTO> cartoes = cartaoService.buscarPorCliente(idCliente, pageable);
         return ResponseEntity.ok(cartoes);
     }
 }

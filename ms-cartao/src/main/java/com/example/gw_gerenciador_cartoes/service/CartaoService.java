@@ -183,8 +183,8 @@ public class CartaoService implements CartaoServicePort {
     }
 
     @Override
-    public Page<CartaoResponseDTO> buscarPorCliente(Long clienteId, Pageable pageable) {
+    public Page<CartaoClienteResponseDTO> buscarPorCliente(Long clienteId, Pageable pageable) {
         Page<Cartao> cartoes = repository.buscarPorIdCliente(clienteId, pageable);
-        return cartoes.map(mapper::toCartaoResponseDTO);
+        return cartoes.map(mapper::toCartaoClienteResponseDTO);
     }
 }
