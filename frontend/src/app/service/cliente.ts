@@ -56,6 +56,11 @@ export class ClienteService {
     return cpf.replace(/\D/g, "");
   }
 
+   formatarCPF(cpf: string): string {
+    const cpfLimpo = this.limparCPF(cpf);
+    return cpfLimpo.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
+  }
+
   formatarCPFAoDigitar(valor: string): string {
     let cpfLimpo = valor.replace(/\D/g, "");
 

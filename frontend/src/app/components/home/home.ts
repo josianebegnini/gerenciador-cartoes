@@ -62,7 +62,7 @@ export class Home implements OnInit, OnDestroy {
 
   // ========== CARREGAMENTO DE DADOS ==========
 
-  carregarDados(): void {
+carregarDados(): void {
   this.isLoading = true;
 
   this.clienteService.getClientes()
@@ -79,26 +79,25 @@ export class Home implements OnInit, OnDestroy {
           selecionado: false
         }));
 
-        // Para cada cliente, buscar os cartões
+        // Buscar cartões paginados para cada cliente
         this.clientes.forEach(cliente => {
-          this.cartaoService.getCartaoByClienteId(cliente.id!).subscribe({
-            next: (cartoes) => {
-              const cartaoEncontrado = Array.isArray(cartoes) ? cartoes[0] : cartoes;
+          this.cartaoService.getCartoesByClienteId(cliente.id!, 0, 1).subscribe({
+            next: (cartoesPage) => {
+              const cartaoEncontrado = cartoesPage.content?.[0] || null;
               cliente.cartao = cartaoEncontrado;
             },
             error: (err) => {
-              console.error(`[v0] Erro ao buscar cartão do cliente ${cliente.id}:`, err);
+              console.error(`[v1] Erro ao buscar cartão do cliente ${cliente.id}:`, err);
             }
           });
         });
       },
       error: (error) => {
-        console.error("[v0] Erro ao carregar dados:", error);
+        console.error("[v1] Erro ao carregar dados:", error);
         this.mostrarErro("Erro ao carregar dados. Tente novamente.");
       }
     });
 }
-
   // ========== FILTROS ==========
 
   get clientesFiltrados(): ClienteComCartao[] {

@@ -29,6 +29,7 @@ export class RelatorioComponent implements OnInit, OnDestroy {
   clientes: ClienteComCartao[] = [];
   cartoes: Cartao[] = [];
   private destroy$ = new Subject<void>();
+  isLoading = false;
 
   constructor(
     private clienteService: ClienteService,
@@ -46,37 +47,42 @@ export class RelatorioComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
- carregarDados(): void {
+carregarDados(): void {
+  this.isLoading = true;
 
-   this.clienteService.getClientes()
-     .subscribe({
-       next: (response) => {
-         const clientes = response.content || response;
-         this.clientes = clientes.map((cliente: any) => ({
-           ...cliente,
-           cartao: null,
-           selecionado: false
-         }));
+  this.clienteService.getClientes()
+    .pipe(
+      takeUntil(this.destroy$),
+      finalize(() => (this.isLoading = false))
+    )
+    .subscribe({
+      next: (response) => {
+        const clientes = response.content || response;
+        this.clientes = clientes.map((cliente: any) => ({
+          ...cliente,
+          cartao: null,
+          selecionado: false
+        }));
 
-         // Para cada cliente, buscar os cartões
-         this.clientes.forEach(cliente => {
-           this.cartaoService.getCartaoByClienteId(cliente.id!).subscribe({
-             next: (cartoes) => {
-               const cartaoEncontrado = Array.isArray(cartoes) ? cartoes[0] : cartoes;
-               cliente.cartao = cartaoEncontrado;
-             },
-             error: (err) => {
-               console.error(`[v0] Erro ao buscar cartão do cliente ${cliente.id}:`, err);
-             }
-           });
-         });
-       },
-       error: (error) => {
-         console.error("[v0] Erro ao carregar dados:", error);
-         this.mostrarErro("Erro ao carregar dados. Tente novamente.");
-       }
-     });
- }
+        // Buscar cartões paginados para cada cliente
+        this.clientes.forEach(cliente => {
+          this.cartaoService.getCartoesByClienteId(cliente.id!, 0, 1).subscribe({
+            next: (cartoesPage) => {
+              const cartaoEncontrado = cartoesPage.content?.[0] || null;
+              cliente.cartao = cartaoEncontrado;
+            },
+            error: (err) => {
+              console.error(`[v1] Erro ao buscar cartão do cliente ${cliente.id}:`, err);
+            }
+          });
+        });
+      },
+      error: (error) => {
+        console.error("[v1] Erro ao carregar dados:", error);
+        this.mostrarErro("Erro ao carregar dados. Tente novamente.");
+      }
+    });
+}
 
   get clientesFiltrados(): ClienteComCartao[] {
     return this.clienteService.filtrarClientes(
