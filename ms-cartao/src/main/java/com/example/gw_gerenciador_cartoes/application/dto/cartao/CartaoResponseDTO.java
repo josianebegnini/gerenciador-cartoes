@@ -21,7 +21,7 @@ public class CartaoResponseDTO {
     private StatusCartao status;
     private String motivoStatus;
     private TipoCartao tipoCartao;
-    private TipoEmissaoCartao tipoEmissaoCartao;
+    private TipoEmissaoCartao tipoEmissao;
     private BigDecimal limite;
 
     public CartaoResponseDTO() {
@@ -41,7 +41,7 @@ public class CartaoResponseDTO {
         this.status = status;
         this.motivoStatus = motivoStatus;
         this.tipoCartao = tipoCartao;
-        this.tipoEmissaoCartao = tipoEmissaoCartao;
+        this.tipoEmissao = tipoEmissaoCartao;
         this.limite = limite;
     }
 
@@ -149,12 +149,12 @@ public class CartaoResponseDTO {
         this.tipoCartao = tipoCartao;
     }
 
-    public TipoEmissaoCartao getTipoEmissaoCartao() {
-        return tipoEmissaoCartao;
+    public TipoEmissaoCartao getTipoEmissao() {
+        return tipoEmissao;
     }
 
-    public void setTipoEmissaoCartao(TipoEmissaoCartao tipoEmissaoCartao) {
-        this.tipoEmissaoCartao = tipoEmissaoCartao;
+    public void setTipoEmissao(TipoEmissaoCartao tipoEmissao) {
+        this.tipoEmissao = tipoEmissao;
     }
 
     public BigDecimal getLimite() {

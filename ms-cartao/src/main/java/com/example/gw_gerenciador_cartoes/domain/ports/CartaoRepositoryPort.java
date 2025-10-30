@@ -12,7 +12,7 @@ public interface CartaoRepositoryPort {
 
     Optional<Cartao> atualizar(Cartao cartao);
 
-    Optional<Cartao> buscarPorNumeroECvv(String numero, String cvv);
+    Optional<Cartao> buscarCartaoPorNumeroECvv(String numero, String cvv);
 
     boolean existePorNumero(String numero);
 

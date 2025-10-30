@@ -158,7 +158,7 @@ public class CartaoService implements CartaoServicePort {
         segundaVia.setTipoCartao(original.getTipoCartao());
         segundaVia.setStatus(StatusCartao.DESATIVADO);
         segundaVia.setTipoEmissao(original.getTipoEmissao());
-        segundaVia.setMotivoStatus(dto.getMotivoSegundaVia());
+        segundaVia.setMotivoStatus(MensagensErroConstantes.MOTIVO_CARTAO_SEGUNDA_VIA_GERADA + dto.getMotivoSegundaVia());
         segundaVia.setLimite(original.getLimite());
         return segundaVia;
     }
@@ -179,7 +179,7 @@ public class CartaoService implements CartaoServicePort {
 
     @Override
     public Cartao buscarCartaoPorNumeroECvv(String numero, String cvv) {
-        return repository.buscarPorNumeroECvv(numero, cvv)
+        return repository.buscarCartaoPorNumeroECvv(numero, cvv)
                 .orElseThrow(() -> new CartaoNotFoundException(MensagensErroConstantes.CARTAO_NAO_ENCONTRADO));
     }
 

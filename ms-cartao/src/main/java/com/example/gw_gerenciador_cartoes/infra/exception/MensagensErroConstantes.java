@@ -15,6 +15,7 @@ public final class MensagensErroConstantes {
     public static final String MOTIVO_CARTAO_ATIVADO = "[MOT002] Cartão ativado.";
     public static final String MOTIVO_CARTAO_BLOQUEADO_SEGURANCA = " [MOT003] Cartão bloqueado por segurança. Motivos possíveis: perda, roubo ou suspeita de fraude.";
     public static final String MOTIVO_CARTAO_CANCELADO_SEGUNDA_VIA = " [MOT004] Cartão cancelado automaticamente após solicitação de segunda via.";
+    public static final String MOTIVO_CARTAO_SEGUNDA_VIA_GERADA = "[MOT005] Segunda via de cartão gerada. Motivo: ";
 
     public static final String ERRO_PERSISTENCIA = "[ERR001] Erro ao persistir os dados no banco.";
     public static final String ERRO_PROCESSAMENTO_MENSAGEM = "[ERR002] Erro inesperado no processamento da mensagem.";
