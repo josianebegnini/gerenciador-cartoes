@@ -2,7 +2,7 @@ package com.example.gw_gerenciador_cartoes.application.dto.cartao;
 
 import com.example.gw_gerenciador_cartoes.domain.enums.TipoCartao;
 import com.example.gw_gerenciador_cartoes.domain.enums.StatusCartao;
-import com.example.gw_gerenciador_cartoes.domain.enums.TipoEmissaoCartao;
+import com.example.gw_gerenciador_cartoes.domain.enums.TipoEmissao;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -21,13 +21,13 @@ public class CartaoResponseDTO {
     private StatusCartao status;
     private String motivoStatus;
     private TipoCartao tipoCartao;
-    private TipoEmissaoCartao tipoEmissao;
+    private TipoEmissao tipoEmissao;
     private BigDecimal limite;
 
     public CartaoResponseDTO() {
     }
 
-    public CartaoResponseDTO(Long id, Long clienteId, Long contaId, Long solicitacaoId, String nome, String email, String numero, String cvv, LocalDateTime dataVencimento, LocalDateTime dataCriacao, StatusCartao status, String motivoStatus, TipoCartao tipoCartao, TipoEmissaoCartao tipoEmissaoCartao, BigDecimal limite) {
+    public CartaoResponseDTO(Long id, Long clienteId, Long contaId, Long solicitacaoId, String nome, String email, String numero, String cvv, LocalDateTime dataVencimento, LocalDateTime dataCriacao, StatusCartao status, String motivoStatus, TipoCartao tipoCartao, TipoEmissao tipoEmissao, BigDecimal limite) {
         this.id = id;
         this.clienteId = clienteId;
         this.contaId = contaId;
@@ -41,7 +41,7 @@ public class CartaoResponseDTO {
         this.status = status;
         this.motivoStatus = motivoStatus;
         this.tipoCartao = tipoCartao;
-        this.tipoEmissao = tipoEmissaoCartao;
+        this.tipoEmissao = tipoEmissao;
         this.limite = limite;
     }
 
@@ -149,11 +149,11 @@ public class CartaoResponseDTO {
         this.tipoCartao = tipoCartao;
     }
 
-    public TipoEmissaoCartao getTipoEmissao() {
+    public TipoEmissao getTipoEmissao() {
         return tipoEmissao;
     }
 
-    public void setTipoEmissao(TipoEmissaoCartao tipoEmissao) {
+    public void setTipoEmissao(TipoEmissao tipoEmissao) {
         this.tipoEmissao = tipoEmissao;
     }
 

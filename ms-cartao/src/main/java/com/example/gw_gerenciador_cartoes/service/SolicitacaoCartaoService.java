@@ -1,6 +1,8 @@
 package com.example.gw_gerenciador_cartoes.service;
 
 import com.example.gw_gerenciador_cartoes.domain.enums.StatusSolicitacao;
+import com.example.gw_gerenciador_cartoes.domain.enums.TipoCartao;
+import com.example.gw_gerenciador_cartoes.domain.enums.TipoEmissao;
 import com.example.gw_gerenciador_cartoes.domain.model.SolicitacaoCartao;
 import com.example.gw_gerenciador_cartoes.domain.ports.SolicitacaoCartaoRepositoryPort;
 import com.example.gw_gerenciador_cartoes.domain.ports.SolicitacaoCartaoServicePort;
@@ -20,7 +22,7 @@ public class SolicitacaoCartaoService implements SolicitacaoCartaoServicePort {
     }
 
     @Override
-    public SolicitacaoCartao salvar(Long clienteId, Long contaId, String tipoCartao, String tipoEmissao, String nome) {
+    public SolicitacaoCartao salvar(Long clienteId, Long contaId, TipoCartao tipoCartao, TipoEmissao tipoEmissao, String nome) {
         SolicitacaoCartao solicitacao = new SolicitacaoCartao();
         solicitacao.setClienteId(clienteId);
         solicitacao.setContaId(contaId);

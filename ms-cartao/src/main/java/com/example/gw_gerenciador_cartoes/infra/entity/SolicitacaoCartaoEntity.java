@@ -1,6 +1,8 @@
 package com.example.gw_gerenciador_cartoes.infra.entity;
 
 import com.example.gw_gerenciador_cartoes.domain.enums.StatusSolicitacao;
+import com.example.gw_gerenciador_cartoes.domain.enums.TipoCartao;
+import com.example.gw_gerenciador_cartoes.domain.enums.TipoEmissao;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -34,10 +36,10 @@ public class SolicitacaoCartaoEntity {
     private StatusSolicitacao status;
 
     @Column(name = "tipo_cartao", nullable = true)
-    private String tipoCartao;
+    private TipoCartao tipoCartao;
 
     @Column(name = "tipo_emissao", nullable = true)
-    private String tipoEmissao;
+    private TipoEmissao tipoEmissao;
 
     @Column(name = "data_solicitacao", nullable = true)
     private LocalDateTime dataSolicitacao;
@@ -105,19 +107,19 @@ public class SolicitacaoCartaoEntity {
         this.status = status;
     }
 
-    public String getTipoCartao() {
+    public TipoCartao getTipoCartao() {
         return tipoCartao;
     }
 
-    public void setTipoCartao(String tipoCartao) {
+    public void setTipoCartao(TipoCartao tipoCartao) {
         this.tipoCartao = tipoCartao;
     }
 
-    public String getTipoEmissao() {
+    public TipoEmissao getTipoEmissao() {
         return tipoEmissao;
     }
 
-    public void setTipoEmissao(String tipoEmissao) {
+    public void setTipoEmissao(TipoEmissao tipoEmissao) {
         this.tipoEmissao = tipoEmissao;
     }
 

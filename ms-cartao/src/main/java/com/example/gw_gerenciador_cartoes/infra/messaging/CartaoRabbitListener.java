@@ -1,6 +1,6 @@
 package com.example.gw_gerenciador_cartoes.infra.messaging;
 
-import com.example.gw_gerenciador_cartoes.application.dto.cartao.CriarCartaoMessageDTO;
+import com.example.gw_gerenciador_cartoes.application.dto.cartao.ClienteContaCriadoDTO;
 import com.example.gw_gerenciador_cartoes.domain.ports.CartaoServicePort;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
@@ -17,7 +17,7 @@ public class CartaoRabbitListener {
     @RabbitListener(queues = "${broker.queue.cartao-criar}",
             containerFactory = "rabbitListenerContainerFactory",
             errorHandler = "rabbitMqExceptionHandler")
-    public void handleMensagem(CriarCartaoMessageDTO dto) {
+    public void handleMensagem(ClienteContaCriadoDTO dto) {
         service.processarSolicitacao(dto);
     }
 }

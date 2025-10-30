@@ -1,6 +1,8 @@
 package com.example.gw_gerenciador_cartoes.domain.model;
 
 import com.example.gw_gerenciador_cartoes.domain.enums.StatusSolicitacao;
+import com.example.gw_gerenciador_cartoes.domain.enums.TipoCartao;
+import com.example.gw_gerenciador_cartoes.domain.enums.TipoEmissao;
 
 import java.time.LocalDateTime;
 
@@ -9,8 +11,8 @@ public class SolicitacaoCartao extends AbstractCartao{
     private String nome;
     private String motivoRejeicao;
     private StatusSolicitacao status;
-    private String tipoCartao;
-    private String tipoEmissao;
+    private TipoCartao tipoCartao;
+    private TipoEmissao tipoEmissao;
     private LocalDateTime dataSolicitacao;
     private LocalDateTime ultimaDataProcessamento;
     private String mensagemSolicitacao;
@@ -50,19 +52,19 @@ public class SolicitacaoCartao extends AbstractCartao{
         this.status = status;
     }
 
-    public String getTipoCartao() {
+    public TipoCartao getTipoCartao() {
         return tipoCartao;
     }
 
-    public void setTipoCartao(String tipoCartao) {
+    public void setTipoCartao(TipoCartao tipoCartao) {
         this.tipoCartao = tipoCartao;
     }
 
-    public String getTipoEmissao() {
+    public TipoEmissao getTipoEmissao() {
         return tipoEmissao;
     }
 
-    public void setTipoEmissao(String tipoEmissao) {
+    public void setTipoEmissao(TipoEmissao tipoEmissao) {
         this.tipoEmissao = tipoEmissao;
     }
 

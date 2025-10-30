@@ -1,12 +1,9 @@
-package com.example.gw_gerenciador_cartoes.infra.dto;
+package com.example.gw_gerenciador_cartoes.application.dto.cartao;
 
-import com.example.gw_gerenciador_cartoes.infra.enums.TipoEmissao;
-import com.example.gw_gerenciador_cartoes.infra.enums.TipoCartao;
-import java.io.Serializable;
+import com.example.gw_gerenciador_cartoes.domain.enums.TipoCartao;
+import com.example.gw_gerenciador_cartoes.domain.enums.TipoEmissao;
 
-public class ClienteContaCriadoDTO implements Serializable {
-    private static final long serialVersionUID = 1L;
-
+public class ClienteContaCriadoDTO {
     private Long clienteId;
     private Long contaId;
     private String nome;
@@ -14,6 +11,9 @@ public class ClienteContaCriadoDTO implements Serializable {
     private String email;
     private TipoCartao tipoCartao;
     private TipoEmissao tipoEmissao;
+
+    public ClienteContaCriadoDTO() {
+    }
 
     public ClienteContaCriadoDTO(Long clienteId, Long contaId, String nome, String cpf, String email, TipoCartao tipoCartao, TipoEmissao tipoEmissao) {
         this.clienteId = clienteId;
@@ -31,6 +31,14 @@ public class ClienteContaCriadoDTO implements Serializable {
 
     public void setClienteId(Long clienteId) {
         this.clienteId = clienteId;
+    }
+
+    public Long getContaId() {
+        return contaId;
+    }
+
+    public void setContaId(Long contaId) {
+        this.contaId = contaId;
     }
 
     public String getNome() {
@@ -55,14 +63,6 @@ public class ClienteContaCriadoDTO implements Serializable {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public Long getContaId() {
-        return contaId;
-    }
-
-    public void setContaId(Long contaId) {
-        this.contaId = contaId;
     }
 
     public TipoCartao getTipoCartao() {

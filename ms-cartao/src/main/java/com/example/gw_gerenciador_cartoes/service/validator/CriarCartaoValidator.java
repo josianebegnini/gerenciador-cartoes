@@ -1,25 +1,22 @@
 package com.example.gw_gerenciador_cartoes.service.validator;
 
-import com.example.gw_gerenciador_cartoes.application.dto.cartao.CriarCartaoMessageDTO;
-import com.example.gw_gerenciador_cartoes.domain.enums.TipoCartao;
-import com.example.gw_gerenciador_cartoes.domain.enums.TipoEmissaoCartao;
+import com.example.gw_gerenciador_cartoes.application.dto.cartao.ClienteContaCriadoDTO;
 import com.example.gw_gerenciador_cartoes.infra.exception.CampoObrigatorioException;
 import com.example.gw_gerenciador_cartoes.infra.exception.MensagemErro;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
 @Component
 public class CriarCartaoValidator {
 
-    public void validar(CriarCartaoMessageDTO dto, Long solicitacaoId) {
+    public void validar(ClienteContaCriadoDTO dto, Long solicitacaoId) {
         validarCamposObrigatorios(dto, solicitacaoId);
     }
 
-    private void validarCamposObrigatorios(CriarCartaoMessageDTO dto, Long solicitacaoId) {
+    private void validarCamposObrigatorios(ClienteContaCriadoDTO dto, Long solicitacaoId) {
         List<MensagemErro> mensagensErros = new ArrayList<>();
 
         if (Objects.isNull(dto.getClienteId())) {
@@ -38,16 +35,12 @@ public class CriarCartaoValidator {
             mensagensErros.add(new MensagemErro("E-mail inválido: " + dto.getEmail()));
         }
 
-        if (isBlank(dto.getTipoCartao())) {
+        if (dto.getTipoCartao() == null) {
             mensagensErros.add(new MensagemErro("Campo tipoCartao é obrigatório."));
-        } else if (!isEnumValido(TipoCartao.class, dto.getTipoCartao())) {
-            mensagensErros.add(new MensagemErro("Valor inválido para tipoCartao: " + dto.getTipoCartao()));
         }
 
-        if (isBlank(dto.getTipoEmissao())) {
+        if (dto.getTipoEmissao() == null) {
             mensagensErros.add(new MensagemErro("Campo tipoEmissao é obrigatório."));
-        } else if (!isEnumValido(TipoEmissaoCartao.class, dto.getTipoEmissao())) {
-            mensagensErros.add(new MensagemErro("Valor inválido para tipoEmissao: " + dto.getTipoEmissao()));
         }
 
         if (!mensagensErros.isEmpty()) {
@@ -63,9 +56,4 @@ public class CriarCartaoValidator {
         return email != null && email.matches("^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,}$");
     }
 
-    private <T extends Enum<T>> boolean isEnumValido(Class<T> enumClass, String value) {
-        if (value == null) return false;
-        return Arrays.stream(enumClass.getEnumConstants())
-                .anyMatch(e -> e.name().equalsIgnoreCase(value));
-    }
 }

@@ -7,7 +7,7 @@ import org.springframework.data.domain.Pageable;
 
 public interface CartaoServicePort {
 
-    void processarSolicitacao(CriarCartaoMessageDTO dto);
+    void processarSolicitacao(ClienteContaCriadoDTO dto);
 
     CartaoResponseDTO ativar(CartaoRequestDTO dto);
 

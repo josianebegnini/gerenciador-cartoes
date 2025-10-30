@@ -2,7 +2,7 @@ package com.example.gw_gerenciador_cartoes.domain.model;
 
 import com.example.gw_gerenciador_cartoes.domain.enums.StatusCartao;
 import com.example.gw_gerenciador_cartoes.domain.enums.TipoCartao;
-import com.example.gw_gerenciador_cartoes.domain.enums.TipoEmissaoCartao;
+import com.example.gw_gerenciador_cartoes.domain.enums.TipoEmissao;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -19,7 +19,7 @@ public class Cartao extends AbstractCartao{
     private StatusCartao status;
     private String motivoStatus;
     private TipoCartao tipoCartao;
-    private TipoEmissaoCartao tipoEmissao;
+    private TipoEmissao tipoEmissao;
     private BigDecimal limite;
 
     public Cartao() {
@@ -118,11 +118,11 @@ public class Cartao extends AbstractCartao{
         this.tipoCartao = tipoCartao;
     }
 
-    public TipoEmissaoCartao getTipoEmissao() {
+    public TipoEmissao getTipoEmissao() {
         return tipoEmissao;
     }
 
-    public void setTipoEmissao(TipoEmissaoCartao tipoEmissao) {
+    public void setTipoEmissao(TipoEmissao tipoEmissao) {
         this.tipoEmissao = tipoEmissao;
     }
 
