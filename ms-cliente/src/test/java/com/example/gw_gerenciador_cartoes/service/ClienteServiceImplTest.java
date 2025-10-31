@@ -24,12 +24,16 @@ import static org.junit.jupiter.api.Assertions.*;
 @Transactional
 class ClienteServiceImplTest {
 
+    private static final String NOME_PADRAO = "Fulano";
+    private static final String CPF_PADRAO = "12345678901";
+    private static final String EMAIL_PADRAO = "fulano@email.com";
+    private static final String DATA_NASCIMENTO_PADRAO = "2000-01-01";
+
     @Autowired
     private ClienteRepositoryAdapter clienteRepository;
 
     @Autowired
     private ClienteServiceImpl clienteService;
-
 
     @MockBean
     private CriarCartaoProducerPort criarCartaoProducer;
@@ -37,59 +41,124 @@ class ClienteServiceImplTest {
     @MockBean
     private EmailNormalQueueProducerPort emailNormalQueueProducer;
 
+    private Endereco criarEnderecoPadrao() {
+        return new Endereco("São Paulo", "Centro", "Rua das Flores", "01000-000", "Apto 101", "123");
+    }
 
-    @Test
-    void deveCriarCliente() {
+    private Conta criarContaPadrao() {
+        return new Conta(null, "0001", "Corrente", new BigDecimal("1000.00"));
+    }
 
-        Endereco endereco = new Endereco("São Paulo", "Centro", "Rua das Flores", "01000-000", "Apto 101", "123");
-
-        Conta conta = new Conta(null, "0001", "Corrente", new BigDecimal("1000.00"));
-
-        Cliente cliente = new Cliente(null, "Fulano", "12345678901", "fulano@email.com", "2000-01-01", endereco, conta);
-        Cliente clienteSalvo = clienteService.criarCliente(cliente);
-
-        // 5. Verificar se foi alterado
-        Cliente clienteFind = clienteRepository.findById(clienteSalvo.getId()).orElseThrow();
-        assertEquals(cliente.getNome(), clienteFind.getNome());
+    private Cliente criarClientePadrao(String nome, String cpf, String email) {
+        return new Cliente(null, nome, email, DATA_NASCIMENTO_PADRAO, cpf, criarEnderecoPadrao(), criarContaPadrao());
     }
 
     @Test
-    void deveDeletarCliente() {
+    void deveCriarClienteContaeEnderecoComSucesso() {
+        Cliente cliente = criarClientePadrao(NOME_PADRAO, CPF_PADRAO, EMAIL_PADRAO);
+        Cliente clienteSalvo = clienteService.criarCliente(cliente);
 
-        Endereco endereco = new Endereco("São Paulo", "Centro", "Rua das Flores", "01000-000", "Apto 101", "123");
-        Conta conta = new Conta(null, "0001", "Corrente", new BigDecimal("1000.00"));
-        Cliente cliente = new Cliente(null, "Fulano", "12345678901", "fulano@email.com", "2000-01-01", endereco, conta);
+        Cliente clienteEncontrado = clienteRepository.findById(clienteSalvo.getId()).orElseThrow();
+
+        // Assert Cliente
+        assertEquals(NOME_PADRAO, clienteEncontrado.getNome());
+        assertEquals(CPF_PADRAO, clienteEncontrado.getCpf());
+        assertEquals(EMAIL_PADRAO, clienteEncontrado.getEmail());
+        assertEquals(DATA_NASCIMENTO_PADRAO, clienteEncontrado.getDataNasc());
+
+        // Assert Endereço
+        Endereco endereco = clienteEncontrado.getEndereco();
+        assertNotNull(endereco);
+        assertEquals("São Paulo", endereco.getCidade());
+        assertEquals("Centro", endereco.getBairro());
+        assertEquals("Rua das Flores", endereco.getRua());
+        assertEquals("01000-000", endereco.getCep());
+        assertEquals("Apto 101", endereco.getComplemento());
+        assertEquals("123", endereco.getNumero());
+
+        // Assert Conta
+        Conta conta = clienteEncontrado.getConta();
+        assertNotNull(conta);
+        assertEquals("0001", conta.getAgencia());
+        assertEquals("Corrente", conta.getTipo());
+        assertEquals(new BigDecimal("1000.00"), conta.getSaldo());
+    }
+
+    @Test
+    void deveDeletarClienteQuandoIdForValido() {
+        Cliente cliente = criarClientePadrao(NOME_PADRAO, CPF_PADRAO, EMAIL_PADRAO);
         Cliente clienteSalvo = clienteService.criarCliente(cliente);
 
         clienteService.deletarCliente(clienteSalvo.getId());
-        Optional<Cliente> clienteFind = clienteRepository.findById(clienteSalvo.getId());
+        Optional<Cliente> clienteEncontrado = clienteRepository.findById(clienteSalvo.getId());
 
-        assertTrue(clienteFind.isEmpty(), "O cliente deveria estar ausente");
+        assertTrue(clienteEncontrado.isEmpty(), "O cliente deveria estar ausente");
     }
 
     @Test
-    void deveBuscarEPaginar() {
+    void deveRetornarClientesFiltradosPorNomeComPaginacao() {
+        Cliente cliente1 = criarClientePadrao("Fulano", "11111111111", "fulano@gmail.com");
+        Cliente cliente2 = criarClientePadrao("Beltrano", "22222222222", "beltrano@gmail.com");
 
-        Endereco endereco = new Endereco("São Paulo", "Centro", "Rua das Flores", "01000-000", "Apto 101", "123");
-        Conta conta = new Conta(null, "0001", "Corrente", new BigDecimal("1000.00"));
-        Cliente cliente = new Cliente(null, "Fulano", "fulanoo@gmail.com", "03/09/1989", "2000-01-01", endereco, conta);
-        Cliente clienteSalvo = clienteService.criarCliente(cliente);
+        clienteService.criarCliente(cliente1);
+        clienteService.criarCliente(cliente2);
 
-        Endereco endereco2 = new Endereco("São Paulo", "Centro", "Rua das Flores", "01000-000", "Apto 101", "123");
-        Conta conta2 = new Conta(null, "0001", "Corrente", new BigDecimal("1000.00"));
-        Cliente cliente2 = new Cliente(null, "Beltrano", "tomas@gmail.com", "03/09/1989", "2000-01-01", endereco, conta);
-        Cliente clienteSalvo2 = clienteService.criarCliente(cliente2);
+        Page<Cliente> paginaClientes = clienteService.listarClientes(0, 6, "id", "asc", "Fulano", null);
 
+        assertNotNull(paginaClientes);
+        assertEquals(1, paginaClientes.getTotalElements());
+        assertEquals("Fulano", paginaClientes.getContent().get(0).getNome());
+    }
 
-        Page<Cliente> paginasCliente = clienteService.listarClientes(0,6,"id","asc","Fulano",null);
+    @Test
+    void deveRetornarClientesFiltradosPorCPFComPaginacao() {
+        Cliente cliente1 = criarClientePadrao("Fulano", "11111111111", "fulano@gmail.com");
+        Cliente cliente2 = criarClientePadrao("Beltrano", "22222222222", "beltrano@gmail.com");
 
+        clienteService.criarCliente(cliente1);
+        clienteService.criarCliente(cliente2);
 
-        assertNotNull(paginasCliente);
-        assertEquals(1, paginasCliente.getTotalElements());
-        assertEquals("Fulano", paginasCliente.getContent().get(0).getNome());
+        Page<Cliente> paginaClientes = clienteService.listarClientes(0, 6, "id", "asc", null, "11111111111");
+
+        assertNotNull(paginaClientes);
+        assertEquals(1, paginaClientes.getTotalElements());
+        assertEquals("11111111111", paginaClientes.getContent().get(0).getCpf());
+    }
+
+    @Test
+    void deveRetornarClientesFiltradosPorCPFeNomeComPaginacao() {
+        Cliente cliente1 = criarClientePadrao("Fulano", "11111111111", "fulano@gmail.com");
+        Cliente cliente2 = criarClientePadrao("Beltrano", "22222222222", "beltrano@gmail.com");
+
+        clienteService.criarCliente(cliente1);
+        clienteService.criarCliente(cliente2);
+
+        Page<Cliente> paginaClientes = clienteService.listarClientes(0, 6, "id", "asc", "Fulano", "11111111111");
+
+        assertNotNull(paginaClientes);
+        assertEquals(1, paginaClientes.getTotalElements());
+        assertEquals("11111111111", paginaClientes.getContent().get(0).getCpf());
+        assertEquals("Fulano", paginaClientes.getContent().get(0).getNome());
 
     }
 
+    @Test
+    void deveRetornarClientesSemFiltrarComPaginacao() {
+        Cliente cliente1 = criarClientePadrao("Fulano", "11111111111", "fulano@gmail.com");
+        Cliente cliente2 = criarClientePadrao("Beltrano", "22222222222", "beltrano@gmail.com");
 
+        clienteService.criarCliente(cliente1);
+        clienteService.criarCliente(cliente2);
+
+        Page<Cliente> paginaClientes = clienteService.listarClientes(0, 6, "id", "asc", null, null);
+
+        assertNotNull(paginaClientes);
+        assertEquals(2, paginaClientes.getTotalElements());
+        assertEquals("11111111111", paginaClientes.getContent().get(0).getCpf());
+        assertEquals("Fulano", paginaClientes.getContent().get(0).getNome());
+        assertEquals("22222222222", paginaClientes.getContent().get(1).getCpf());
+        assertEquals("Beltrano", paginaClientes.getContent().get(1).getNome());
+
+    }
 
 }
