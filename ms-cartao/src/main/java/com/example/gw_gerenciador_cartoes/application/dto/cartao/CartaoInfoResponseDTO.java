@@ -4,16 +4,16 @@ import com.example.gw_gerenciador_cartoes.domain.enums.StatusCartao;
 
 import java.time.LocalDateTime;
 
-public class SegundaViaCartaoResponseDTO {
+public class CartaoInfoResponseDTO {
     private String numero;
     private String cvv;
     private LocalDateTime dataVencimento;
     private StatusCartao status;
 
-    public SegundaViaCartaoResponseDTO() {
+    public CartaoInfoResponseDTO() {
     }
 
-    public SegundaViaCartaoResponseDTO(String numero, String cvv, LocalDateTime dataVencimento, StatusCartao status) {
+    public CartaoInfoResponseDTO(String numero, String cvv, LocalDateTime dataVencimento, StatusCartao status) {
         this.numero = numero;
         this.cvv = cvv;
         this.dataVencimento = dataVencimento;

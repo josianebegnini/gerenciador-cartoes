@@ -8,13 +8,13 @@ public interface CartaoServicePort {
 
     void processarSolicitacao(ClienteContaCriadoDTO dto);
 
-    SegundaViaCartaoResponseDTO solicitarSegundaVia(SegundaViaCartaoRequestDTO dto);
+    CartaoInfoResponseDTO solicitarSegundaVia(SegundaViaCartaoRequestDTO dto);
 
     Page<CartaoClienteResponseDTO> buscarPorCliente(Long idCliente, Pageable pageable);
 
     CartaoClienteResponseDTO cadastrarCartaoExistente(CadastrarCartaoExistenteRequestDTO dto);
 
-    CartaoClienteResponseDTO alterarStatus(AlterarStatusRequestDTO dto);
+    CartaoInfoResponseDTO alterarStatus(AlterarStatusRequestDTO dto);
 
     Page<CartaoResponseDTO> listarTodos(Pageable pageable);
 
