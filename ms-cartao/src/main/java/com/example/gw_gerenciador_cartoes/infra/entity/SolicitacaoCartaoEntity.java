@@ -28,6 +28,9 @@ public class SolicitacaoCartaoEntity {
     @Column(name = "nome", nullable = true)
     private String nome;
 
+    @Column(name = "email", nullable = true)
+    private String email;
+
     @Column(name = "motivo_rejeicao", nullable = true)
     private String motivoRejeicao;
 
@@ -35,9 +38,11 @@ public class SolicitacaoCartaoEntity {
     @Column(name = "status", nullable = true)
     private StatusSolicitacao status;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "tipo_cartao", nullable = true)
     private TipoCartao tipoCartao;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "tipo_emissao", nullable = true)
     private TipoEmissao tipoEmissao;
 
@@ -89,6 +94,14 @@ public class SolicitacaoCartaoEntity {
 
     public void setNome(String nome) {
         this.nome = nome;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getMotivoRejeicao() {

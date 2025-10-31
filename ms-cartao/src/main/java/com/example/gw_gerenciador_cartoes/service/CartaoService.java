@@ -9,7 +9,8 @@ import com.example.gw_gerenciador_cartoes.domain.ports.CartaoRepositoryPort;
 import com.example.gw_gerenciador_cartoes.domain.ports.CartaoServicePort;
 import com.example.gw_gerenciador_cartoes.domain.ports.SolicitacaoCartaoServicePort;
 import com.example.gw_gerenciador_cartoes.infra.exception.*;
-import com.example.gw_gerenciador_cartoes.service.validator.CriarCartaoValidator;
+import com.example.gw_gerenciador_cartoes.service.validator.CartaoStatusValidator;
+import com.example.gw_gerenciador_cartoes.service.validator.CartaoValidator;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -22,19 +23,21 @@ import java.time.LocalDateTime;
 public class CartaoService implements CartaoServicePort {
 
     private final CartaoRepositoryPort repository;
-    private final CartaoMapper mapper;
-    private final CartaoGenerator cartaoGenerator;
     private final SolicitacaoCartaoServicePort solicitacaoCartaoService;
+    private final CartaoValidator cartaoValidator;
+    private final CartaoGenerator cartaoGenerator;
+    private final CartaoMapper mapper;
     private final CartaoEmailService cartaoEmailService;
-    private final CriarCartaoValidator criarCartaoValidator;
+    private final CartaoStatusValidator cartaoStatusValidator;
 
-    public CartaoService(CartaoRepositoryPort repository, CartaoMapper mapper, CartaoGenerator cartaoGenerator, SolicitacaoCartaoService solicitacaoCartaoService, CartaoEmailService cartaoEmailService, CriarCartaoValidator criarCartaoValidator) {
+    public CartaoService(CartaoRepositoryPort repository, SolicitacaoCartaoServicePort solicitacaoCartaoService, CartaoValidator cartaoValidator, CartaoGenerator cartaoGenerator, CartaoMapper mapper, CartaoEmailService cartaoEmailService, CartaoStatusValidator cartaoStatusValidator) {
         this.repository = repository;
-        this.mapper = mapper;
-        this.cartaoGenerator = cartaoGenerator;
         this.solicitacaoCartaoService = solicitacaoCartaoService;
+        this.cartaoValidator = cartaoValidator;
+        this.cartaoGenerator = cartaoGenerator;
+        this.mapper = mapper;
         this.cartaoEmailService = cartaoEmailService;
-        this.criarCartaoValidator = criarCartaoValidator;
+        this.cartaoStatusValidator = cartaoStatusValidator;
     }
 
     @Override
@@ -44,8 +47,9 @@ public class CartaoService implements CartaoServicePort {
                 dto.getContaId(),
                 dto.getTipoCartao(),
                 dto.getTipoEmissao(),
-                dto.getNome());
-        criarCartaoValidator.validar(dto, solicitacao.getId());
+                dto.getNome(),
+                dto.getEmail());
+        cartaoValidator.validar(dto, solicitacao.getId());
         Long cartaoId = criarCartao(dto, solicitacao.getId());
         solicitacaoCartaoService.finalizarComoProcessada(solicitacao.getId(), cartaoId);
     }
@@ -55,8 +59,6 @@ public class CartaoService implements CartaoServicePort {
         cartao.setSolicitacaoId(solicitacaoId);
         cartao.setClienteId(dto.getClienteId());
         cartao.setContaId(dto.getContaId());
-        cartao.setNome(dto.getNome());
-        cartao.setEmail(dto.getEmail());
         cartao.setNumero(gerarNumeroCartaoUnico());
         cartao.setCvv(cartaoGenerator.gerarCvv());
         cartao.setDataVencimento(calcularDataVencimentoNovoCartao());
@@ -85,41 +87,28 @@ public class CartaoService implements CartaoServicePort {
     }
 
     @Override
-    public CartaoResponseDTO ativar(CartaoRequestDTO dto) {
+    public CartaoClienteResponseDTO alterarStatus(AlterarStatusRequestDTO dto) {
         Cartao cartao = buscarCartaoPorNumeroECvv(dto.getNumero(), dto.getCvv());
 
-        if (cartao.getStatus() != StatusCartao.DESATIVADO) {
-            throw new RegraNegocioException(MensagensErroConstantes.CARTAO_ATIVACAO_STATUS_INVALIDO);
-        }
-
-        cartao.atualizarStatus(StatusCartao.ATIVADO, MensagensErroConstantes.MOTIVO_CARTAO_ATIVADO);
-        cartao.setDataCriacao(LocalDateTime.now());
+        cartaoStatusValidator.validarAlteracaoStatus(cartao, dto.getNovoStatus());
 
         Cartao atualizado = repository.atualizar(cartao)
                 .orElseThrow(() -> new CartaoNotFoundException(MensagensErroConstantes.CARTAO_NAO_ENCONTRADO));
 
-        cartaoEmailService.enviarEmailCartaoAtivado(atualizado);
+        enviarEmailStatusAtualizado(dto.getNovoStatus(), atualizado);
 
-        return mapper.toCartaoResponseDTO(atualizado);
+        return mapper.toCartaoClienteResponseDTO(atualizado);
     }
 
-    @Override
-    public CartaoResponseDTO bloquear(CartaoRequestDTO dto) {
-        Cartao cartao = buscarCartaoPorNumeroECvv(dto.getNumero(), dto.getCvv());
-
-        if (cartao.getStatus() != StatusCartao.ATIVADO) {
-            throw new RegraNegocioException(MensagensErroConstantes.CARTAO_BLOQUEAR_STATUS_INVALIDO);
+    private void enviarEmailStatusAtualizado(StatusCartao status, Cartao cartao) {
+        switch (status) {
+            case ATIVADO:
+                cartaoEmailService.enviarEmailCartaoAtivado(cartao);
+                break;
+            case BLOQUEADO:
+                cartaoEmailService.enviarEmailCartaoBloqueado(cartao, MensagensErroConstantes.MOTIVO_CARTAO_BLOQUEADO_SEGURANCA);
+                break;
         }
-
-        String motivoBloqueio = MensagensErroConstantes.MOTIVO_CARTAO_BLOQUEADO_SEGURANCA;
-        cartao.atualizarStatus(StatusCartao.BLOQUEADO, motivoBloqueio);
-
-        Cartao atualizado = repository.atualizar(cartao)
-                .orElseThrow(() -> new CartaoNotFoundException(MensagensErroConstantes.CARTAO_NAO_ENCONTRADO));
-
-        cartaoEmailService.enviarEmailCartaoBloqueado(atualizado, motivoBloqueio);
-
-        return mapper.toCartaoResponseDTO(atualizado);
     }
 
     @Override
@@ -148,8 +137,6 @@ public class CartaoService implements CartaoServicePort {
         segundaVia.setClienteId(original.getClienteId());
         segundaVia.setContaId(original.getContaId());
         segundaVia.setSolicitacaoId(original.getSolicitacaoId());
-        segundaVia.setNome(original.getNome());
-        segundaVia.setEmail(original.getEmail());
         segundaVia.setNumero(gerarNumeroCartaoUnico());
         segundaVia.setCvv(cartaoGenerator.gerarCvv());
         segundaVia.setDataVencimento(calcularDataVencimentoSegundaVia(original.getDataVencimento()));
@@ -176,8 +163,7 @@ public class CartaoService implements CartaoServicePort {
         }
     }
 
-    @Override
-    public Cartao buscarCartaoPorNumeroECvv(String numero, String cvv) {
+    private Cartao buscarCartaoPorNumeroECvv(String numero, String cvv) {
         return repository.buscarCartaoPorNumeroECvv(numero, cvv)
                 .orElseThrow(() -> new CartaoNotFoundException(MensagensErroConstantes.CARTAO_NAO_ENCONTRADO));
     }
@@ -187,4 +173,31 @@ public class CartaoService implements CartaoServicePort {
         Page<Cartao> cartoes = repository.buscarPorIdCliente(clienteId, pageable);
         return cartoes.map(mapper::toCartaoClienteResponseDTO);
     }
+
+    @Override
+    public CartaoClienteResponseDTO cadastrarCartaoExistente(CadastrarCartaoExistenteRequestDTO dto) {
+        Cartao cartao = new Cartao();
+        cartao.setClienteId(dto.getClienteId());
+        cartao.setContaId(0L);
+        cartao.setSolicitacaoId(0L);
+        cartao.setNumero(dto.getNumero());
+        cartao.setCvv(dto.getCvv());
+        cartao.setDataVencimento(dto.getDataVencimento());
+        cartao.setDataCriacao(LocalDateTime.now());
+        cartao.setStatus(dto.getStatus());
+        cartao.setMotivoStatus(dto.getMotivoStatus());
+        cartao.setTipoCartao(dto.getTipoCartao());
+        cartao.setTipoEmissao(dto.getTipoEmissao());
+        cartao.setLimite(dto.getLimite());
+
+        Cartao cartaoSalvo = repository.salvar(cartao);
+        return mapper.toCartaoClienteResponseDTO(cartaoSalvo);
+    }
+
+    @Override
+    public Page<CartaoResponseDTO> listarTodos(Pageable pageable) {
+        return repository.buscarTodos(pageable)
+                .map(mapper::toCartaoResponseDTO);
+    }
+
 }

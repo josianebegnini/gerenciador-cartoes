@@ -18,4 +18,6 @@ public interface CartaoRepositoryPort {
 
     Page<Cartao> buscarPorIdCliente(Long idCliente, Pageable pageable);
 
+    Page<Cartao> buscarTodos(Pageable pageable);
+
 }

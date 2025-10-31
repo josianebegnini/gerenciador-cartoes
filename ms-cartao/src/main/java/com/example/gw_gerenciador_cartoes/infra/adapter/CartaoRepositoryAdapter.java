@@ -58,4 +58,10 @@ public class CartaoRepositoryAdapter implements CartaoRepositoryPort {
                 .map(mapper::toDomain);
     }
 
+    @Override
+    public Page<Cartao> buscarTodos(Pageable pageable) {
+        return jpaRepository.findAll(pageable)
+                .map(mapper::toDomain);
+
+    }
 }
