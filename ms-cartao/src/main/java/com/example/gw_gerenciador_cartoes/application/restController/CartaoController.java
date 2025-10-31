@@ -15,10 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.gw_gerenciador_cartoes.application.dto.cartao.AlterarStatusRequestDTO;
 import com.example.gw_gerenciador_cartoes.application.dto.cartao.CadastrarCartaoExistenteRequestDTO;
-import com.example.gw_gerenciador_cartoes.application.dto.cartao.CartaoClienteResponseDTO;
 import com.example.gw_gerenciador_cartoes.application.dto.cartao.CartaoResponseDTO;
 import com.example.gw_gerenciador_cartoes.application.dto.cartao.SegundaViaCartaoRequestDTO;
-import com.example.gw_gerenciador_cartoes.application.dto.cartao.SegundaViaCartaoResponseDTO;
 import com.example.gw_gerenciador_cartoes.domain.ports.CartaoControllerDoc;
 import com.example.gw_gerenciador_cartoes.domain.ports.CartaoServicePort;
 
