@@ -7,6 +7,7 @@ import com.example.gw_gerenciador_cartoes.infra.enums.TipoEmissao;
 import java.time.LocalDateTime;
 
 public class SolicitacaoCartao extends AbstractCartao{
+
     private Long cartaoId;
     private String nome;
     private String email;

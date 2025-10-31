@@ -30,7 +30,7 @@ public interface CartaoControllerDoc {
     @Operation(summary = "Solicitar segunda via do cartão", description = "Gera uma nova via do cartão com nova numeração e CVV")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Segunda via gerada com sucesso",
-                    content = @Content(schema = @Schema(implementation = CartaoInfoResponseDTO.class))),
+                    content = @Content(schema = @Schema(implementation = CartaoResponseDTO.class))),
             @ApiResponse(responseCode = "404", description = "Cartão não encontrado")
     })
     ResponseEntity<CartaoResponseDTO> solicitarSegundaVia(@RequestBody @Valid SegundaViaCartaoRequestDTO dto);
