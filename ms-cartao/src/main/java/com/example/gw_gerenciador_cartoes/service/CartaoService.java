@@ -87,7 +87,7 @@ public class CartaoService implements CartaoServicePort {
     }
 
     @Override
-    public CartaoClienteResponseDTO alterarStatus(AlterarStatusRequestDTO dto) {
+    public CartaoInfoResponseDTO alterarStatus(AlterarStatusRequestDTO dto) {
         Cartao cartao = buscarCartaoPorNumeroECvv(dto.getNumero(), dto.getCvv());
 
         cartaoStatusValidator.validarAlteracaoStatus(cartao, dto.getNovoStatus());
@@ -97,7 +97,7 @@ public class CartaoService implements CartaoServicePort {
 
         enviarEmailStatusAtualizado(dto.getNovoStatus(), atualizado);
 
-        return mapper.toCartaoClienteResponseDTO(atualizado);
+        return mapper.toCartaoInfoResponseDTO(atualizado);
     }
 
     private void enviarEmailStatusAtualizado(StatusCartao status, Cartao cartao) {
@@ -112,7 +112,7 @@ public class CartaoService implements CartaoServicePort {
     }
 
     @Override
-    public SegundaViaCartaoResponseDTO solicitarSegundaVia(SegundaViaCartaoRequestDTO dto) {
+    public CartaoInfoResponseDTO solicitarSegundaVia(SegundaViaCartaoRequestDTO dto) {
 
         Cartao original = buscarCartaoPorNumeroECvv(dto.getNumero(), dto.getCvv());
 

@@ -22,13 +22,13 @@ public class CartaoController implements CartaoControllerDoc {
     }
 
     @PutMapping("/alterar-status")
-    public ResponseEntity<CartaoClienteResponseDTO> alterarStatus(@Valid @RequestBody AlterarStatusRequestDTO dto) {
-        CartaoClienteResponseDTO response = cartaoService.alterarStatus(dto);
+    public ResponseEntity<CartaoInfoResponseDTO> alterarStatus(@Valid @RequestBody AlterarStatusRequestDTO dto) {
+        CartaoInfoResponseDTO response = cartaoService.alterarStatus(dto);
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/segunda-via")
-    public ResponseEntity<SegundaViaCartaoResponseDTO> solicitarSegundaVia(@Valid @RequestBody SegundaViaCartaoRequestDTO dto) {
+    public ResponseEntity<CartaoInfoResponseDTO> solicitarSegundaVia(@Valid @RequestBody SegundaViaCartaoRequestDTO dto) {
         return ResponseEntity.ok(cartaoService.solicitarSegundaVia(dto));
     }
 

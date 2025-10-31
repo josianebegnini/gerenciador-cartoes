@@ -25,15 +25,15 @@ public interface CartaoControllerDoc {
                 content = @Content(schema = @Schema(implementation = CartaoClienteResponseDTO.class))),
         @ApiResponse(responseCode = "400", description = "Requisição inválida")
     })
-    ResponseEntity<CartaoClienteResponseDTO> alterarStatus(@RequestBody @Valid AlterarStatusRequestDTO dto);
+    ResponseEntity<CartaoInfoResponseDTO> alterarStatus(@RequestBody @Valid AlterarStatusRequestDTO dto);
 
     @Operation(summary = "Solicitar segunda via do cartão", description = "Gera uma nova via do cartão com nova numeração e CVV")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Segunda via gerada com sucesso",
-                    content = @Content(schema = @Schema(implementation = SegundaViaCartaoResponseDTO.class))),
+                    content = @Content(schema = @Schema(implementation = CartaoInfoResponseDTO.class))),
             @ApiResponse(responseCode = "404", description = "Cartão não encontrado")
     })
-    ResponseEntity<SegundaViaCartaoResponseDTO> solicitarSegundaVia(@RequestBody @Valid SegundaViaCartaoRequestDTO dto);
+    ResponseEntity<CartaoInfoResponseDTO> solicitarSegundaVia(@RequestBody @Valid SegundaViaCartaoRequestDTO dto);
 
     @Operation(summary = "Buscar cartões por cliente", description = "Retorna os cartões associados a um cliente específico")
     @ApiResponses(value = {
