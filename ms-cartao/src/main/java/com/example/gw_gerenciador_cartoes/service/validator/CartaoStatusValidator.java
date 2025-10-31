@@ -1,6 +1,6 @@
 package com.example.gw_gerenciador_cartoes.service.validator;
 
-import com.example.gw_gerenciador_cartoes.domain.enums.StatusCartao;
+import com.example.gw_gerenciador_cartoes.infra.enums.StatusCartao;
 import com.example.gw_gerenciador_cartoes.domain.model.Cartao;
 import com.example.gw_gerenciador_cartoes.infra.exception.MensagensErroConstantes;
 import com.example.gw_gerenciador_cartoes.infra.exception.RegraNegocioException;

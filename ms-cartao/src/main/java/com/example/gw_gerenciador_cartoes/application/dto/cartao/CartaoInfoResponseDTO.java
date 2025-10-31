@@ -1,6 +1,6 @@
 package com.example.gw_gerenciador_cartoes.application.dto.cartao;
 
-import com.example.gw_gerenciador_cartoes.domain.enums.StatusCartao;
+import com.example.gw_gerenciador_cartoes.infra.enums.StatusCartao;
 
 import java.time.LocalDateTime;
 
