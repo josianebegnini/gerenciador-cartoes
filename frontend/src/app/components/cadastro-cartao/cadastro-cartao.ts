@@ -194,19 +194,19 @@ export class CadastroCartaoComponent implements OnDestroy {
   }
 
 
- converterDataVencimentoParaISO(data: string): string {
-  const [mes, ano] = data.split("/");
 
-  if (!mes || !ano || mes.length !== 2 || ano.length !== 2) return "";
+  converterDataVencimentoParaISO(data: string): string {
+    const [mes, ano] = data.split("/");
 
-  const anoCompleto = 2000 + parseInt(ano, 10); // Ex: "25" vira "2025"
-  const mesNum = parseInt(mes, 10);
+    if (!mes || !ano || mes.length !== 2 || ano.length !== 2) return "";
 
-  // Cria a data no primeiro dia do mês
-  const dataObj = new Date(anoCompleto, mesNum - 1, 1);
+    const anoCompleto = 2000 + parseInt(ano, 10); // Ex: "25" vira "2025"
+    const mesNum = parseInt(mes, 10);
 
-  return dataObj.toISOString(); // Ex: "2025-12-01T00:00:00.000Z"
-}
+    // Retorna no formato "yyyy-MM-ddT00:00:00"
+    return `${anoCompleto}-${String(mesNum).padStart(2, "0")}-01T00:00:00`;
+  }
+
 
 
   // ========== CRIAÇÃO DE CARTÃO ========== //
@@ -223,19 +223,21 @@ export class CadastroCartaoComponent implements OnDestroy {
     clienteId: this.cartao.clienteId,
     numero: this.cartao.numero.replace(/\s+/g, ""), // remove espaços
     cvv: this.cartao.cvv,
-    dataVencimento: this.converterDataVencimentoParaISO(this.cartao.dataVencimento).substring(0, 10), // yyyy-MM-dd
+    dataVencimento: this.converterDataVencimentoParaISO(this.cartao.dataVencimento), // yyyy-MM-dd
     status: this.cartao.status || "ativado", // enum padronizado
     motivoStatus: "Cadastro inicial",
     tipoCartao: (this.cartao.tipoCartao || "CREDITO").toUpperCase(), // enum padronizado
     tipoEmissao: (this.cartao.tipoEmissao || "VIRTUAL").toUpperCase(), // enum padronizado
-    limite: typeof this.cartao.limite === "string"
-      ? parseFloat(this.cartao.limite)
-      : this.cartao.limite > 0
-        ? this.cartao.limite
-        : 1000 // valor padrão
+    limite: parseFloat(
+      typeof this.cartao.limite === "string"
+        ? parseFloat(this.cartao.limite).toFixed(2)
+        : this.cartao.limite > 0
+          ? this.cartao.limite.toFixed(2)
+          : "1000.00"
+    )
   };
 
-  console.log("DTO tratado:", dto);
+  console.log("DTO enviado:", JSON.stringify(dto, null, 2));
 
   this.carregando = true;
 

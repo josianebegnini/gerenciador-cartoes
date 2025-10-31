@@ -73,39 +73,37 @@ export class Home implements OnInit, OnDestroy {
 carregarDados(): void {
   this.isLoading = true;
 
-  this.clienteService.getClientes()
-    .pipe(
-      takeUntil(this.destroy$),
-      finalize(() => (this.isLoading = false))
-    )
-    .subscribe({
-      next: (response) => {
-        const clientes = response.content || response;
-        this.clientes = clientes.map((cliente: any) => ({
-          ...cliente,
-          cartao: null,
-          selecionado: false
-        }));
+  forkJoin({
+    clientes: this.clienteService.getClientes(),
+    cartoes: this.cartaoService.listarTodos(0, 1000)
+  })
+  .pipe(
+    takeUntil(this.destroy$),
+    finalize(() => (this.isLoading = false))
+  )
+  .subscribe({
+    next: ({ clientes, cartoes }) => {
+      const listaClientes = clientes.content || clientes;
+      const listaCartoes = cartoes.content || [];
 
-        // Buscar cartões paginados para cada cliente
-        this.clientes.forEach(cliente => {
-          this.cartaoService.getCartoesByClienteId(cliente.id!, 0, 1).subscribe({
-            next: (cartoesPage) => {
-              const cartaoEncontrado = cartoesPage.content?.[0] || null;
-              cliente.cartao = cartaoEncontrado;
-            },
-            error: (err) => {
-              console.error(`Erro ao buscar cartão do cliente ${cliente.id}:`, err);
-            }
-          });
-        });
-      },
-      error: (error) => {
-        console.error("Erro ao carregar dados:", error);
-        this.mostrarErro("Erro ao carregar dados. Tente novamente.");
-      }
-    });
-  }
+      this.clientes = listaClientes.map((cliente: any) => {
+        const cartaoDoCliente = listaCartoes.find(
+          (cartao: any) => cartao.clienteId === cliente.id
+        );
+        return {
+          ...cliente,
+          cartao: cartaoDoCliente || null,
+          selecionado: false
+        };
+      });
+    },
+    error: (error) => {
+      console.error("Erro ao carregar dados:", error);
+      this.mostrarErro("Erro ao carregar dados. Tente novamente.");
+    }
+  });
+}
+
 
   // ========== FILTROS ========== //
 

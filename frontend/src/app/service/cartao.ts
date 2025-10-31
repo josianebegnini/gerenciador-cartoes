@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { HttpClient, HttpParams } from "@angular/common/http";
+import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
 import { Observable } from "rxjs";
 import { Cartao } from "../models/cartao";
 import { SegundaViaCartaoRequestDTO, SegundaViaCartaoResponseDTO, AlterarStatusRequestDTO, } from "../models/cartao-dtos";
@@ -26,7 +26,12 @@ export class CartaoService {
   }
 
   createCartao(cartao: Cartao): Observable<Cartao> {
-    return this.http.post<Cartao>(`${this.apiUrl}/cadastrar-existente`, cartao);
+
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+
+    return this.http.post<Cartao>(`${this.apiUrl}/cadastrar-existente`, cartao, { headers });
+
+    //return this.http.post<Cartao>(`${this.apiUrl}/cadastrar-existente`, cartao);
   }
 
   alterarStatus(dto: AlterarStatusRequestDTO): Observable<Cartao> {
@@ -42,14 +47,16 @@ export class CartaoService {
     return this.http.post<SegundaViaCartaoResponseDTO>(`${this.apiUrl}/segunda-via`, request);
   }
 
-  listarTodos(page: number = 0, size: number = 10): Observable<any> {
-    const params = new HttpParams()
-      .set('page', page.toString())
-      .set('size', size.toString())
-      .set('sort', 'id,DESC');
 
-    return this.http.get<any>(`${this.apiUrl}`, { params });
-  }
+listarTodos(page: number = 0, size: number = 10): Observable<any> {
+  const params = new HttpParams()
+    .set('page', page.toString())
+    .set('size', size.toString())
+    .set('sort', 'id,DESC');
+
+  return this.http.get<any>(`${this.apiUrl}`, { params });
+}
+
 
   // ========== FORMATAÇÃO ========== //
 
