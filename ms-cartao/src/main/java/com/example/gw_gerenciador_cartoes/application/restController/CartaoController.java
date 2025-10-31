@@ -22,29 +22,29 @@ public class CartaoController implements CartaoControllerDoc {
     }
 
     @PutMapping("/alterar-status")
-    public ResponseEntity<CartaoInfoResponseDTO> alterarStatus(@Valid @RequestBody AlterarStatusRequestDTO dto) {
-        CartaoInfoResponseDTO response = cartaoService.alterarStatus(dto);
+    public ResponseEntity<CartaoResponseDTO> alterarStatus(@Valid @RequestBody AlterarStatusRequestDTO dto) {
+        CartaoResponseDTO response = cartaoService.alterarStatus(dto);
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/segunda-via")
-    public ResponseEntity<CartaoInfoResponseDTO> solicitarSegundaVia(@Valid @RequestBody SegundaViaCartaoRequestDTO dto) {
+    public ResponseEntity<CartaoResponseDTO> solicitarSegundaVia(@Valid @RequestBody SegundaViaCartaoRequestDTO dto) {
         return ResponseEntity.ok(cartaoService.solicitarSegundaVia(dto));
     }
 
     @GetMapping("/cliente/{idCliente}")
-    public ResponseEntity<Page<CartaoClienteResponseDTO>> buscarPorCliente(
+    public ResponseEntity<Page<CartaoResponseDTO>> buscarPorCliente(
             @PathVariable Long idCliente,
             @ParameterObject Pageable pageable) {
 
-        Page<CartaoClienteResponseDTO> cartoes = cartaoService.buscarPorCliente(idCliente, pageable);
+        Page<CartaoResponseDTO> cartoes = cartaoService.buscarPorCliente(idCliente, pageable);
         return ResponseEntity.ok(cartoes);
     }
 
     @PostMapping("/cadastrar-existente")
-    public ResponseEntity<CartaoClienteResponseDTO> cadastrarCartaoExistente(
+    public ResponseEntity<CartaoResponseDTO> cadastrarCartaoExistente(
             @RequestBody @Valid CadastrarCartaoExistenteRequestDTO dto) {
-        CartaoClienteResponseDTO response = cartaoService.cadastrarCartaoExistente(dto);
+        CartaoResponseDTO response = cartaoService.cadastrarCartaoExistente(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 

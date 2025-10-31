@@ -1,8 +1,8 @@
 package com.example.gw_gerenciador_cartoes.domain.model;
 
-import com.example.gw_gerenciador_cartoes.domain.enums.StatusSolicitacao;
-import com.example.gw_gerenciador_cartoes.domain.enums.TipoCartao;
-import com.example.gw_gerenciador_cartoes.domain.enums.TipoEmissao;
+import com.example.gw_gerenciador_cartoes.infra.enums.StatusSolicitacao;
+import com.example.gw_gerenciador_cartoes.infra.enums.TipoCartao;
+import com.example.gw_gerenciador_cartoes.infra.enums.TipoEmissao;
 
 import java.time.LocalDateTime;
 
