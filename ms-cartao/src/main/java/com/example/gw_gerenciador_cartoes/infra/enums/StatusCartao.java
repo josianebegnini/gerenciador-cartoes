@@ -1,5 +1,6 @@
 package com.example.gw_gerenciador_cartoes.infra.enums;
 
+import com.example.gw_gerenciador_cartoes.infra.exception.MensagensErroConstantes;
 import com.fasterxml.jackson.annotation.JsonCreator;
 
 public enum StatusCartao {
@@ -8,14 +9,14 @@ public enum StatusCartao {
     BLOQUEADO,
     REJEITADO,
     CANCELADO;
-    
+
     @JsonCreator
     public static StatusCartao from(String value) {
-        try {
-            return StatusCartao.valueOf(value.toUpperCase());
-        } catch (Exception e) {
-            throw new IllegalArgumentException("StatusCartao inválido: " + value);
+        for (StatusCartao status : StatusCartao.values()) {
+            if (status.name().equalsIgnoreCase(value)) {
+                return status;
+            }
         }
+        throw new IllegalArgumentException(MensagensErroConstantes.CARTAO_STATUS_CARTAO_INVALIDO + value);
     }
-
 }
