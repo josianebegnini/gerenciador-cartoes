@@ -22,11 +22,12 @@ public class SolicitacaoCartaoService implements SolicitacaoCartaoServicePort {
     }
 
     @Override
-    public SolicitacaoCartao salvar(Long clienteId, Long contaId, TipoCartao tipoCartao, TipoEmissao tipoEmissao, String nome) {
+    public SolicitacaoCartao salvar(Long clienteId, Long contaId, TipoCartao tipoCartao, TipoEmissao tipoEmissao, String nome, String email) {
         SolicitacaoCartao solicitacao = new SolicitacaoCartao();
         solicitacao.setClienteId(clienteId);
         solicitacao.setContaId(contaId);
         solicitacao.setNome(nome);
+        solicitacao.setEmail(email);
         solicitacao.setStatus(StatusSolicitacao.EM_ANDAMENTO);
         solicitacao.setTipoCartao(tipoCartao);
         solicitacao.setTipoEmissao(tipoEmissao);
@@ -38,8 +39,7 @@ public class SolicitacaoCartaoService implements SolicitacaoCartaoServicePort {
 
     @Override
     public void rejeitarSolicitacao(Long solicitacaoId, String motivo, String mensagemSolicitacao) {
-        SolicitacaoCartao solicitacao = solicitacaoCartaoRepository.buscarPorId(solicitacaoId)
-                .orElseThrow(() -> new RegraNegocioException(MensagensErroConstantes.SOLICITACAO_NAO_ENCONTRADA_REJEITAR));
+        SolicitacaoCartao solicitacao = buscarPorId(solicitacaoId);
 
         solicitacao.setStatus(StatusSolicitacao.REJEITADO);
         solicitacao.setMotivoRejeicao(motivo);
@@ -50,12 +50,16 @@ public class SolicitacaoCartaoService implements SolicitacaoCartaoServicePort {
 
     @Override
     public void finalizarComoProcessada(Long solicitacaoId, Long cartaoId) {
-        SolicitacaoCartao solicitacao = solicitacaoCartaoRepository.buscarPorId(solicitacaoId)
-                .orElseThrow(() -> new RegraNegocioException(MensagensErroConstantes.SOLICITACAO_NAO_ENCONTRADA_FINALIZAR));
+        SolicitacaoCartao solicitacao = buscarPorId(solicitacaoId);
 
         solicitacao.setStatus(StatusSolicitacao.PROCESSADO);
         solicitacao.setCartaoId(cartaoId);
         solicitacao.setUltimaDataProcessamento(LocalDateTime.now());
         solicitacaoCartaoRepository.alterar(solicitacao);
+    }
+
+    public SolicitacaoCartao buscarPorId(Long solicitacaoId) {
+        return solicitacaoCartaoRepository.buscarPorId(solicitacaoId)
+                .orElseThrow(() -> new RegraNegocioException(MensagensErroConstantes.SOLICITACAO_NAO_ENCONTRADA));
     }
 }

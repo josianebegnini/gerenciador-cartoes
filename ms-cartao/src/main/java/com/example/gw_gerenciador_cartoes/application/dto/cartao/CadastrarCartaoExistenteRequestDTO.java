@@ -1,86 +1,59 @@
-package com.example.gw_gerenciador_cartoes.infra.entity;
+package com.example.gw_gerenciador_cartoes.application.dto.cartao;
 
 import com.example.gw_gerenciador_cartoes.domain.enums.StatusCartao;
 import com.example.gw_gerenciador_cartoes.domain.enums.TipoCartao;
 import com.example.gw_gerenciador_cartoes.domain.enums.TipoEmissao;
-import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "cartao")
-public class CartaoEntity {
+public class CadastrarCartaoExistenteRequestDTO {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
-    private Long id;
-
-    @Column(name = "cliente_id", nullable = false)
+    @NotNull(message = "O ID do cliente é obrigatório")
     private Long clienteId;
 
-    @Column(name = "conta_id", nullable = false)
-    private Long contaId;
-
-    @Column(name = "solicitacao_id", nullable = false)
-    private Long solicitacaoId;
-
-    @Column(name = "numero", nullable = true, unique = false)
+    @NotBlank(message = "O número do cartão é obrigatório")
+    @Size(min = 16, max = 16, message = "O número do cartão deve ter 16 dígitos")
     private String numero;
 
-    @Column(name = "cvv", nullable = false)
+    @NotBlank(message = "O CVV é obrigatório")
+    @Pattern(regexp = "\\d{3}", message = "O CVV deve conter exatamente 3 dígitos")
     private String cvv;
 
-    @Column(name = "data_vencimento", nullable = false)
+    @NotNull(message = "A data de vencimento é obrigatória")
+    @Future(message = "A data de vencimento deve ser futura")
     private LocalDateTime dataVencimento;
 
-    @Column(name = "data_criacao", nullable = false)
-    private LocalDateTime dataCriacao;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
+    @NotNull(message = "O status do cartão é obrigatório")
     private StatusCartao status;
 
-    @Column(name = "motivo_status")
+    @Size(max = 255, message = "O motivo do status deve ter no máximo 255 caracteres")
     private String motivoStatus;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "tipo_cartao", nullable = false)
+    @NotNull(message = "O tipo de cartão é obrigatório")
     private TipoCartao tipoCartao;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "tipo_emissao_cartao", nullable = false)
+    @NotNull(message = "O tipo de emissão é obrigatório")
     private TipoEmissao tipoEmissao;
 
-    @Column(name = "limite", nullable = true)
+    @NotNull(message = "O limite do cartão é obrigatório")
+    @DecimalMin(value = "0.0", inclusive = false, message = "O limite deve ser maior que zero")
     private BigDecimal limite;
 
-    public CartaoEntity() {
+    public CadastrarCartaoExistenteRequestDTO() {
     }
 
-    public CartaoEntity(Long id, Long clienteId, Long contaId, Long solicitacaoId, String numero, String cvv, LocalDateTime dataVencimento, LocalDateTime dataCriacao, StatusCartao status, String motivoStatus, TipoCartao tipoCartao, TipoEmissao tipoEmissao, BigDecimal limite) {
-        this.id = id;
+    public CadastrarCartaoExistenteRequestDTO(Long clienteId, String numero, String cvv, LocalDateTime dataVencimento, StatusCartao status, String motivoStatus, TipoCartao tipoCartao, TipoEmissao tipoEmissao, BigDecimal limite) {
         this.clienteId = clienteId;
-        this.contaId = contaId;
-        this.solicitacaoId = solicitacaoId;
         this.numero = numero;
         this.cvv = cvv;
         this.dataVencimento = dataVencimento;
-        this.dataCriacao = dataCriacao;
         this.status = status;
         this.motivoStatus = motivoStatus;
         this.tipoCartao = tipoCartao;
         this.tipoEmissao = tipoEmissao;
         this.limite = limite;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public Long getClienteId() {
@@ -89,22 +62,6 @@ public class CartaoEntity {
 
     public void setClienteId(Long clienteId) {
         this.clienteId = clienteId;
-    }
-
-    public Long getContaId() {
-        return contaId;
-    }
-
-    public void setContaId(Long contaId) {
-        this.contaId = contaId;
-    }
-
-    public Long getSolicitacaoId() {
-        return solicitacaoId;
-    }
-
-    public void setSolicitacaoId(Long solicitacaoId) {
-        this.solicitacaoId = solicitacaoId;
     }
 
     public String getNumero() {
@@ -129,14 +86,6 @@ public class CartaoEntity {
 
     public void setDataVencimento(LocalDateTime dataVencimento) {
         this.dataVencimento = dataVencimento;
-    }
-
-    public LocalDateTime getDataCriacao() {
-        return dataCriacao;
-    }
-
-    public void setDataCriacao(LocalDateTime dataCriacao) {
-        this.dataCriacao = dataCriacao;
     }
 
     public StatusCartao getStatus() {
