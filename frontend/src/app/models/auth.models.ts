@@ -1,3 +1,5 @@
+// ========== DTOS PARA OPERAÇÕES HTTP ========== //
+
 export interface LoginRequest {
   username: string
   password: string

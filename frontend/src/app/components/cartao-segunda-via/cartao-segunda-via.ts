@@ -4,10 +4,7 @@ import { FormsModule } from "@angular/forms";
 import { CartaoService } from "../../service/cartao";
 import { Cliente } from "../../models/cliente";
 import { Cartao } from "../../models/cartao";
-import {
-  SegundaViaCartaoRequestDTO,
-  SegundaViaCartaoResponseDTO,
-} from "../../models/cartao-dtos";
+import { SegundaViaCartaoRequestDTO, SegundaViaCartaoResponseDTO, } from "../../models/cartao-dtos";
 
 @Component({
   selector: "app-segunda-via-popup",
@@ -16,6 +13,7 @@ import {
   templateUrl: "./cartao-segunda-via.html",
   styleUrls: ["./cartao-segunda-via.css"],
 })
+
 export class SegundaViaPopupComponent {
   @Input() cliente: Cliente | null = null;
   @Input() cartao: Cartao | null = null;
@@ -30,10 +28,7 @@ export class SegundaViaPopupComponent {
 
   constructor(private cartaoService: CartaoService) {}
 
-  fecharModal(): void {
-    this.resetarEstado();
-    this.fechar.emit();
-  }
+// ========== FAZ A SOLICITAÇÃO DA SEGUNDA VIA ========== //
 
   confirmarSolicitacao(): void {
     if (!this.motivo.trim()) {
@@ -47,8 +42,8 @@ export class SegundaViaPopupComponent {
     }
 
     const solicitacao: SegundaViaCartaoRequestDTO = {
-      clienteId: this.cliente.id,
-      numeroCartao: this.cartao.numero,
+      cvv: this.cartao.cvv,
+      numero: this.cartao.numero,
       motivo: this.motivo.trim(),
     };
 
@@ -56,8 +51,17 @@ export class SegundaViaPopupComponent {
     this.resetarEstado();
   }
 
+  // ========== FORMATAÇÃO ========== //
+
   formatarNumeroCartao(numero: string): string {
     return this.cartaoService.formatarNumeroCartao(numero);
+  }
+
+  // ========== NAVEGAÇÃO ========== //
+
+  fecharModal(): void {
+    this.resetarEstado();
+    this.fechar.emit();
   }
 
   onOverlayClick(event: MouseEvent): void {
@@ -65,6 +69,8 @@ export class SegundaViaPopupComponent {
       this.fecharModal();
     }
   }
+
+  // ========== LIMPA FORMS ========== //
 
   private resetarEstado(): void {
     this.motivo = "";

@@ -2,23 +2,19 @@ import { Injectable } from "@angular/core";
 import { HttpClient, HttpParams } from "@angular/common/http";
 import { Observable } from "rxjs";
 import { Cartao } from "../models/cartao";
-import {
-  CartaoResponseDTO,
-  CartaoIdentificacaoRequestDTO,
-  SegundaViaCartaoRequestDTO,
-  SegundaViaCartaoResponseDTO,
-} from "../models/cartao-dtos";
+import { SegundaViaCartaoRequestDTO, SegundaViaCartaoResponseDTO, AlterarStatusRequestDTO, } from "../models/cartao-dtos";
 import { environment } from "../enviroments/enviroment";
 
 @Injectable({
   providedIn: "root",
 })
+
 export class CartaoService {
   private apiUrl = `${environment.apiUrl}/cartoes`;
 
   constructor(private http: HttpClient) {}
 
-  // ========== OPERAÇÕES HTTP ==========
+  // ========== OPERAÇÕES HTTP ========== //
 
  getCartoesByClienteId(clienteId: number, page: number = 0, size: number = 10): Observable<any> {
   const params = new HttpParams()
@@ -27,40 +23,35 @@ export class CartaoService {
     .set('sort', 'id,DESC');
 
   return this.http.get<any>(`${this.apiUrl}/cliente/${clienteId}`, { params });
-}
-
-  /*createCartao(cartao: Cartao): Observable<Cartao> {
-    return this.http.post<Cartao>(this.apiUrl, cartao);
   }
 
-  updateCartao(id: number, cartao: Cartao): Observable<Cartao> {
-    return this.http.put<Cartao>(`${this.apiUrl}/${id}`, cartao);
+  createCartao(cartao: Cartao): Observable<Cartao> {
+    return this.http.post<Cartao>(`${this.apiUrl}/cadastrar-existente`, cartao);
   }
 
-  deleteCartao(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`);
-  }*/
-
-  ativarCartao(clienteId: number, numeroCartao: string): Observable<CartaoResponseDTO> {
-    const request: CartaoIdentificacaoRequestDTO = { clienteId, numeroCartao };
-    return this.http.put<CartaoResponseDTO>(`${this.apiUrl}/ativar`, request);
-  }
-
-  bloquearCartao(clienteId: number, numeroCartao: string): Observable<CartaoResponseDTO> {
-    const request: CartaoIdentificacaoRequestDTO = { clienteId, numeroCartao };
-    return this.http.put<CartaoResponseDTO>(`${this.apiUrl}/bloquear`, request);
+  alterarStatus(dto: AlterarStatusRequestDTO): Observable<Cartao> {
+    return this.http.put<Cartao>(`${this.apiUrl}/alterar-status`, dto);
   }
 
   solicitarSegundaVia(
-    clienteId: number,
-    numeroCartao: string,
+    cvv: string,
+    numero: string,
     motivo: string
   ): Observable<SegundaViaCartaoResponseDTO> {
-    const request: SegundaViaCartaoRequestDTO = { clienteId, numeroCartao, motivo };
+    const request: SegundaViaCartaoRequestDTO = { cvv, numero, motivo };
     return this.http.post<SegundaViaCartaoResponseDTO>(`${this.apiUrl}/segunda-via`, request);
   }
 
-  // ========== FORMATAÇÃO ==========
+  listarTodos(page: number = 0, size: number = 10): Observable<any> {
+    const params = new HttpParams()
+      .set('page', page.toString())
+      .set('size', size.toString())
+      .set('sort', 'id,DESC');
+
+    return this.http.get<any>(`${this.apiUrl}`, { params });
+  }
+
+  // ========== FORMATAÇÃO ========== //
 
   formatarNumeroCartao(numero: string): string {
     return numero.replace(/(\d{4})(?=\d)/g, "$1 ");
@@ -68,13 +59,19 @@ export class CartaoService {
 
   formatarDataVencimento(data: string): string {
     if (!data) return "";
-    const partes = data.split("/");
-    if (partes.length === 2) return data;
-    if (data.includes("-")) {
-      const [ano, mes] = data.split("-");
-      return `${mes}/${ano}`;
+
+    // Remove tudo que não é número
+    const numeros = data.replace(/\D/g, "");
+
+    // Formata como MM/AA
+    if (numeros.length <= 2) {
+      return numeros;
     }
-    return data;
+
+    const mes = numeros.substring(0, 2);
+    const ano = numeros.substring(2, 4);
+
+    return `${mes}/${ano}`;
   }
 
   mascaraNumeroCartao(numero: string): string {
@@ -87,11 +84,29 @@ export class CartaoService {
     return value.replace(/\D/g, "").slice(0, 4);
   }
 
-  // ========== STATUS ==========
+
+formatarLimiteAoDigitar(valor: string): string {
+  const valorNumerico = valor.replace(/\D/g, "");
+
+  if (!valorNumerico) return "";
+
+  const numero = Number(valorNumerico) / 100;
+
+  return numero.toLocaleString("pt-BR", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+}
+
+  // ========== OPERAÇÕES DE STATUS ========== //
+
   getStatusTexto(status: string): string {
     const statusMap: Record<string, string> = {
       ativado: "Ativado",
-      bloqueado: "Bloqueado"
+      bloqueado: "Bloqueado",
+      desativado: 'desativado',
+      rejeitado: 'rejeitado',
+      cancelado: 'cancelado'
     };
     return statusMap[status] || "Sem Cartão";
   }
@@ -100,8 +115,9 @@ export class CartaoService {
     const classes: Record<string, string> = {
       ativado: "status-ativado",
       bloqueado: "status-bloqueado",
-      cancelado: "status-cancelado",
-      desativado: "status-desativado",
+      desativado: 'status-desativado',
+      rejeitado: 'status-rejeitado',
+      cancelado: 'status-cancelado'
     };
     return classes[status] || "status-desconhecido";
   }
@@ -110,8 +126,9 @@ export class CartaoService {
     const classes: Record<string, string> = {
       ativado: "badge-ativado",
       bloqueado: "badge-bloqueado",
-      cancelado: "badge-cancelado",
-      desativado: "badge-desativado",
+      desativado: 'badge-desativado',
+      rejeitado: 'badge-rejeitado',
+      cancelado: 'badge-cancelado'
     };
     return classes[status] || "badge-sem-cartao";
   }
@@ -120,17 +137,18 @@ export class CartaoService {
     const cicloStatus: Record<string, string> = {
       ativado: "bloqueado",
       bloqueado: "ativado",
-      desativado: "ativado",
-      cancelado: "cancelado",
+      desativado: 'desativado',
+      rejeitado: 'rejeitado',
+      cancelado: 'cancelado'
     };
     return cicloStatus[statusAtual] || "ativado";
   }
 
   podeAlterarStatus(status: string): boolean {
-    return status !== " ";
+    return status !== "Sem Cartão";
   }
 
-  // ========== VALIDAÇÃO ==========
+  // ========== VALIDAÇÃO ========== //
 
   validarNumeroCartao(numero: string): boolean {
     const numeroLimpo = numero.replace(/\s/g, "");
@@ -154,12 +172,22 @@ export class CartaoService {
 
   validarDataVencimento(data: string): boolean {
     if (!data) return false;
+
     const [mes, ano] = data.split("/");
     if (!mes || !ano) return false;
 
     const mesNum = parseInt(mes, 10);
-    const anoNum = parseInt(ano, 10);
+    let anoNum = parseInt(ano, 10);
+
+    if (isNaN(mesNum) || isNaN(anoNum)) return false;
     if (mesNum < 1 || mesNum > 12) return false;
+
+    // Corrige ano com dois dígitos (ex: "25" vira "2025")
+    if (ano.length === 2) {
+      const anoAtual = new Date().getFullYear();
+      const prefixo = Math.floor(anoAtual / 100) * 100;
+      anoNum += prefixo;
+    }
 
     const hoje = new Date();
     const anoAtual = hoje.getFullYear();
@@ -200,7 +228,7 @@ export class CartaoService {
     };
   }
 
-  // ========== IDENTIFICAÇÃO DE BANDEIRA ==========
+  // ========== IDENTIFICAÇÃO DE BANDEIRA ========== //
 
   identificarBandeira(numero: string): string {
     const numeroLimpo = numero.replace(/\s/g, "");

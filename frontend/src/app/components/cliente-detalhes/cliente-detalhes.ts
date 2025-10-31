@@ -13,6 +13,7 @@ import { ExportacaoService } from "../../service/exportacao";
   templateUrl: "./cliente-detalhes.html",
   styleUrls: ["./cliente-detalhes.css"],
 })
+
 export class ClienteDetalhesComponent implements OnChanges {
   @Input() cliente: Cliente | null = null;
   @Input() cartao: Cartao | null = null;
@@ -27,10 +28,12 @@ export class ClienteDetalhesComponent implements OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes["cliente"] || changes["cartao"]) {
-      console.log("[v0] ClienteDetalhes - Cliente recebido:", this.cliente);
-      console.log("[v0] ClienteDetalhes - Cartão recebido:", this.cartao);
+      console.log("ClienteDetalhes - Cliente recebido:", this.cliente);
+      console.log("ClienteDetalhes - Cartão recebido:", this.cartao);
     }
   }
+
+// ========== NAVEGAÇÃO ========== //
 
   fecharModal(): void {
     this.fechar.emit();
@@ -42,6 +45,8 @@ export class ClienteDetalhesComponent implements OnChanges {
     }
   }
 
+// ========== OPERAÇÕES HTTP ========== //
+
   getStatusTexto(status: string): string {
     return this.cartaoService.getStatusTexto(status);
   }
@@ -49,6 +54,8 @@ export class ClienteDetalhesComponent implements OnChanges {
   getStatusClass(status: string): string {
     return this.cartaoService.getStatusBadgeClass(status);
   }
+
+// ========== FORMATAÇÃO ========== //
 
   formatarCPF(cpf: string): string {
     return this.clienteService.formatarCPF(cpf);
@@ -65,6 +72,8 @@ export class ClienteDetalhesComponent implements OnChanges {
   formatarValorParaReal(valor: number | string): string {
     return this.clienteService.formatarValorParaReal(valor);
   }
+
+ // ========== EXPORTAR RELATORIO CLIENTE ========== //
 
   exportarPDF(): void {
     if (!this.cliente) return;

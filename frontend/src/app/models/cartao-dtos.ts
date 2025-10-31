@@ -1,25 +1,35 @@
-export interface CartaoIdentificacaoRequestDTO {
-  clienteId: number
-  numeroCartao: string
-}
+// ========== DTOS PARA OPERAÇÕES HTTP ========== //
 
-export interface CartaoResponseDTO {
-  clienteId: number
-  numeroCartao: string
-  status: string
-  mensagem: string
+export interface AlterarStatusRequestDTO {
+  numero: string
+  cvv: string
+  novoStatus: string
 }
 
 export interface SegundaViaCartaoRequestDTO {
-  clienteId: number
-  numeroCartao: string
+  cvv: string
+  numero: string
   motivo: string
 }
 
 export interface SegundaViaCartaoResponseDTO {
-  clienteId: number
-  numeroCartaoAntigo: string
-  numeroCartaoNovo: string
-  dataEmissao: string
-  mensagem: string
+  numero: number
+  cvv: string
+  motivoSegundaVia: string
+  dataVencimento: string
+  status: string
+}
+
+export interface CartaoRequestDTO {
+  id?: number;
+  clienteId: number;
+  numero: string;
+  cvv: string;
+  dataVencimento: string;
+  dataCriacao?: string;
+  status:  "ATIVADO" | "BLOQUEADO" | "DESATIVADO" | "REJEITADO" | "CANCELADO";
+  motivoStatus?: string;
+  tipoCartao: string;
+  tipoEmissao: string;
+  limite: number;
 }

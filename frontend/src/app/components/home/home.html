@@ -94,7 +94,7 @@
           </button>
           <button
             class="bulk-btn bulk-btn-cancelado"
-            (click)="mudarStatus('')"
+            (click)="mudarStatus('cancelado')"
             [disabled]="isProcessing"
             aria-label="Cancelar cartões selecionados"
           >
@@ -102,7 +102,7 @@
               <circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="2" fill="none"/>
               <path d="M8 5V8L10 10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
             </svg>
-            sem Cartão
+            cancelado
           </button>
         </div>
       </div>
@@ -152,7 +152,7 @@
             </td>
             <td class="td-nome">{{ cliente.nome }}</td>
             <td>{{ cliente.email }}</td>
-            <td>{{ formatarCPF(cliente.cpf) }}</td>
+            <td>{{ this.clienteService.formatarCPF(cliente.cpf) }}</td>
             <td>
               <button
                 class="btn-status"

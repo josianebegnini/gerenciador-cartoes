@@ -11,6 +11,7 @@ import { AuthService } from '../../service/auth.service';
   templateUrl: './cadastro-user.html',
   styleUrls: ['./cadastro-user.css']
 })
+
 export class CadastroUserComponent {
   cadastroForm: FormGroup;
 
@@ -27,18 +28,14 @@ export class CadastroUserComponent {
     });
   }
 
-  /**
-   * Verifica se as senhas são diferentes
-   */
+  // ========== Verifica se as senhas são diferentes ========== //
   senhasDiferentes(): boolean {
     const senha = this.cadastroForm.get('senha')?.value;
     const confirmar = this.cadastroForm.get('confirmarSenha')?.value;
     return senha && confirmar && senha !== confirmar;
   }
 
-  /**
-   * Envia os dados para o backend
-   */
+  // ========== Envia os dados para o backend ========== //
   onSubmit(): void {
     if (this.cadastroForm.invalid || this.senhasDiferentes()) {
       this.cadastroForm.markAllAsTouched();
@@ -65,9 +62,7 @@ export class CadastroUserComponent {
     });
   }
 
-  /**
-   * Retorna para a tela de login
-   */
+  // ========== NAVEGAÇÃO ========== //
   voltarLogin(): void {
     this.router.navigate(['/login']);
   }

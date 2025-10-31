@@ -10,14 +10,21 @@ import { ClienteDetalhesComponent } from "../cliente-detalhes/cliente-detalhes"
 import { MenuLateral } from "../menu-lateral/menu-lateral"
 import { Router } from "@angular/router"
 import { SegundaViaPopupComponent } from "../cartao-segunda-via/cartao-segunda-via"
-import type { CartaoResponseDTO, SegundaViaCartaoRequestDTO } from "../../models/cartao-dtos"
+import { AlterarStatusRequestDTO, SegundaViaCartaoRequestDTO } from "../../models/cartao-dtos"
 
 interface ClienteComCartao extends Cliente {
   cartao?: Cartao
   selecionado: boolean
 }
 
-type StatusCartao =  "ativado" | "bloqueado" | ""
+type StatusCartao =  'ativado' | 'bloqueado' | 'desativado' | 'rejeitado' | 'cancelado';
+
+export const VALID_STATUSES = ["ativado", "bloqueado", "desativado", "rejeitado", "cancelado"] as const;
+export type CartaoStatus = typeof VALID_STATUSES[number];
+
+export function isValidStatus(s: string): s is CartaoStatus {
+  return VALID_STATUSES.includes(s as CartaoStatus);
+}
 
 @Component({
   selector: "app-home",
@@ -26,6 +33,7 @@ type StatusCartao =  "ativado" | "bloqueado" | ""
   templateUrl: "./home.html",
   styleUrls: ["./home.css"],
 })
+
 export class Home implements OnInit, OnDestroy {
   isLoading = false
   isProcessing = false
@@ -46,7 +54,7 @@ export class Home implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>()
 
   constructor(
-    private clienteService: ClienteService,
+    public clienteService: ClienteService,
     private cartaoService: CartaoService,
     private router: Router,
   ) {}
@@ -60,7 +68,7 @@ export class Home implements OnInit, OnDestroy {
     this.destroy$.complete()
   }
 
-  // ========== CARREGAMENTO DE DADOS ==========
+// ========== CARREGAMENTO DE DADOS ========== //
 
 carregarDados(): void {
   this.isLoading = true;
@@ -87,24 +95,25 @@ carregarDados(): void {
               cliente.cartao = cartaoEncontrado;
             },
             error: (err) => {
-              console.error(`[v1] Erro ao buscar cartão do cliente ${cliente.id}:`, err);
+              console.error(`Erro ao buscar cartão do cliente ${cliente.id}:`, err);
             }
           });
         });
       },
       error: (error) => {
-        console.error("[v1] Erro ao carregar dados:", error);
+        console.error("Erro ao carregar dados:", error);
         this.mostrarErro("Erro ao carregar dados. Tente novamente.");
       }
     });
-}
-  // ========== FILTROS ==========
+  }
+
+  // ========== FILTROS ========== //
 
   get clientesFiltrados(): ClienteComCartao[] {
     return this.clienteService.filtrarClientes(this.clientes, this.filtroCpf, this.filtroNome)
   }
 
-  // ========== SELEÇÃO ==========
+  // ========== SELEÇÃO ========== //
 
   get temClientesSelecionados(): boolean {
     return this.clientes.some((cliente) => cliente.selecionado === true)
@@ -114,9 +123,9 @@ carregarDados(): void {
     return this.clientes.filter((cliente) => cliente.selecionado === true).length
   }
 
-  // ========== OPERAÇÕES DE STATUS ==========
+  // ========== OPERAÇÕES DE STATUS ========== //
 
-  mudarStatus(novoStatus: StatusCartao): void {
+  mudarStatus(novoStatus: CartaoStatus): void {
   const clientesSelecionados = this.clientes.filter(cliente => cliente.selecionado === true);
   const clientesComCartao = clientesSelecionados.filter(cliente => cliente.cartao && cliente.id);
 
@@ -134,15 +143,15 @@ carregarDados(): void {
   this.isProcessing = true;
 
   const alteracoes = clientesComCartao.map(cliente => {
-    const { id, cartao } = cliente;
-    if (!id || !cartao?.numero) return of(null); // segurança
-    if (novoStatus === 'ativado') {
-      return this.cartaoService.ativarCartao(id, cartao.numero);
-    } else if (novoStatus === 'bloqueado') {
-      return this.cartaoService.bloquearCartao(id, cartao.numero);
-    } else {
-      return of(null);
-    }
+    const { cartao } = cliente;
+    if (!cartao?.numero || !cartao?.cvv) return of(null); // segurança
+    const dto: AlterarStatusRequestDTO = {
+      numero: cartao.numero,
+      cvv: cartao.cvv,
+      novoStatus: novoStatus
+    };
+
+    return this.cartaoService.alterarStatus(dto);
   });
 
   forkJoin(alteracoes)
@@ -154,74 +163,79 @@ carregarDados(): void {
       next: () => {
         this.clientes.forEach(cliente => {
           if (cliente.selecionado && cliente.cartao) {
-            cliente.cartao.status = novoStatus;
+            if (isValidStatus(novoStatus)) {
+              cliente.cartao.status = novoStatus;
+            } else {
+              console.warn("Status inválido recebido:", novoStatus);
+            }
           }
           cliente.selecionado = false;
         });
         this.mostrarSucesso("Status alterado com sucesso!");
       },
       error: (error) => {
-        console.error("[v1] Erro ao alterar status:", error);
+        console.error("Erro ao alterar status:", error);
         this.mostrarErro("Erro ao alterar status. Tente novamente.");
       }
     });
 }
 
-
-  alternarStatus(cliente: ClienteComCartao): void {
-  if (!cliente.id || !cliente.cartao) {
-    this.mostrarErro("Cliente não possui cartão");
+alternarStatus(cliente: ClienteComCartao): void {
+  if (!cliente.cartao) {
+    this.mostrarErro("Cartão não encontrado para este cliente.");
     return;
   }
 
-  if (!this.cartaoService.podeAlterarStatus(cliente.cartao.status)) {
+  const cartao = cliente.cartao;
+
+  if (!this.cartaoService.podeAlterarStatus(cartao.status)) {
     this.mostrarErro("Cartão cancelado não pode ter status alterado");
     return;
   }
 
-  this.isProcessing = true;
-
-  const { id, cartao } = cliente;
-  const numeroCartao = cartao.numero;
-
-  let operacao$: Observable<CartaoResponseDTO>;
-
-  if (cartao.status === 'ativado') {
-    operacao$ = this.cartaoService.bloquearCartao(id, numeroCartao);
-  } else if (cartao.status === 'bloqueado') {
-    operacao$ = this.cartaoService.ativarCartao(id, numeroCartao);
+  let novoStatus: CartaoStatus;
+  if (cartao.status === "ativado") {
+    novoStatus = "bloqueado";
+  } else if (cartao.status === "bloqueado") {
+    novoStatus = "ativado";
   } else {
     this.mostrarErro("Status atual não permite alternância");
-    this.isProcessing = false;
     return;
   }
 
-  operacao$
+  const dto: AlterarStatusRequestDTO = {
+    numero: cartao.numero,
+    cvv: cartao.cvv,
+    novoStatus: novoStatus
+  };
+
+  this.isProcessing = true;
+
+  this.cartaoService.alterarStatus(dto)
     .pipe(
       takeUntil(this.destroy$),
       finalize(() => (this.isProcessing = false))
     )
     .subscribe({
       next: (cartaoAtualizado) => {
+        const statusRecebido = cartaoAtualizado?.status;
 
-      const status = cartaoAtualizado.status as "ativado" | "bloqueado";
-
-        if (status === "ativado" || status === "bloqueado") {
-          cliente.cartao!.status = status;
+        if (isValidStatus(statusRecebido)) {
+          cliente.cartao!.status = statusRecebido;
           this.mostrarSucesso("Status alterado com sucesso!");
         } else {
-          console.warn("Status inválido recebido:", status);
+          console.warn("Status inválido recebido:", statusRecebido);
           this.mostrarErro("Status recebido é inválido.");
         }
       },
       error: (error) => {
-        console.error("[v1] Erro ao alterar status:", error);
+        console.error("Erro ao alterar status:", error);
         this.mostrarErro("Erro ao alterar status. Tente novamente.");
       }
     });
 }
 
-  // ========== MODAL DETALHES ==========
+  // ========== MODAL DETALHES ========== //
 
   verDetalhes(cliente: ClienteComCartao): void {
     this.clienteSelecionadoDetalhes = cliente
@@ -242,7 +256,7 @@ carregarDados(): void {
     this.cartaoSelecionado = null
   }
 
-  // ========== SEGUNDA VIA ==========
+  // ========== SEGUNDA VIA ========== //
 
   segundaVia(cliente: ClienteComCartao): void {
     if (!cliente.id || !cliente.cartao) {
@@ -262,15 +276,10 @@ carregarDados(): void {
   }
 
   processarSegundaVia(solicitacao: SegundaViaCartaoRequestDTO): void {
-    if (!solicitacao.clienteId) {
-      this.mostrarErro("Erro: ID do cliente não encontrado")
-      return
-    }
-
     this.isProcessing = true
 
     this.cartaoService
-      .solicitarSegundaVia(solicitacao.clienteId, solicitacao.numeroCartao, solicitacao.motivo)
+      .solicitarSegundaVia(solicitacao.cvv, solicitacao.motivo, solicitacao.numero)
       .pipe(
         takeUntil(this.destroy$),
         finalize(() => (this.isProcessing = false)),
@@ -282,13 +291,13 @@ carregarDados(): void {
           this.carregarDados()
         },
         error: (error) => {
-          console.error("[v0] Erro ao solicitar 2ª via:", error)
+          console.error("Erro ao solicitar 2ª via:", error)
           this.mostrarErro("Erro ao solicitar 2ª via do cartão")
         },
       })
   }
 
-  // ========== EXCLUSÃO ==========
+  // ========== EXCLUSÃO ========== //
 
   excluirCliente(cliente: ClienteComCartao): void {
     if (!cliente.id) return
@@ -311,13 +320,13 @@ carregarDados(): void {
           this.carregarDados()
         },
         error: (error) => {
-          console.error("[v0] Erro ao excluir cliente:", error)
+          console.error("Erro ao excluir cliente:", error)
           this.mostrarErro("Erro ao excluir cliente")
         },
       })
   }
 
-  // ========== NAVEGAÇÃO ==========
+  // ========== NAVEGAÇÃO ========== //
 
   novoCliente(): void {
     this.router.navigate(["/cadastro-cliente"])
@@ -339,7 +348,7 @@ carregarDados(): void {
     this.router.navigate(["/login"])
   }
 
-  // ========== FORMATAÇÃO (delegada ao service) ==========
+  // ========== FORMATAÇÃO (delegada ao service) ========== //
 
   getStatusClass(status?: string): string {
     return this.cartaoService.getStatusClass(status || "")
@@ -349,7 +358,7 @@ carregarDados(): void {
     return this.cartaoService.getStatusTexto(status || "")
   }
 
-  // ========== UTILITÁRIOS ==========
+  // ========== UTILITÁRIOS ========== //
 
   private mostrarSucesso(mensagem: string): void {
     alert(mensagem)
@@ -363,8 +372,4 @@ carregarDados(): void {
     return cliente.id
   }
 
-   formatarCPF(cpf: string): string {
-    const cpfLimpo = this.clienteService.limparCPF(cpf);
-    return cpfLimpo.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
-  }
 }
