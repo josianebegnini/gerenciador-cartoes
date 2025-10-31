@@ -1,7 +1,7 @@
 package com.example.gw_gerenciador_cartoes.application.dto.cartao;
 
-import com.example.gw_gerenciador_cartoes.domain.enums.TipoCartao;
-import com.example.gw_gerenciador_cartoes.domain.enums.TipoEmissao;
+import com.example.gw_gerenciador_cartoes.infra.enums.TipoCartao;
+import com.example.gw_gerenciador_cartoes.infra.enums.TipoEmissao;
 
 public class ClienteContaCriadoDTO {
     private Long clienteId;

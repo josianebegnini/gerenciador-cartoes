@@ -2,7 +2,7 @@ package com.example.gw_gerenciador_cartoes.service;
 
 import com.example.gw_gerenciador_cartoes.application.dto.cartao.*;
 import com.example.gw_gerenciador_cartoes.application.mapper.CartaoMapper;
-import com.example.gw_gerenciador_cartoes.domain.enums.StatusCartao;
+import com.example.gw_gerenciador_cartoes.infra.enums.StatusCartao;
 import com.example.gw_gerenciador_cartoes.domain.model.Cartao;
 import com.example.gw_gerenciador_cartoes.domain.model.SolicitacaoCartao;
 import com.example.gw_gerenciador_cartoes.domain.ports.CartaoRepositoryPort;
@@ -87,7 +87,7 @@ public class CartaoService implements CartaoServicePort {
     }
 
     @Override
-    public CartaoClienteResponseDTO alterarStatus(AlterarStatusRequestDTO dto) {
+    public CartaoResponseDTO alterarStatus(AlterarStatusRequestDTO dto) {
         Cartao cartao = buscarCartaoPorNumeroECvv(dto.getNumero(), dto.getCvv());
 
         cartaoStatusValidator.validarAlteracaoStatus(cartao, dto.getNovoStatus());
@@ -97,7 +97,7 @@ public class CartaoService implements CartaoServicePort {
 
         enviarEmailStatusAtualizado(dto.getNovoStatus(), atualizado);
 
-        return mapper.toCartaoClienteResponseDTO(atualizado);
+        return mapper.toCartaoResponseDTO(atualizado);
     }
 
     private void enviarEmailStatusAtualizado(StatusCartao status, Cartao cartao) {
@@ -112,7 +112,7 @@ public class CartaoService implements CartaoServicePort {
     }
 
     @Override
-    public SegundaViaCartaoResponseDTO solicitarSegundaVia(SegundaViaCartaoRequestDTO dto) {
+    public CartaoResponseDTO solicitarSegundaVia(SegundaViaCartaoRequestDTO dto) {
 
         Cartao original = buscarCartaoPorNumeroECvv(dto.getNumero(), dto.getCvv());
 
@@ -129,7 +129,7 @@ public class CartaoService implements CartaoServicePort {
 
         cartaoEmailService.enviarEmailSegundaVia(cartaoSalvo);
 
-        return mapper.toSegundaViaResponseDTO(cartaoSalvo);
+        return mapper.toCartaoResponseDTO(cartaoSalvo);
     }
 
     private Cartao criarSegundaVia(Cartao original, SegundaViaCartaoRequestDTO dto) {
@@ -169,13 +169,13 @@ public class CartaoService implements CartaoServicePort {
     }
 
     @Override
-    public Page<CartaoClienteResponseDTO> buscarPorCliente(Long clienteId, Pageable pageable) {
+    public Page<CartaoResponseDTO> buscarPorCliente(Long clienteId, Pageable pageable) {
         Page<Cartao> cartoes = repository.buscarPorIdCliente(clienteId, pageable);
-        return cartoes.map(mapper::toCartaoClienteResponseDTO);
+        return cartoes.map(mapper::toCartaoResponseDTO);
     }
 
     @Override
-    public CartaoClienteResponseDTO cadastrarCartaoExistente(CadastrarCartaoExistenteRequestDTO dto) {
+    public CartaoResponseDTO cadastrarCartaoExistente(CadastrarCartaoExistenteRequestDTO dto) {
         Cartao cartao = new Cartao();
         cartao.setClienteId(dto.getClienteId());
         cartao.setContaId(0L);
@@ -191,7 +191,7 @@ public class CartaoService implements CartaoServicePort {
         cartao.setLimite(dto.getLimite());
 
         Cartao cartaoSalvo = repository.salvar(cartao);
-        return mapper.toCartaoClienteResponseDTO(cartaoSalvo);
+        return mapper.toCartaoResponseDTO(cartaoSalvo);
     }
 
     @Override

@@ -22,34 +22,34 @@ public interface CartaoControllerDoc {
     @Operation(summary = "Alterar status do cartão", description = "Permite alterar o status de um cartão existente")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Status alterado com sucesso",
-                content = @Content(schema = @Schema(implementation = CartaoClienteResponseDTO.class))),
+                content = @Content(schema = @Schema(implementation = CartaoResponseDTO.class))),
         @ApiResponse(responseCode = "400", description = "Requisição inválida")
     })
-    ResponseEntity<CartaoClienteResponseDTO> alterarStatus(@RequestBody @Valid AlterarStatusRequestDTO dto);
+    ResponseEntity<CartaoResponseDTO> alterarStatus(@RequestBody @Valid AlterarStatusRequestDTO dto);
 
     @Operation(summary = "Solicitar segunda via do cartão", description = "Gera uma nova via do cartão com nova numeração e CVV")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Segunda via gerada com sucesso",
-                    content = @Content(schema = @Schema(implementation = SegundaViaCartaoResponseDTO.class))),
+                    content = @Content(schema = @Schema(implementation = CartaoInfoResponseDTO.class))),
             @ApiResponse(responseCode = "404", description = "Cartão não encontrado")
     })
-    ResponseEntity<SegundaViaCartaoResponseDTO> solicitarSegundaVia(@RequestBody @Valid SegundaViaCartaoRequestDTO dto);
+    ResponseEntity<CartaoResponseDTO> solicitarSegundaVia(@RequestBody @Valid SegundaViaCartaoRequestDTO dto);
 
     @Operation(summary = "Buscar cartões por cliente", description = "Retorna os cartões associados a um cliente específico")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Cartões encontrados",
-                    content = @Content(schema = @Schema(implementation = CartaoClienteResponseDTO.class))),
+                    content = @Content(schema = @Schema(implementation = CartaoResponseDTO.class))),
             @ApiResponse(responseCode = "404", description = "Cliente não encontrado")
     })
-    ResponseEntity<Page<CartaoClienteResponseDTO>> buscarPorCliente(@PathVariable Long idCliente, Pageable pageable);
+    ResponseEntity<Page<CartaoResponseDTO>> buscarPorCliente(@PathVariable Long idCliente, Pageable pageable);
 
     @Operation(summary = "Cadastrar cartão existente", description = "Permite cadastrar um cartão já existente no sistema")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Cartão cadastrado com sucesso",
-                    content = @Content(schema = @Schema(implementation = CartaoClienteResponseDTO.class))),
+                    content = @Content(schema = @Schema(implementation = CartaoResponseDTO.class))),
             @ApiResponse(responseCode = "400", description = "Dados inválidos")
     })
-    ResponseEntity<CartaoClienteResponseDTO> cadastrarCartaoExistente(@RequestBody @Valid CadastrarCartaoExistenteRequestDTO dto);
+    ResponseEntity<CartaoResponseDTO> cadastrarCartaoExistente(@RequestBody @Valid CadastrarCartaoExistenteRequestDTO dto);
 
     @Operation(summary = "Listar todos os cartões", description = "Retorna todos os cartões cadastrados no sistema")
     @ApiResponses(value = {

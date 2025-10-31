@@ -1,8 +1,7 @@
 package com.example.gw_gerenciador_cartoes.application.mapper;
 
-import com.example.gw_gerenciador_cartoes.application.dto.cartao.CartaoClienteResponseDTO;
 import com.example.gw_gerenciador_cartoes.application.dto.cartao.CartaoResponseDTO;
-import com.example.gw_gerenciador_cartoes.application.dto.cartao.SegundaViaCartaoResponseDTO;
+import com.example.gw_gerenciador_cartoes.application.dto.cartao.CartaoInfoResponseDTO;
 import com.example.gw_gerenciador_cartoes.domain.model.Cartao;
 import com.example.gw_gerenciador_cartoes.infra.entity.CartaoEntity;
 import org.mapstruct.Mapper;
@@ -11,7 +10,7 @@ import org.mapstruct.Mapper;
 public interface CartaoMapper {
     Cartao toDomain(CartaoEntity entity);
     CartaoEntity toEntity(Cartao domain);
+    CartaoInfoResponseDTO toSegundaViaResponseDTO(Cartao cartao);
     CartaoResponseDTO toCartaoResponseDTO(Cartao cartao);
-    SegundaViaCartaoResponseDTO toSegundaViaResponseDTO(Cartao cartao);
-    CartaoClienteResponseDTO toCartaoClienteResponseDTO(Cartao cartao);
+    CartaoInfoResponseDTO toCartaoInfoResponseDTO(Cartao cartao);
 }

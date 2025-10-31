@@ -1,8 +1,8 @@
 package com.example.gw_gerenciador_cartoes.service;
 
-import com.example.gw_gerenciador_cartoes.domain.enums.StatusSolicitacao;
-import com.example.gw_gerenciador_cartoes.domain.enums.TipoCartao;
-import com.example.gw_gerenciador_cartoes.domain.enums.TipoEmissao;
+import com.example.gw_gerenciador_cartoes.infra.enums.StatusSolicitacao;
+import com.example.gw_gerenciador_cartoes.infra.enums.TipoCartao;
+import com.example.gw_gerenciador_cartoes.infra.enums.TipoEmissao;
 import com.example.gw_gerenciador_cartoes.domain.model.SolicitacaoCartao;
 import com.example.gw_gerenciador_cartoes.domain.ports.SolicitacaoCartaoRepositoryPort;
 import com.example.gw_gerenciador_cartoes.domain.ports.SolicitacaoCartaoServicePort;

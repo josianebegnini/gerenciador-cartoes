@@ -1,6 +1,6 @@
 package com.example.gw_gerenciador_cartoes.application.dto.cartao;
 
-import com.example.gw_gerenciador_cartoes.domain.enums.StatusCartao;
+import com.example.gw_gerenciador_cartoes.infra.enums.StatusCartao;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 

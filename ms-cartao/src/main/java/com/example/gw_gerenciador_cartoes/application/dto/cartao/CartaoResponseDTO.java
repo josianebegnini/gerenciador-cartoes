@@ -1,17 +1,15 @@
 package com.example.gw_gerenciador_cartoes.application.dto.cartao;
 
+import com.example.gw_gerenciador_cartoes.infra.enums.StatusCartao;
+import com.example.gw_gerenciador_cartoes.infra.enums.TipoCartao;
+import com.example.gw_gerenciador_cartoes.infra.enums.TipoEmissao;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-import com.example.gw_gerenciador_cartoes.domain.enums.StatusCartao;
-import com.example.gw_gerenciador_cartoes.domain.enums.TipoCartao;
-import com.example.gw_gerenciador_cartoes.domain.enums.TipoEmissao;
-
 public class CartaoResponseDTO {
-    private Long id;
+
     private Long clienteId;
-    private Long contaId;
-    private Long solicitacaoId;
     private String numero;
     private String cvv;
     private LocalDateTime dataVencimento;
@@ -25,11 +23,8 @@ public class CartaoResponseDTO {
     public CartaoResponseDTO() {
     }
 
-    public CartaoResponseDTO(Long id, Long clienteId, Long contaId, Long solicitacaoId, String numero, String cvv, LocalDateTime dataVencimento, LocalDateTime dataCriacao, StatusCartao status, String motivoStatus, TipoCartao tipoCartao, TipoEmissao tipoEmissao, BigDecimal limite) {
-        this.id = id;
+    public CartaoResponseDTO(Long clienteId, String numero, String cvv, LocalDateTime dataVencimento, LocalDateTime dataCriacao, StatusCartao status, String motivoStatus, TipoCartao tipoCartao, TipoEmissao tipoEmissao, BigDecimal limite) {
         this.clienteId = clienteId;
-        this.contaId = contaId;
-        this.solicitacaoId = solicitacaoId;
         this.numero = numero;
         this.cvv = cvv;
         this.dataVencimento = dataVencimento;
@@ -41,36 +36,12 @@ public class CartaoResponseDTO {
         this.limite = limite;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public Long getClienteId() {
         return clienteId;
     }
 
     public void setClienteId(Long clienteId) {
         this.clienteId = clienteId;
-    }
-
-    public Long getContaId() {
-        return contaId;
-    }
-
-    public void setContaId(Long contaId) {
-        this.contaId = contaId;
-    }
-
-    public Long getSolicitacaoId() {
-        return solicitacaoId;
-    }
-
-    public void setSolicitacaoId(Long solicitacaoId) {
-        this.solicitacaoId = solicitacaoId;
     }
 
     public String getNumero() {

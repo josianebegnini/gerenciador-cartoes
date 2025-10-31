@@ -1,4 +1,4 @@
-package com.example.gw_gerenciador_cartoes.domain.enums;
+package com.example.gw_gerenciador_cartoes.infra.enums;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 
