@@ -4,7 +4,6 @@ import com.example.gw_gerenciador_cartoes.application.util.ClienteMapper;
 import com.example.gw_gerenciador_cartoes.domain.model.Cliente;
 import com.example.gw_gerenciador_cartoes.application.dto.ClienteDTO;
 import com.example.gw_gerenciador_cartoes.domain.ports.ClienteServicePort;
-import com.example.gw_gerenciador_cartoes.service.ClienteServiceImpl;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -19,7 +18,7 @@ public class ClienteController {
 
     ClienteServicePort clienteService;
 
-    public ClienteController(ClienteServiceImpl clienteService) {
+    public ClienteController(ClienteServicePort clienteService) {
         this.clienteService = clienteService;
     }
 
