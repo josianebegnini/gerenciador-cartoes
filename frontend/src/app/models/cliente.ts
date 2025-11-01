@@ -1,3 +1,5 @@
+// ========== ENTIDADE PRINCIPAL ========== //
+
 import { Conta } from "./conta";
 import { Endereco } from "./endereco";
 

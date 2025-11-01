@@ -7,10 +7,13 @@ import { environment } from "../enviroments/enviroment";
 @Injectable({
   providedIn: "root",
 })
+
 export class ClienteService {
   private apiUrl = `${environment.apiUrl}/clientes`;
 
   constructor(private http: HttpClient) {}
+
+  // ========== OPERAÇÕES HTTP ========== //
 
   getClientes(
     page = 0,
@@ -50,7 +53,7 @@ export class ClienteService {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 
-  // ========== FORMATAÇÃO ==========
+  // ========== FORMATAÇÃO ========== //
 
   limparCPF(cpf: string): string {
     return cpf.replace(/\D/g, "");
@@ -109,17 +112,7 @@ export class ClienteService {
     });
   }
 
-  formatarSaldoAoDigitar(valor: string): string {
-    const valorNumerico = valor.replace(/\D/g, "");
-    const numero = Number.parseFloat(valorNumerico) / 100;
-
-    return numero.toLocaleString("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-    });
-  }
-
-  // ========== VALIDAÇÃO ==========
+  // ========== VALIDAÇÃO ========== //
 
   validarCPF(cpf: string): boolean {
     const cpfLimpo = this.limparCPF(cpf);
@@ -218,7 +211,7 @@ export class ClienteService {
     };
   }
 
-  // ========== FILTROS ==========
+  // ========== FILTROS ========== //
 
   filtrarClientes(clientes: Cliente[], filtroCpf: string, filtroNome: string): Cliente[] {
     return clientes.filter((cliente) => {
@@ -228,7 +221,7 @@ export class ClienteService {
     });
   }
 
-  // ========== PREPARAÇÃO DE DADOS ==========
+  // ========== PREPARAÇÃO DE DADOS ========== //
 
   private prepararClienteParaEnvio(cliente: Cliente): any {
   return {

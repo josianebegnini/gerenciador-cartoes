@@ -72,7 +72,7 @@
         <div class="bulk-actions-buttons">
           <button
             class="bulk-btn bulk-btn-ativado"
-            (click)="mudarStatus('ativado')"
+            (click)="mudarStatus('ATIVADO')"
             [disabled]="isProcessing"
             aria-label="Ativar cartões selecionados"
           >
@@ -83,7 +83,7 @@
           </button>
           <button
             class="bulk-btn bulk-btn-bloqueado"
-            (click)="mudarStatus('bloqueado')"
+            (click)="mudarStatus('BLOQUEADO')"
             [disabled]="isProcessing"
             aria-label="Bloquear cartões selecionados"
           >
@@ -94,7 +94,7 @@
           </button>
           <button
             class="bulk-btn bulk-btn-cancelado"
-            (click)="mudarStatus('')"
+            (click)="mudarStatus('CANCELADO')"
             [disabled]="isProcessing"
             aria-label="Cancelar cartões selecionados"
           >
@@ -102,14 +102,14 @@
               <circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="2" fill="none"/>
               <path d="M8 5V8L10 10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
             </svg>
-            sem Cartão
+            cancelado
           </button>
         </div>
       </div>
     </div>
 
-    <!-- Tabela de clientes -->
-    <div class="table-container">
+    <!-- Container de clientes -->
+    <div class="clients-container">
       <!-- Mensagem quando não há dados -->
       <div *ngIf="!isLoading && clientesFiltrados.length === 0" class="empty-state">
         <svg width="48" height="48" viewBox="0 0 48 48" fill="none" aria-hidden="true">
@@ -119,78 +119,143 @@
         <p class="empty-state-text">Nenhum cliente encontrado</p>
       </div>
 
-      <table class="table" *ngIf="!isLoading && clientesFiltrados.length > 0">
-        <thead>
-          <tr>
-            <th class="th-checkbox" scope="col">
-              <span class="sr-only">Selecionar</span>
-            </th>
-            <th class="th-nome" scope="col">
-              <div class="th-content">
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-                  <path d="M2 4L6 8L10 4" stroke="#6B7280" stroke-width="1.5"/>
-                </svg>
-                Nome
-              </div>
-            </th>
-            <th scope="col">Email</th>
-            <th scope="col">CPF</th>
-            <th scope="col">Status do Cartão</th>
-            <th scope="col">Ações</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let cliente of clientesFiltrados; trackBy: trackByClienteId" class="table-row">
-            <td class="td-checkbox">
+      <!-- Lista de clientes com cartões -->
+      <div class="clients-list" *ngIf="!isLoading && clientesFiltrados.length > 0">
+        <div *ngFor="let cliente of clientesFiltrados; trackBy: trackByClienteId" class="client-card">
+          <!-- Header do cliente -->
+          <div class="client-header">
+            <div class="client-header-left">
               <input
                 type="checkbox"
                 [(ngModel)]="cliente.selecionado"
                 class="checkbox"
-                [disabled]="!cliente.cartao || isProcessing"
+                [disabled]="!temCartoes(cliente) || isProcessing"
                 [attr.aria-label]="'Selecionar ' + cliente.nome"
               />
-            </td>
-            <td class="td-nome">{{ cliente.nome }}</td>
-            <td>{{ cliente.email }}</td>
-            <td>{{ formatarCPF(cliente.cpf) }}</td>
-            <td>
               <button
-                class="btn-status"
-                [ngClass]="getStatusClass(cliente.cartao?.status)"
-                (click)="alternarStatus(cliente)"
-                [disabled]="!cliente.cartao || isProcessing"
-                [attr.aria-label]="'Alterar status do cartão de ' + cliente.nome"
+                class="expand-btn"
+                (click)="alternarExpansao(cliente)"
+                [disabled]="!temCartoes(cliente)"
+                [attr.aria-label]="cliente.expandido ? 'Recolher' : 'Expandir'"
               >
-                {{ getStatusLabel(cliente.cartao?.status) }}
-              </button>
-            </td>
-            <td>
-              <div class="action-buttons">
-                <button
-                  class="btn-acao btn-detalhes"
-                  (click)="verDetalhes(cliente)"
-                  [disabled]="isProcessing"
-                  [attr.aria-label]="'Ver detalhes de ' + cliente.nome"
+                <svg
+                  [class.rotated]="cliente.expandido"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 20 20"
+                  fill="none"
+                  aria-hidden="true"
                 >
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                    <circle cx="8" cy="8" r="2" stroke="currentColor" stroke-width="1.5" fill="none"/>
-                    <path d="M1 8C1 8 3.5 3 8 3C12.5 3 15 8 15 8C15 8 12.5 13 8 13C3.5 13 1 8 1 8Z" stroke="currentColor" stroke-width="1.5" fill="none"/>
-                  </svg>
-                  Detalhes
-                </button>
+                  <path d="M7 8L10 11L13 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+            </div>
+
+            <div class="client-info">
+              <h3 class="client-name">{{ cliente.nome }}</h3>
+              <div class="client-meta">
+                <span class="client-cpf">{{ clienteService.formatarCPF(cliente.cpf) }}</span>
+                <span class="client-email">{{ cliente.email }}</span>
+                <span class="cartoes-badge" *ngIf="temCartoes(cliente)">{{ cliente.cartoes.length }} cartão(ões)</span>
+              </div>
+            </div>
+
+            <div class="client-actions">
+              <button
+                class="btn-acao btn-detalhes"
+                (click)="verDetalhes(cliente)"
+                [disabled]="isProcessing"
+                [attr.aria-label]="'Ver detalhes de ' + cliente.nome"
+              >
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                  <circle cx="8" cy="8" r="2" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                  <path d="M1 8C1 8 3.5 3 8 3C12.5 3 15 8 15 8C15 8 12.5 13 8 13C3.5 13 1 8 1 8Z" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                </svg>
+                Detalhes
+              </button>
+            </div>
+          </div>
+
+          <!-- Lista de cartões expandida -->
+          <div class="cartoes-container" *ngIf="cliente.expandido && temCartoes(cliente)">
+            <div *ngFor="let cartao of cliente.cartoes; trackBy: trackByCartaoId" class="cartao-card">
+              <div class="cartao-header">
+                <div class="cartao-numero">
+                  <span class="label">Cartão:</span>
+                  <span class="valor">{{ mascararNumeroCartao(cartao.numero) }}</span>
+                </div>
                 <button
-                  class="btn-acao"
-                  (click)="segundaVia(cliente)"
-                  [disabled]="!cliente.cartao || isProcessing"
-                  [attr.aria-label]="'Solicitar segunda via para ' + cliente.nome"
+                  [ngClass]="getStatusClass(cartao.status)"
+                  class="btn-status"
+                  (click)="alternarStatusCartao(cartao)"
+                  [disabled]="isProcessing"
+                  [attr.aria-label]="'Alterar status do cartão ' + cartao.numero"
+                >
+                  {{ getStatusLabel(cartao.status) }}
+                </button>
+              </div>
+
+              <div class="cartao-detalhes">
+                <div class="cartao-info">
+                  <span class="label">Validade:</span>
+                  <span class="valor">{{ formatarDataVencimento(cartao.dataVencimento) }}</span>
+                </div>
+                <div class="cartao-info">
+                  <span class="label">Tipo:</span>
+                  <span class="valor">{{ cartao.tipoCartao }}</span>
+                </div>
+                <div class="cartao-info">
+                  <span class="label">Limite:</span>
+                  <span class="valor">{{ clienteService.formatarValorParaReal(cartao.limite) }}</span>
+                </div>
+              </div>
+
+              <div class="cartao-actions">
+                <button
+                  class="btn-cartao-acao"
+                  (click)="segundaVia(cliente, cartao)"
+                  [disabled]="isProcessing"
+                  [attr.aria-label]="'Solicitar segunda via para ' + cartao.numero"
                 >
                   2ª Via
                 </button>
               </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+            </div>
+
+            <!-- Ações em lote por cliente -->
+            <div class="cartoes-bulk-actions" *ngIf="cliente.cartoes.length > 1">
+              <span class="bulk-text">Ações para todos os cartões:</span>
+              <div class="bulk-buttons">
+                <button
+                  class="bulk-btn-small bulk-btn-ativado"
+                  (click)="alterarStatusMultiploCartoes(cliente, 'ATIVADO')"
+                  [disabled]="isProcessing"
+                >
+                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                    <path d="M13 4L6 11L3 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                  Ativar Todos
+                </button>
+                <button
+                  class="bulk-btn-small bulk-btn-bloqueado"
+                  (click)="alterarStatusMultiploCartoes(cliente, 'BLOQUEADO')"
+                  [disabled]="isProcessing"
+                >
+                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                    <path d="M12 4L4 12M4 4L12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  </svg>
+                  Bloquear Todos
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mensagem quando não há cartões -->
+          <div class="no-cartoes" *ngIf="!temCartoes(cliente)">
+            <span class="no-cartoes-text">Nenhum cartão cadastrado</span>
+          </div>
+        </div>
+      </div>
     </div>
   </main>
 </div>
@@ -198,7 +263,7 @@
 <!-- Modais -->
 <app-cliente-detalhes
   [cliente]="clienteSelecionadoDetalhes"
-  [cartao]="cartaoSelecionado"
+  [cartoesDoCliente]="clienteSelecionadoDetalhes?.cartoes || []"
   [isOpen]="modalDetalhesAberto"
   (fechar)="fecharDetalhes()"
 ></app-cliente-detalhes>
@@ -206,7 +271,7 @@
 <app-segunda-via-popup
   [isOpen]="modalSegundaViaAberto"
   [cliente]="clienteSegundaVia"
-  [cartao]="cartaoSegundaVia"
+  [cartoes]="clienteSegundaVia?.cartoes || []"
   (fechar)="fecharSegundaVia()"
   (confirmar)="processarSegundaVia($event)"
 ></app-segunda-via-popup>

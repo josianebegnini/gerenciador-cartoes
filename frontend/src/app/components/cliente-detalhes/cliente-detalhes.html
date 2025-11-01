@@ -1,5 +1,6 @@
 <div class="modal-overlay" *ngIf="isOpen && cliente" (click)="onOverlayClick($event)">
   <div class="modal-container">
+    <!-- Modal Header -->
     <div class="modal-header">
       <h2 class="modal-title">Detalhes do Cliente</h2>
       <button class="modal-close" (click)="fecharModal()" aria-label="Fechar">
@@ -10,7 +11,7 @@
     </div>
 
     <div class="modal-body">
-      <!-- Header com informações principais -->
+      <!-- Header com informações principais do cliente -->
       <div class="detail-section">
         <div class="detail-header">
           <svg class="detail-icon" width="48" height="48" viewBox="0 0 48 48" fill="none">
@@ -20,10 +21,7 @@
           </svg>
           <div class="detail-header-info">
             <h3 class="detail-name">{{ cliente.nome }}</h3>
-            <!--  Status agora vem do cartão separado -->
-            <span class="detail-badge" [ngClass]="getStatusClass(cartao?.status || '')">
-              {{ getStatusTexto(cartao?.status || '') }}
-            </span>
+            <p class="detail-subtitle">Cliente ID: #{{ cliente.id }}</p>
           </div>
         </div>
       </div>
@@ -64,205 +62,137 @@
           </label>
           <p class="detail-value">{{ cliente.dataNasc }}</p>
         </div>
-
-        <div class="detail-item">
-          <label class="detail-label">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path d="M8 2L2 5V10C2 12 4.5 13.5 8 14C11.5 13.5 14 12 14 10V5L8 2Z" stroke="#6B7280" stroke-width="1.5" fill="none"/>
-            </svg>
-            ID do Cliente
-          </label>
-          <p class="detail-value">#{{ cliente.id }}</p>
-        </div>
       </div>
 
-      <!--  Seção de Endereço adicionada -->
+      <!-- Endereço -->
       <div class="section-title">Endereço</div>
       <div class="detail-grid">
         <div class="detail-item">
-          <label class="detail-label">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path d="M8 2C5.8 2 4 3.8 4 6C4 9 8 14 8 14C8 14 12 9 12 6C12 3.8 10.2 2 8 2Z" stroke="#6B7280" stroke-width="1.5" fill="none"/>
-              <circle cx="8" cy="6" r="1.5" fill="#6B7280"/>
-            </svg>
-            CEP
-          </label>
+          <label class="detail-label">CEP</label>
           <p class="detail-value">{{ formatarCEP(cliente.endereco.cep) }}</p>
         </div>
-
         <div class="detail-item">
-          <label class="detail-label">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path d="M2 6L8 2L14 6V13C14 13.5 13.5 14 13 14H3C2.5 14 2 13.5 2 13V6Z" stroke="#6B7280" stroke-width="1.5" fill="none"/>
-              <path d="M6 14V9H10V14" stroke="#6B7280" stroke-width="1.5"/>
-            </svg>
-            Rua
-          </label>
+          <label class="detail-label">Rua</label>
           <p class="detail-value">{{ cliente.endereco.rua }}</p>
         </div>
-
         <div class="detail-item">
-          <label class="detail-label">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <rect x="3" y="3" width="10" height="10" rx="1" stroke="#6B7280" stroke-width="1.5" fill="none"/>
-              <path d="M6 6H10M6 9H10" stroke="#6B7280" stroke-width="1.5" stroke-linecap="round"/>
-            </svg>
-            Número
-          </label>
+          <label class="detail-label">Número</label>
           <p class="detail-value">{{ cliente.endereco.numero }}</p>
         </div>
-
         <div class="detail-item">
-          <label class="detail-label">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <circle cx="8" cy="8" r="6" stroke="#6B7280" stroke-width="1.5" fill="none"/>
-              <path d="M8 5V8L10 10" stroke="#6B7280" stroke-width="1.5" stroke-linecap="round"/>
-            </svg>
-            Bairro
-          </label>
+          <label class="detail-label">Bairro</label>
           <p class="detail-value">{{ cliente.endereco.bairro }}</p>
         </div>
-
         <div class="detail-item">
-          <label class="detail-label">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path d="M8 14C11.3 14 14 11.3 14 8C14 4.7 11.3 2 8 2C4.7 2 2 4.7 2 8C2 11.3 4.7 14 8 14Z" stroke="#6B7280" stroke-width="1.5" fill="none"/>
-              <path d="M8 2V14M2 8H14" stroke="#6B7280" stroke-width="1.5"/>
-            </svg>
-            Cidade
-          </label>
+          <label class="detail-label">Cidade</label>
           <p class="detail-value">{{ cliente.endereco.cidade }}</p>
         </div>
-
         <div class="detail-item" *ngIf="cliente.endereco.complemento">
-          <label class="detail-label">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path d="M3 8L8 3L13 8M4 7V13H12V7" stroke="#6B7280" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-            </svg>
-            Complemento
-          </label>
+          <label class="detail-label">Complemento</label>
           <p class="detail-value">{{ cliente.endereco.complemento }}</p>
         </div>
       </div>
 
-      <div class="section-title">Conta</div>
+      <!-- Conta -->
+      <div class="section-title">Conta Bancária</div>
       <div class="detail-grid">
         <div class="detail-item">
-          <label class="detail-label">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path d="M8 2C5.8 2 4 3.8 4 6C4 9 8 14 8 14C8 14 12 9 12 6C12 3.8 10.2 2 8 2Z" stroke="#6B7280" stroke-width="1.5" fill="none"/>
-              <circle cx="8" cy="6" r="1.5" fill="#6B7280"/>
-            </svg>
-            Agencia
-          </label>
-          <p class="detail-value">{{cliente.conta.agencia}}</p>
+          <label class="detail-label">Agência</label>
+          <p class="detail-value">{{ cliente.conta.agencia }}</p>
         </div>
-
         <div class="detail-item">
-          <label class="detail-label">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path d="M2 6L8 2L14 6V13C14 13.5 13.5 14 13 14H3C2.5 14 2 13.5 2 13V6Z" stroke="#6B7280" stroke-width="1.5" fill="none"/>
-              <path d="M6 14V9H10V14" stroke="#6B7280" stroke-width="1.5"/>
-            </svg>
-            tipo de Conta
-          </label>
+          <label class="detail-label">Tipo de Conta</label>
           <p class="detail-value">{{ cliente.conta.tipo }}</p>
         </div>
       </div>
-        <div class="detail-item">
-          <label class="detail-label">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <rect x="3" y="3" width="10" height="10" rx="1" stroke="#6B7280" stroke-width="1.5" fill="none"/>
-              <path d="M6 6H10M6 9H10" stroke="#6B7280" stroke-width="1.5" stroke-linecap="round"/>
-            </svg>
-            saldo
-          </label>
-          <p class="detail-value">{{ formatarValorParaReal(cliente.conta.saldo!) }}</p>
-        </div>
 
-      <!--  Seção de Cartão adicionada (se existir) -->
-      <div *ngIf="cartao">
-        <div class="section-title">Informações do Cartão</div>
-        <div class="detail-grid">
-          <div class="detail-item">
-            <label class="detail-label">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                <rect x="2" y="4" width="12" height="8" rx="1.5" stroke="#6B7280" stroke-width="1.5" fill="none"/>
-                <path d="M2 7H14" stroke="#6B7280" stroke-width="1.5"/>
-              </svg>
-              Número do Cartão
-            </label>
-            <p class="detail-value">{{ formatarNumeroCartao(cartao.numero) }}</p>
-          </div>
+      <!-- Seção de Cartões refatorada para exibir múltiplos cartões -->
+      <div class="section-title">Cartões do Cliente</div>
 
-          <div class="detail-item">
-            <label class="detail-label">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                <circle cx="8" cy="8" r="6" stroke="#6B7280" stroke-width="1.5" fill="none"/>
-                <path d="M8 4V8L11 11" stroke="#6B7280" stroke-width="1.5" stroke-linecap="round"/>
-            </svg>
-              Data de Vencimento
-            </label>
-            <p class="detail-value">{{ cartao.dataVencimento }}</p>
-          </div>
+      <div *ngIf="temCartoes(); else semCartoes" class="cartoes-container">
+        <div class="cartoes-grid">
+          <div *ngFor="let cartao of cartoesDoClienteSelecionado; let i = index"
+               [ngClass]="getCartaoCardClass(cartao)"
+               class="cartao-item">
+            <!-- Header do Cartão -->
+            <div class="cartao-header">
+              <div class="cartao-info-top">
+                <span class="cartao-tipo">{{ cartao.tipoCartao }}</span>
+                <span [ngClass]="'badge-' + cartao.status" class="cartao-status">
+                  {{ getStatusTexto(cartao.status) }}
+                </span>
+              </div>
+            </div>
 
-          <div class="detail-item">
-            <label class="detail-label">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                <rect x="3" y="3" width="10" height="10" rx="1" stroke="#6B7280" stroke-width="1.5" fill="none"/>
-                <path d="M6 6H10M6 9H8" stroke="#6B7280" stroke-width="1.5" stroke-linecap="round"/>
-              </svg>
-              Tipo de Cartão
-            </label>
-            <p class="detail-value">{{ cartao.tipoCartao }}</p>
-          </div>
+            <!-- Número do Cartão -->
+            <div class="cartao-numero">
+              <p>{{ formatarNumeroCartao(cartao.numero) }}</p>
+            </div>
 
-          <div class="detail-item">
-            <label class="detail-label">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                <circle cx="8" cy="8" r="6" stroke="#6B7280" stroke-width="1.5" fill="none"/>
-                <path d="M8 10V14M8 6V7" stroke="#6B7280" stroke-width="1.5" stroke-linecap="round"/>
-              </svg>
-              Status do Cartão
-            </label>
-            <p class="detail-value">{{ getStatusTexto(cartao.status) }}</p>
+            <!-- Informações do Cartão -->
+            <div class="cartao-details">
+              <div class="cartao-detail-item">
+                <label>Vencimento</label>
+                <p>{{ cartao.dataVencimento }}</p>
+              </div>
+              <div class="cartao-detail-item">
+                <label>Limite</label>
+                <p>{{ formatarValorParaReal(cartao.limite) }}</p>
+              </div>
+              <div class="cartao-detail-item">
+                <label>Emissão</label>
+                <p>{{ cartao.tipoEmissao }}</p>
+              </div>
+            </div>
+
+            <!-- Motivo Status se existir -->
+            <div *ngIf="cartao.motivoStatus" class="cartao-motivo">
+              <strong>Motivo:</strong> {{ cartao.motivoStatus }}
+            </div>
+
+            <!-- Índice do Cartão -->
+            <div class="cartao-index">Cartão {{ i + 1 }} de {{ cartoesDoClienteSelecionado.length }}</div>
           </div>
         </div>
 
-        <div class="detail-info-box">
+        <!-- Informação sobre múltiplos cartões -->
+        <div class="cartoes-info">
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
             <circle cx="10" cy="10" r="8" stroke="#3B82F6" stroke-width="2" fill="none"/>
             <path d="M10 10V14M10 6V7" stroke="#3B82F6" stroke-width="2" stroke-linecap="round"/>
           </svg>
-          <p class="detail-info-text">
-            Este cartão está atualmente com status <strong>{{ getStatusTexto(cartao.status) }}</strong>.
-            Você pode alterar o status diretamente na lista de clientes.
-          </p>
+          <p>Este cliente possui <strong>{{ cartoesDoClienteSelecionado.length }}</strong> cartão(ões) associado(s). Você pode alterar o status de cada cartão diretamente na lista de clientes.</p>
         </div>
       </div>
 
-      <!--  Mensagem quando não há cartão -->
-      <div *ngIf="!cartao" class="detail-info-box info-warning">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-          <path d="M10 2L2 18H18L10 2Z" stroke="#F59E0B" stroke-width="2" fill="none"/>
-          <path d="M10 8V12M10 14V15" stroke="#F59E0B" stroke-width="2" stroke-linecap="round"/>
-        </svg>
-        <p class="detail-info-text">
-          Este cliente ainda não possui um cartão associado.
-        </p>
-      </div>
+      <!-- Mensagem quando não há cartão -->
+      <ng-template #semCartoes>
+        <div class="cartoes-info warning">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M10 2L2 18H18L10 2Z" stroke="#F59E0B" stroke-width="2" fill="none"/>
+            <path d="M10 8V12M10 14V15" stroke="#F59E0B" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <p>Este cliente ainda não possui cartão(ões) associado(s).</p>
+        </div>
+      </ng-template>
     </div>
 
+    <!-- Modal Footer -->
     <div class="modal-footer">
-        <button class="btn-secondary" (click)="exportarPDF()">
-            Exportar PDF
-        </button>
-        <button class="btn-secondary" (click)="exportarXML()">
-            Exportar XML
-        </button>
-        <button class="btn-secondary" (click)="fecharModal()">
-            Fechar
-        </button>
+      <button class="btn-secondary" (click)="exportarPDF()">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <rect x="2" y="2" width="12" height="12" rx="1" stroke="currentColor" stroke-width="1.5" fill="none"/>
+          <path d="M2 6H14M5 2V14M11 2V14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        Exportar PDF
+      </button>
+      <button class="btn-secondary" (click)="exportarXML()">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M2 2L8 8L14 2M2 8L8 14L14 8" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        </svg>
+        Exportar XML
+      </button>
+      <button class="btn-secondary" (click)="fecharModal()">Fechar</button>
     </div>
   </div>
 </div>
