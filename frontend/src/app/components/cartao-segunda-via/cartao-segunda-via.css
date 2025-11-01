@@ -1,6 +1,6 @@
 /* Estilo Geral */
 * {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
 }
 
 .modal-overlay {
@@ -135,6 +135,143 @@
 
 .detail-section:first-of-type .section-title {
   margin-top: 0;
+}
+
+/* Estilos para grid de cartões selecionáveis */
+.cartoes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.cartao-card {
+  position: relative;
+  padding: 16px;
+  border: 2px solid #e5e7eb;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+}
+
+.cartao-card:hover {
+  border-color: #3b82f6;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1);
+  transform: translateY(-2px);
+}
+
+.cartao-card.cartao-selecionado {
+  border-color: #3b82f6;
+  background: linear-gradient(135deg, #eff6ff 0%, #e0f2fe 100%);
+  box-shadow: 0 8px 16px rgba(59, 130, 246, 0.15);
+}
+
+.cartao-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+  gap: 8px;
+}
+
+.cartao-numero {
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+  word-break: break-all;
+  flex: 1;
+}
+
+.cartao-status {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  color: white;
+  text-transform: capitalize;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.cartao-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 12px;
+  padding: 12px 0;
+  border-top: 1px solid rgba(107, 114, 128, 0.2);
+  border-bottom: 1px solid rgba(107, 114, 128, 0.2);
+}
+
+.cartao-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cartao-label {
+  font-size: 11px;
+  color: #6b7280;
+  text-transform: uppercase;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+}
+
+.cartao-valor {
+  font-size: 13px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.cartao-footer {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.cartao-limite {
+  font-size: 12px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.cartao-checkmark {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 32px;
+  height: 32px;
+  background-color: #3b82f6;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: scaleIn 0.2s ease-out;
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Estilos para mensagem de erro */
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  background-color: #fee2e2;
+  border-left: 4px solid #ef4444;
+  border-radius: 6px;
+  font-size: 13px;
+  color: #991b1b;
+  margin-bottom: 16px;
 }
 
 .detail-grid {
@@ -340,6 +477,10 @@
     flex-direction: column;
     text-align: center;
     align-items: center;
+  }
+
+  .cartoes-grid {
+    grid-template-columns: 1fr;
   }
 
   .detail-grid {

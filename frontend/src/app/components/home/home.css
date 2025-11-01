@@ -539,3 +539,492 @@
     width: 50px;
   }
 }
+/* Novos estilos para layout expandível de cartões */
+
+.clients-container {
+  background-color: white;
+  border-radius: 8px;
+  margin: 0 24px 24px 24px;
+  overflow: hidden;
+}
+
+.clients-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.client-card {
+  border-bottom: 1px solid #e5e7eb;
+  transition: background-color 0.15s;
+}
+
+.client-card:last-child {
+  border-bottom: none;
+}
+
+.client-card:hover {
+  background-color: #f9fafb;
+}
+
+.client-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  cursor: pointer;
+}
+
+.client-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 140px;
+}
+
+.checkbox {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: #3b82f6;
+  flex-shrink: 0;
+}
+
+.checkbox:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.expand-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  border-radius: 6px;
+  color: #6b7280;
+  transition: all 0.2s;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.expand-btn:hover:not(:disabled) {
+  background-color: #e5e7eb;
+  color: #111827;
+}
+
+.expand-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.expand-btn svg {
+  transition: transform 0.2s;
+}
+
+.expand-btn svg.rotated {
+  transform: rotate(180deg);
+}
+
+.client-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.client-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+}
+
+.client-meta {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.client-cpf {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.client-email {
+  font-size: 13px;
+  color: #6b7280;
+  max-width: 250px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cartoes-badge {
+  display: inline-block;
+  background-color: #dbeafe;
+  color: #0c4a6e;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.client-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-acao {
+  padding: 6px 14px;
+  background-color: #b22222;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  font-family: inherit;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-acao:hover:not(:disabled) {
+  background-color: #ec7a7a;
+}
+
+.btn-acao:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+  background-color: #9ca3af;
+}
+
+.btn-detalhes {
+  background-color: #b22222;
+}
+
+.btn-detalhes svg {
+  flex-shrink: 0;
+}
+
+/* Container de cartões */
+.cartoes-container {
+  background-color: #fafafa;
+  border-top: 1px solid #e5e7eb;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  animation: slideDown 0.3s ease-out;
+}
+
+.cartao-card {
+  background-color: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 12px;
+  transition: all 0.2s;
+}
+
+.cartao-card:hover {
+  border-color: #3b82f6;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.cartao-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.cartao-numero {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cartao-numero .label {
+  font-size: 12px;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.cartao-numero .valor {
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+  font-family: monospace;
+}
+
+.btn-status {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.btn-status:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.status-ativado {
+  background-color: #10b981;
+  color: white;
+}
+
+.status-ativado:hover:not(:disabled) {
+  background-color: #059669;
+}
+
+.status-bloqueado {
+  background-color: #ef4444;
+  color: white;
+}
+
+.status-bloqueado:hover:not(:disabled) {
+  background-color: #dc2626;
+}
+
+.status-cancelado {
+  background-color: #f59e0b;
+  color: white;
+}
+
+.status-cancelado:hover:not(:disabled) {
+  background-color: #d97706;
+}
+
+.status-desativado {
+  background-color: #6b7280;
+  color: white;
+}
+
+.status-desativado:hover:not(:disabled) {
+  background-color: #4b5563;
+}
+
+.status-rejeitado {
+  background-color: #8b5cf6;
+  color: white;
+}
+
+.status-rejeitado:hover:not(:disabled) {
+  background-color: #7c3aed;
+}
+
+.cartao-detalhes {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 10px;
+  font-size: 13px;
+}
+
+.cartao-info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+}
+
+.cartao-info .label {
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.cartao-info .valor {
+  color: #111827;
+  font-weight: 500;
+}
+
+.cartao-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-cartao-acao {
+  padding: 6px 12px;
+  background-color: #4b2e2e;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  font-family: inherit;
+}
+
+.btn-cartao-acao:hover:not(:disabled) {
+  background-color: #e2725b;
+}
+
+.btn-cartao-acao:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+  background-color: #9ca3af;
+}
+
+/* Ações em lote por cliente */
+.cartoes-bulk-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background-color: #eff6ff;
+  border-radius: 6px;
+  border: 1px solid #bfdbfe;
+  margin-top: 8px;
+}
+
+.bulk-text {
+  font-size: 12px;
+  color: #0c4a6e;
+  font-weight: 500;
+}
+
+.bulk-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.bulk-btn-small {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+  color: white;
+}
+
+.bulk-btn-small:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.bulk-btn-small svg {
+  flex-shrink: 0;
+}
+
+.bulk-btn-ativado {
+  background-color: #10b981;
+}
+
+.bulk-btn-ativado:hover:not(:disabled) {
+  background-color: #059669;
+}
+
+.bulk-btn-bloqueado {
+  background-color: #ef4444;
+}
+
+.bulk-btn-bloqueado:hover:not(:disabled) {
+  background-color: #dc2626;
+}
+
+.no-cartoes {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+  color: #9ca3af;
+}
+
+.no-cartoes-text {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .client-header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 12px;
+    gap: 12px;
+  }
+
+  .client-info {
+    width: 100%;
+  }
+
+  .client-actions {
+    width: 100%;
+  }
+
+  .btn-acao {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .cartao-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .cartao-detalhes {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .cartoes-bulk-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .bulk-buttons {
+    width: 100%;
+  }
+
+  .bulk-btn-small {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .client-meta {
+    width: 100%;
+  }
+
+  .client-email {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .client-header-left {
+    min-width: auto;
+  }
+
+  .cartao-info {
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .cartao-actions {
+    width: 100%;
+  }
+
+  .btn-cartao-acao {
+    flex: 1;
+  }
+}
