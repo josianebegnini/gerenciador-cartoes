@@ -7,7 +7,7 @@ export interface Cartao {
   cvv: string;
   dataVencimento: string;
   dataCriacao?: string;
-  status:  'ativado' | 'bloqueado' | 'desativado' | 'rejeitado' | 'cancelado' ;
+  status: "ATIVADO" | "BLOQUEADO" | "DESATIVADO" | "REJEITADO" | "CANCELADO";
   motivoStatus?: string;
   tipoCartao: string;
   tipoEmissao: string;

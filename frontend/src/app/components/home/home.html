@@ -72,7 +72,7 @@
         <div class="bulk-actions-buttons">
           <button
             class="bulk-btn bulk-btn-ativado"
-            (click)="mudarStatus('ativado')"
+            (click)="mudarStatus('ATIVADO')"
             [disabled]="isProcessing"
             aria-label="Ativar cartões selecionados"
           >
@@ -83,7 +83,7 @@
           </button>
           <button
             class="bulk-btn bulk-btn-bloqueado"
-            (click)="mudarStatus('bloqueado')"
+            (click)="mudarStatus('BLOQUEADO')"
             [disabled]="isProcessing"
             aria-label="Bloquear cartões selecionados"
           >
@@ -94,7 +94,7 @@
           </button>
           <button
             class="bulk-btn bulk-btn-cancelado"
-            (click)="mudarStatus('cancelado')"
+            (click)="mudarStatus('CANCELADO')"
             [disabled]="isProcessing"
             aria-label="Cancelar cartões selecionados"
           >
@@ -228,7 +228,7 @@
               <div class="bulk-buttons">
                 <button
                   class="bulk-btn-small bulk-btn-ativado"
-                  (click)="alterarStatusMultiploCartoes(cliente, 'ativado')"
+                  (click)="alterarStatusMultiploCartoes(cliente, 'ATIVADO')"
                   [disabled]="isProcessing"
                 >
                   <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
@@ -238,7 +238,7 @@
                 </button>
                 <button
                   class="bulk-btn-small bulk-btn-bloqueado"
-                  (click)="alterarStatusMultiploCartoes(cliente, 'bloqueado')"
+                  (click)="alterarStatusMultiploCartoes(cliente, 'BLOQUEADO')"
                   [disabled]="isProcessing"
                 >
                   <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">

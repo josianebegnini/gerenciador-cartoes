@@ -1,251 +1,256 @@
-import { Injectable } from "@angular/core";
-import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
-import { Observable } from "rxjs";
-import { Cartao } from "../models/cartao";
-import { SegundaViaCartaoRequestDTO, SegundaViaCartaoResponseDTO, AlterarStatusRequestDTO, } from "../models/cartao-dtos";
-import { environment } from "../enviroments/enviroment";
+import { Injectable } from "@angular/core"
+import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http"
+import type { Observable } from "rxjs"
+import type { Cartao } from "../models/cartao"
+import type {
+  SegundaViaCartaoRequestDTO,
+  SegundaViaCartaoResponseDTO,
+  AlterarStatusRequestDTO,
+} from "../models/cartao-dtos"
+import { environment } from "../enviroments/enviroment"
 
 @Injectable({
   providedIn: "root",
 })
-
 export class CartaoService {
-  private apiUrl = `${environment.apiUrl}/cartoes`;
+  private apiUrl = `${environment.apiUrl}/cartoes`
 
   constructor(private http: HttpClient) {}
 
   // ========== OPERAÇÕES HTTP ========== //
 
- getCartoesByClienteId(clienteId: number, page: number = 0, size: number = 10): Observable<any> {
-  const params = new HttpParams()
-    .set('page', page.toString())
-    .set('size', size.toString())
-    .set('sort', 'id,DESC');
+  getCartoesByClienteId(clienteId: number, page = 0, size = 10): Observable<any> {
+    const params = new HttpParams().set("page", page.toString()).set("size", size.toString()).set("sort", "id,DESC")
 
-  return this.http.get<any>(`${this.apiUrl}/cliente/${clienteId}`, { params });
+    return this.http.get<any>(`${this.apiUrl}/cliente/${clienteId}`, { params })
   }
 
   createCartao(cartao: Cartao): Observable<Cartao> {
-
-    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-
-    return this.http.post<Cartao>(`${this.apiUrl}/cadastrar-existente`, cartao, { headers });
-
-    //return this.http.post<Cartao>(`${this.apiUrl}/cadastrar-existente`, cartao);
+    const headers = new HttpHeaders({ "Content-Type": "application/json" })
+    return this.http.post<Cartao>(`${this.apiUrl}/cadastrar-existente`, cartao, { headers })
   }
 
   alterarStatus(dto: AlterarStatusRequestDTO): Observable<Cartao> {
-    return this.http.put<Cartao>(`${this.apiUrl}/alterar-status`, dto);
+    const dtoCorrigido: AlterarStatusRequestDTO = {
+      numero: dto.numero.trim(),
+      cvv: dto.cvv.trim(),
+      novoStatus: dto.novoStatus.toUpperCase().trim(),
+    }
+
+    const headers = new HttpHeaders({
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    })
+
+    return this.http.put<Cartao>(`${this.apiUrl}/alterar-status`, dtoCorrigido, { headers })
   }
 
-  solicitarSegundaVia(
-    cvv: string,
-    numero: string,
-    motivo: string
-  ): Observable<SegundaViaCartaoResponseDTO> {
-    const request: SegundaViaCartaoRequestDTO = { cvv, numero, motivo };
-    return this.http.post<SegundaViaCartaoResponseDTO>(`${this.apiUrl}/segunda-via`, request);
+  solicitarSegundaVia(cvv: string, numero: string, motivo: string): Observable<SegundaViaCartaoResponseDTO> {
+    const request: SegundaViaCartaoRequestDTO = { cvv, numero, motivo }
+    return this.http.post<SegundaViaCartaoResponseDTO>(`${this.apiUrl}/segunda-via`, request)
   }
 
+  listarTodos(page = 0, size = 10): Observable<any> {
+    const params = new HttpParams().set("page", page.toString()).set("size", size.toString()).set("sort", "id,DESC")
 
-listarTodos(page: number = 0, size: number = 10): Observable<any> {
-  const params = new HttpParams()
-    .set('page', page.toString())
-    .set('size', size.toString())
-    .set('sort', 'id,DESC');
-
-  return this.http.get<any>(`${this.apiUrl}`, { params });
-}
-
+    return this.http.get<any>(`${this.apiUrl}`, { params })
+  }
 
   // ========== FORMATAÇÃO ========== //
 
   formatarNumeroCartao(numero: string): string {
-    return numero.replace(/(\d{4})(?=\d)/g, "$1 ");
+    return numero.replace(/(\d{4})(?=\d)/g, "$1 ")
   }
 
   formatarDataVencimento(data: string): string {
-    if (!data) return "";
+    if (!data) return ""
 
-    // Remove tudo que não é número
-    const numeros = data.replace(/\D/g, "");
+    const numeros = data.replace(/\D/g, "")
 
-    // Formata como MM/AA
     if (numeros.length <= 2) {
-      return numeros;
+      return numeros
     }
 
-    const mes = numeros.substring(0, 2);
-    const ano = numeros.substring(2, 4);
+    const mes = numeros.substring(0, 2)
+    const ano = numeros.substring(2, 4)
 
-    return `${mes}/${ano}`;
+    return `${mes}/${ano}`
   }
 
   mascaraNumeroCartao(numero: string): string {
-    if (numero.length < 4) return numero;
-    const ultimosQuatro = numero.slice(-4);
-    return `**** **** **** ${ultimosQuatro}`;
+    if (numero.length < 4) return numero
+    const ultimosQuatro = numero.slice(-4)
+    return `**** **** **** ${ultimosQuatro}`
   }
 
   aplicarMascaraCVV(value: string): string {
-    return value.replace(/\D/g, "").slice(0, 4);
+    return value.replace(/\D/g, "").slice(0, 4)
   }
 
+  formatarLimiteAoDigitar(valor: string): string {
+    const valorNumerico = valor.replace(/\D/g, "")
 
-formatarLimiteAoDigitar(valor: string): string {
-  const valorNumerico = valor.replace(/\D/g, "");
+    if (!valorNumerico) return ""
 
-  if (!valorNumerico) return "";
+    const numero = Number(valorNumerico) / 100
 
-  const numero = Number(valorNumerico) / 100;
-
-  return numero.toLocaleString("pt-BR", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
-}
+    return numero.toLocaleString("pt-BR", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })
+  }
 
   // ========== OPERAÇÕES DE STATUS ========== //
 
   getStatusTexto(status: string): string {
     const statusMap: Record<string, string> = {
-      ativado: "Ativado",
-      bloqueado: "Bloqueado",
-      desativado: 'desativado',
-      rejeitado: 'rejeitado',
-      cancelado: 'cancelado'
-    };
-    return statusMap[status] || "Sem Cartão";
+      ATIVADO: "Ativado",
+      BLOQUEADO: "Bloqueado",
+      DESATIVADO: "Desativado",
+      REJEITADO: "Rejeitado",
+      CANCELADO: "Cancelado",
+    }
+    return statusMap[status] || "Sem Cartão"
   }
 
   getStatusClass(status: string): string {
     const classes: Record<string, string> = {
-      ativado: "status-ativado",
-      bloqueado: "status-bloqueado",
-      desativado: 'status-desativado',
-      rejeitado: 'status-rejeitado',
-      cancelado: 'status-cancelado'
-    };
-    return classes[status] || "status-desconhecido";
+      ATIVADO: "status-ativado",
+      BLOQUEADO: "status-bloqueado",
+      DESATIVADO: "status-desativado",
+      REJEITADO: "status-rejeitado",
+      CANCELADO: "status-cancelado",
+    }
+    return classes[status] || "status-desconhecido"
   }
 
   getStatusBadgeClass(status: string): string {
     const classes: Record<string, string> = {
-      ativado: "badge-ativado",
-      bloqueado: "badge-bloqueado",
-      desativado: 'badge-desativado',
-      rejeitado: 'badge-rejeitado',
-      cancelado: 'badge-cancelado'
-    };
-    return classes[status] || "badge-sem-cartao";
+      ATIVADO: "badge-ativado",
+      BLOQUEADO: "badge-bloqueado",
+      DESATIVADO: "badge-desativado",
+      REJEITADO: "badge-rejeitado",
+      CANCELADO: "badge-cancelado",
+    }
+    return classes[status] || "badge-sem-cartao"
   }
 
   obterProximoStatus(statusAtual: string): string {
-    const cicloStatus: Record<string, string> = {
-      ativado: "bloqueado",
-      bloqueado: "ativado",
-      desativado: 'desativado',
-      rejeitado: 'rejeitado',
-      cancelado: 'cancelado'
-    };
-    return cicloStatus[statusAtual] || "ativado";
+    // Backend has specific transition rules:
+    // DESATIVADO -> ATIVADO (only allowed transition from DESATIVADO)
+    // ATIVADO -> BLOQUEADO (only allowed transition from ATIVADO)
+    // BLOQUEADO -> não pode alterar (apenas para listar/visualizar)
+    // REJEITADO e CANCELADO são status finais (não podem alterar)
+
+    const transicoes: Record<string, string> = {
+      DESATIVADO: "ATIVADO", // Só pode ativar cartões desativados
+      ATIVADO: "BLOQUEADO", // Só pode bloquear cartões ativados
+      BLOQUEADO: "DESATIVADO", // Não suportado pelo backend (CART004)
+      REJEITADO: "", // Status final
+      CANCELADO: "", // Status final
+    }
+
+    return transicoes[statusAtual] || ""
   }
 
   podeAlterarStatus(status: string): boolean {
-    return status !== "Sem Cartão";
+    // Apenas DESATIVADO e ATIVADO podem ser alterados para novo status
+    const statusesAlteraveis = ["DESATIVADO", "ATIVADO"]
+    return statusesAlteraveis.includes(status)
   }
 
   // ========== VALIDAÇÃO ========== //
 
   validarNumeroCartao(numero: string): boolean {
-    const numeroLimpo = numero.replace(/\s/g, "");
-    if (!/^\d{16}$/.test(numeroLimpo)) return false;
+    const numeroLimpo = numero.replace(/\s/g, "")
+    if (!/^\d{16}$/.test(numeroLimpo)) return false
 
-    let soma = 0;
-    let alternar = false;
+    let soma = 0
+    let alternar = false
 
     for (let i = numeroLimpo.length - 1; i >= 0; i--) {
-      let digito = parseInt(numeroLimpo.charAt(i), 10);
+      let digito = Number.parseInt(numeroLimpo.charAt(i), 10)
       if (alternar) {
-        digito *= 2;
-        if (digito > 9) digito -= 9;
+        digito *= 2
+        if (digito > 9) digito -= 9
       }
-      soma += digito;
-      alternar = !alternar;
+      soma += digito
+      alternar = !alternar
     }
 
-    return soma % 10 === 0;
+    return soma % 10 === 0
   }
 
   validarDataVencimento(data: string): boolean {
-    if (!data) return false;
+    if (!data) return false
 
-    const [mes, ano] = data.split("/");
-    if (!mes || !ano) return false;
+    const [mes, ano] = data.split("/")
+    if (!mes || !ano) return false
 
-    const mesNum = parseInt(mes, 10);
-    let anoNum = parseInt(ano, 10);
+    const mesNum = Number.parseInt(mes, 10)
+    let anoNum = Number.parseInt(ano, 10)
 
-    if (isNaN(mesNum) || isNaN(anoNum)) return false;
-    if (mesNum < 1 || mesNum > 12) return false;
+    if (isNaN(mesNum) || isNaN(anoNum)) return false
+    if (mesNum < 1 || mesNum > 12) return false
 
-    // Corrige ano com dois dígitos (ex: "25" vira "2025")
     if (ano.length === 2) {
-      const anoAtual = new Date().getFullYear();
-      const prefixo = Math.floor(anoAtual / 100) * 100;
-      anoNum += prefixo;
+      const anoAtual = new Date().getFullYear()
+      const prefixo = Math.floor(anoAtual / 100) * 100
+      anoNum += prefixo
     }
 
-    const hoje = new Date();
-    const anoAtual = hoje.getFullYear();
-    const mesAtual = hoje.getMonth() + 1;
+    const hoje = new Date()
+    const anoAtual = hoje.getFullYear()
+    const mesAtual = hoje.getMonth() + 1
 
-    if (anoNum < anoAtual) return false;
-    if (anoNum === anoAtual && mesNum < mesAtual) return false;
+    if (anoNum < anoAtual) return false
+    if (anoNum === anoAtual && mesNum < mesAtual) return false
 
-    return true;
+    return true
   }
 
   validarCVV(cvv: string): boolean {
-    return /^\d{3,4}$/.test(cvv);
+    return /^\d{3,4}$/.test(cvv)
   }
 
   validarCartao(cartao: Cartao): { valido: boolean; erros: string[] } {
-    const erros: string[] = [];
+    const erros: string[] = []
 
     if (!cartao.numero || !this.validarNumeroCartao(cartao.numero)) {
-      erros.push("Número do cartão inválido");
+      erros.push("Número do cartão inválido")
     }
 
     if (!cartao.dataVencimento || !this.validarDataVencimento(cartao.dataVencimento)) {
-      erros.push("Data de vencimento inválida");
+      erros.push("Data de vencimento inválida")
     }
 
     if (!cartao.tipoCartao) {
-      erros.push("Tipo de cartão é obrigatório");
+      erros.push("Tipo de cartão é obrigatório")
     }
 
     if (!cartao.clienteId) {
-      erros.push("Cliente é obrigatório");
+      erros.push("Cliente é obrigatório")
     }
 
     return {
       valido: erros.length === 0,
       erros,
-    };
+    }
   }
 
   // ========== IDENTIFICAÇÃO DE BANDEIRA ========== //
 
   identificarBandeira(numero: string): string {
-    const numeroLimpo = numero.replace(/\s/g, "");
+    const numeroLimpo = numero.replace(/\s/g, "")
 
-    if (/^4/.test(numeroLimpo)) return "Visa";
-    if (/^5[1-5]/.test(numeroLimpo) || /^2(22[1-9]|2[3-9][0-9]|[3-6][0-9]{2}|7[0-1][0-9]|720)/.test(numeroLimpo)) return "Mastercard";
-    if (/^3[47]/.test(numeroLimpo)) return "American Express";
-    if (/^6011|^622(12[6-9]|1[3-9][0-9]|[2-8][0-9]{2}|9[0-1][0-9]|92[0-5])|^64[4-9]|^65/.test(numeroLimpo)) return "Discover";
-    if (/^636368|^438935|^504175|^451416|^636297|^5067|^4576|^4011/.test(numeroLimpo)) return "Elo";
+    if (/^4/.test(numeroLimpo)) return "Visa"
+    if (/^5[1-5]/.test(numeroLimpo) || /^2(22[1-9]|2[3-9][0-9]|[3-6][0-9]{2}|7[0-1][0-9]|720)/.test(numeroLimpo))
+      return "Mastercard"
+    if (/^3[47]/.test(numeroLimpo)) return "American Express"
+    if (/^6011|^622(12[6-9]|1[3-9][0-9]|[2-8][0-9]{2}|9[0-1][0-9]|92[0-5])|^64[4-9]|^65/.test(numeroLimpo))
+      return "Discover"
+    if (/^636368|^438935|^504175|^451416|^636297|^5067|^4576|^4011/.test(numeroLimpo)) return "Elo"
 
-    return "Desconhecida";
+    return "Desconhecida"
   }
 }

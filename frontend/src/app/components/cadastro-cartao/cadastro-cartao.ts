@@ -36,7 +36,7 @@ export class CadastroCartaoComponent implements OnDestroy {
     numero: "",
     cvv: "",
     dataVencimento: "",
-    status: 'ativado',
+    status: 'ATIVADO',
     tipoCartao: "",
     tipoEmissao: "",
     limite: 0
@@ -273,7 +273,7 @@ export class CadastroCartaoComponent implements OnDestroy {
       numero: "",
       cvv: "",
       dataVencimento: "",
-      status: 'ativado',
+      status: 'ATIVADO',
       tipoCartao: "",
       tipoEmissao: "",
       limite: 0

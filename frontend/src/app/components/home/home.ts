@@ -18,9 +18,9 @@ interface ClienteComCartoes extends Cliente {
   expandido: boolean
 }
 
-type StatusCartao = "ativado" | "bloqueado" | "desativado" | "rejeitado" | "cancelado"
+type StatusCartao = "ATIVADO" | "BLOQUEADO" | "DESATIVADO" | "REJEITADO" | "CANCELADO"
 
-export const VALID_STATUSES = ["ativado", "bloqueado", "desativado", "rejeitado", "cancelado"] as const
+export const VALID_STATUSES = ["ATIVADO", "BLOQUEADO", "DESATIVADO", "REJEITADO", "CANCELADO"] as const
 export type CartaoStatus = (typeof VALID_STATUSES)[number]
 
 export function isValidStatus(s: string): s is CartaoStatus {
@@ -94,7 +94,7 @@ export class Home implements OnInit, OnDestroy {
               cartoes: cartoesDoCliente,
               selecionado: false,
               expandido: false,
-            }
+            } as ClienteComCartoes
           })
         },
         error: (error) => {
@@ -153,7 +153,7 @@ export class Home implements OnInit, OnDestroy {
         const dto: AlterarStatusRequestDTO = {
           numero: cartao.numero,
           cvv: cartao.cvv,
-          novoStatus: novoStatus,
+          novoStatus: novoStatus.toUpperCase(),
         }
 
         return this.cartaoService.alterarStatus(dto)
@@ -193,24 +193,30 @@ export class Home implements OnInit, OnDestroy {
     }
 
     if (!this.cartaoService.podeAlterarStatus(cartao.status)) {
-      this.mostrarErro("Cartão cancelado não pode ter status alterado")
+      const statusAtual = this.cartaoService.getStatusTexto(cartao.status)
+      this.mostrarErro(
+        `Não é possível alterar cartão com status '${statusAtual}'.\nApenas cartões ATIVADO ou DESATIVADO podem ser alterados.`,
+      )
       return
     }
 
-    let novoStatus: CartaoStatus
-    if (cartao.status === "ativado") {
-      novoStatus = "bloqueado"
-    } else if (cartao.status === "bloqueado") {
-      novoStatus = "ativado"
-    } else {
-      this.mostrarErro("Status atual não permite alternância")
+    const proximoStatus = this.cartaoService.obterProximoStatus(cartao.status)
+
+    if (!proximoStatus) {
+      const statusAtual = this.cartaoService.getStatusTexto(cartao.status)
+      this.mostrarErro(`Transição não permitida de '${statusAtual}'. Verifique as regras de status.`)
+      return
+    }
+
+    if (!isValidStatus(proximoStatus)) {
+      this.mostrarErro("Status inválido para transição")
       return
     }
 
     const dto: AlterarStatusRequestDTO = {
       numero: cartao.numero,
       cvv: cartao.cvv,
-      novoStatus: novoStatus,
+      novoStatus: proximoStatus.toUpperCase(),
     }
 
     this.isProcessing = true
@@ -229,12 +235,12 @@ export class Home implements OnInit, OnDestroy {
             cartao.status = statusRecebido
             this.mostrarSucesso("Status alterado com sucesso!")
           } else {
-            console.warn("Status inválido recebido:", statusRecebido)
+            console.warn("[v0] Status inválido recebido:", statusRecebido)
             this.mostrarErro("Status recebido é inválido.")
           }
         },
         error: (error) => {
-          console.error("Erro ao alterar status:", error)
+          console.error("[v0] Erro ao alterar status:", error)
           this.mostrarErro("Erro ao alterar status. Tente novamente.")
         },
       })
@@ -258,7 +264,7 @@ export class Home implements OnInit, OnDestroy {
       const dto: AlterarStatusRequestDTO = {
         numero: cartao.numero,
         cvv: cartao.cvv,
-        novoStatus: novoStatus,
+        novoStatus: novoStatus.toUpperCase(),
       }
 
       return this.cartaoService.alterarStatus(dto)
@@ -318,7 +324,7 @@ export class Home implements OnInit, OnDestroy {
     this.isProcessing = true
 
     this.cartaoService
-      .solicitarSegundaVia(solicitacao.cvv, solicitacao.motivo, solicitacao.numero)
+      .solicitarSegundaVia(solicitacao.cvv, solicitacao.numero, solicitacao.motivo)
       .pipe(
         takeUntil(this.destroy$),
         finalize(() => (this.isProcessing = false)),
