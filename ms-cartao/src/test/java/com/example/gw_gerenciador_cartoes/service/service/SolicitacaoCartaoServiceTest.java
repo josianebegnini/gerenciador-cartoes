@@ -8,14 +8,16 @@ import com.example.gw_gerenciador_cartoes.infra.enums.TipoEmissao;
 import com.example.gw_gerenciador_cartoes.infra.exception.MensagensErroConstantes;
 import com.example.gw_gerenciador_cartoes.infra.exception.RegraNegocioException;
 import com.example.gw_gerenciador_cartoes.service.SolicitacaoCartaoService;
-import com.example.gw_gerenciador_cartoes.service.testutil.CartaoTestConstants;
-import com.example.gw_gerenciador_cartoes.service.testutil.CartaoTestFactory;
+import com.example.gw_gerenciador_cartoes.testutil.CartaoTestConstants;
+import com.example.gw_gerenciador_cartoes.testutil.CartaoTestFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -33,20 +35,40 @@ public class SolicitacaoCartaoServiceTest {
 
     @Test
     void deveSalvarSolicitacaoComSucesso() {
-        SolicitacaoCartao solicitacaoMock = CartaoTestFactory.criarSolicitacaoCartaoCompleto(1L, StatusSolicitacao.EM_ANDAMENTO);
+        Long clienteId = 1L;
+        Long contaId = 2L;
+        TipoCartao tipoCartao = TipoCartao.CONTA;
+        TipoEmissao tipoEmissao = TipoEmissao.FISICO;
+        String nome = CartaoTestConstants.NOME_PADRAO;
+        String email = CartaoTestConstants.EMAIL_PADRAO;
 
         when(solicitacaoCartaoRepository.salvar(any(SolicitacaoCartao.class)))
-                .thenReturn(Optional.of(solicitacaoMock));
+                .thenAnswer(invocation -> {
+                    SolicitacaoCartao s = invocation.getArgument(0);
+                    s.setId(1L);
+                    return Optional.of(s);
+                });
 
         SolicitacaoCartao resultado = solicitacaoCartaoService.salvar(
-                1L, 2L, solicitacaoMock.getTipoCartao(), solicitacaoMock.getTipoEmissao(),
-                solicitacaoMock.getNome(), solicitacaoMock.getEmail()
+                clienteId, contaId, tipoCartao, tipoEmissao, nome, email
         );
 
         assertNotNull(resultado);
         assertEquals(1L, resultado.getId());
-        assertEquals(StatusSolicitacao.EM_ANDAMENTO, resultado.getStatus());
-        verify(solicitacaoCartaoRepository).salvar(any(SolicitacaoCartao.class));
+
+        ArgumentCaptor<SolicitacaoCartao> captor = ArgumentCaptor.forClass(SolicitacaoCartao.class);
+        verify(solicitacaoCartaoRepository).salvar(captor.capture());
+        SolicitacaoCartao enviado = captor.getValue();
+
+        assertEquals(clienteId, enviado.getClienteId());
+        assertEquals(contaId, enviado.getContaId());
+        assertEquals(nome, enviado.getNome());
+        assertEquals(email, enviado.getEmail());
+        assertEquals(tipoCartao, enviado.getTipoCartao());
+        assertEquals(tipoEmissao, enviado.getTipoEmissao());
+        assertEquals(StatusSolicitacao.EM_ANDAMENTO, enviado.getStatus());
+        assertNotNull(enviado.getDataSolicitacao());
+        assertNotNull(enviado.getUltimaDataProcessamento());
     }
 
     @Test
@@ -59,65 +81,6 @@ public class SolicitacaoCartaoServiceTest {
                     1L, 2L, TipoCartao.DEBITO, TipoEmissao.FISICO, CartaoTestConstants.NOME_PADRAO, CartaoTestConstants.EMAIL_PADRAO
             );
         });
-    }
-
-    @Test
-    void deveRejeitarSolicitacaoComSucesso() {
-
-        SolicitacaoCartao solicitacao = CartaoTestFactory.criarSolicitacaoCartaoCompleto(1L, StatusSolicitacao.EM_ANDAMENTO);
-
-        when(solicitacaoCartaoRepository.buscarPorId(1L)).thenReturn(Optional.of(solicitacao));
-
-        solicitacaoCartaoService.rejeitarSolicitacao(1L, CartaoTestConstants.MOTIVO_DADOS_INVALIDOS, CartaoTestConstants.MENSAGEM_SOLICITACAO_REJEITADA);
-
-        assertEquals(StatusSolicitacao.REJEITADO, solicitacao.getStatus());
-        assertEquals(CartaoTestConstants.MOTIVO_DADOS_INVALIDOS, solicitacao.getMotivoRejeicao());
-        assertEquals(CartaoTestConstants.MENSAGEM_SOLICITACAO_REJEITADA, solicitacao.getMensagemSolicitacao());
-        verify(solicitacaoCartaoRepository).alterar(solicitacao);
-    }
-
-    @Test
-    void deveLancarExcecaoAoRejeitarSolicitacaoInexistente() {
-        Long solicitacaoId = 99L;
-
-        when(solicitacaoCartaoRepository.buscarPorId(solicitacaoId)).thenReturn(Optional.empty());
-
-        RegraNegocioException exception = assertThrows(RegraNegocioException.class, () -> {
-            solicitacaoCartaoService.rejeitarSolicitacao(solicitacaoId, CartaoTestConstants.MOTIVO_DADOS_INVALIDOS, CartaoTestConstants.MENSAGEM_SOLICITACAO_REJEITADA);
-        });
-
-        assertEquals(MensagensErroConstantes.SOLICITACAO_NAO_ENCONTRADA, exception.getMessage());
-
-        verify(solicitacaoCartaoRepository, never()).alterar(any());
-    }
-
-    @Test
-    void deveFinalizarSolicitacaoComoProcessadaComSucesso() {
-        SolicitacaoCartao solicitacao = CartaoTestFactory.criarSolicitacaoCartaoCompleto(1L, StatusSolicitacao.EM_ANDAMENTO);
-
-        when(solicitacaoCartaoRepository.buscarPorId(1L)).thenReturn(Optional.of(solicitacao));
-
-        solicitacaoCartaoService.finalizarComoProcessada(1L, 99L);
-
-        assertEquals(StatusSolicitacao.PROCESSADO, solicitacao.getStatus());
-        assertEquals(99L, solicitacao.getCartaoId());
-        verify(solicitacaoCartaoRepository).alterar(solicitacao);
-    }
-
-    @Test
-    void deveLancarExcecaoAoFinalizarSolicitacaoInexistenteComoProcessada() {
-        Long solicitacaoId = 99L;
-        Long cartaoId = 123L;
-
-        when(solicitacaoCartaoRepository.buscarPorId(solicitacaoId)).thenReturn(Optional.empty());
-
-        RegraNegocioException exception = assertThrows(RegraNegocioException.class, () -> {
-            solicitacaoCartaoService.finalizarComoProcessada(solicitacaoId, cartaoId);
-        });
-
-        assertEquals(MensagensErroConstantes.SOLICITACAO_NAO_ENCONTRADA, exception.getMessage());
-
-        verify(solicitacaoCartaoRepository, never()).alterar(any());
     }
 
     @Test
@@ -149,4 +112,88 @@ public class SolicitacaoCartaoServiceTest {
         verify(solicitacaoCartaoRepository).buscarPorId(solicitacaoId);
     }
 
+    @Test
+    void deveRejeitarSolicitacaoComSucesso() {
+
+        SolicitacaoCartao solicitacao = CartaoTestFactory.criarSolicitacaoCartaoCompleto(
+                1L, StatusSolicitacao.EM_ANDAMENTO);
+
+        when(solicitacaoCartaoRepository.buscarPorId(1L)).thenReturn(Optional.of(solicitacao));
+
+        LocalDateTime inicio = LocalDateTime.now();
+
+        solicitacaoCartaoService.rejeitarSolicitacao(
+                1L,
+                CartaoTestConstants.MOTIVO_DADOS_INVALIDOS,
+                CartaoTestConstants.MENSAGEM_SOLICITACAO_REJEITADA
+        );
+
+        LocalDateTime fim = LocalDateTime.now();
+
+        assertEquals(StatusSolicitacao.REJEITADO, solicitacao.getStatus());
+        assertEquals(CartaoTestConstants.MOTIVO_DADOS_INVALIDOS, solicitacao.getMotivoRejeicao());
+        assertEquals(CartaoTestConstants.MENSAGEM_SOLICITACAO_REJEITADA, solicitacao.getMensagemSolicitacao());
+        assertNotNull(solicitacao.getUltimaDataProcessamento());
+
+        assertFalse(solicitacao.getUltimaDataProcessamento().isBefore(inicio),
+                "ultimaDataProcessamento deve ser >= " + inicio);
+        assertFalse(solicitacao.getUltimaDataProcessamento().isAfter(fim),
+                "ultimaDataProcessamento deve ser <= " + fim);
+
+        verify(solicitacaoCartaoRepository).alterar(solicitacao);
+    }
+
+    @Test
+    void deveLancarExcecaoAoRejeitarSolicitacaoInexistente() {
+        Long solicitacaoId = 99L;
+
+        when(solicitacaoCartaoRepository.buscarPorId(solicitacaoId)).thenReturn(Optional.empty());
+
+        RegraNegocioException exception = assertThrows(RegraNegocioException.class, () -> {
+            solicitacaoCartaoService.rejeitarSolicitacao(solicitacaoId, CartaoTestConstants.MOTIVO_DADOS_INVALIDOS, CartaoTestConstants.MENSAGEM_SOLICITACAO_REJEITADA);
+        });
+
+        assertEquals(MensagensErroConstantes.SOLICITACAO_NAO_ENCONTRADA, exception.getMessage());
+
+        verify(solicitacaoCartaoRepository, never()).alterar(any());
+    }
+
+    @Test
+    void deveFinalizarSolicitacaoComoProcessadaComSucesso() {
+        SolicitacaoCartao solicitacao =
+                CartaoTestFactory.criarSolicitacaoCartaoCompleto(1L, StatusSolicitacao.EM_ANDAMENTO);
+        Long cartaoId = 99L;
+
+        when(solicitacaoCartaoRepository.buscarPorId(1L)).thenReturn(Optional.of(solicitacao));
+
+        LocalDateTime inicio = LocalDateTime.now();
+        solicitacaoCartaoService.finalizarComoProcessada(1L, cartaoId);
+        LocalDateTime fim = LocalDateTime.now();
+
+        assertEquals(StatusSolicitacao.PROCESSADO, solicitacao.getStatus());
+        assertEquals(cartaoId, solicitacao.getCartaoId());
+
+        LocalDateTime atualizado = solicitacao.getUltimaDataProcessamento();
+        assertNotNull(atualizado);
+        assertFalse(atualizado.isBefore(inicio), "deve ser >= início");
+        assertFalse(atualizado.isAfter(fim),     "deve ser <= fim");
+
+        verify(solicitacaoCartaoRepository).alterar(solicitacao);
+    }
+
+    @Test
+    void deveLancarExcecaoAoFinalizarSolicitacaoInexistenteComoProcessada() {
+        Long solicitacaoId = 99L;
+        Long cartaoId = 123L;
+
+        when(solicitacaoCartaoRepository.buscarPorId(solicitacaoId)).thenReturn(Optional.empty());
+
+        RegraNegocioException exception = assertThrows(RegraNegocioException.class, () -> {
+            solicitacaoCartaoService.finalizarComoProcessada(solicitacaoId, cartaoId);
+        });
+
+        assertEquals(MensagensErroConstantes.SOLICITACAO_NAO_ENCONTRADA, exception.getMessage());
+
+        verify(solicitacaoCartaoRepository, never()).alterar(any());
+    }
 }

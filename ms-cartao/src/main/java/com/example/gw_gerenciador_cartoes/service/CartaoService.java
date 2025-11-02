@@ -14,11 +14,11 @@ import com.example.gw_gerenciador_cartoes.infra.exception.MensagensErroConstante
 import com.example.gw_gerenciador_cartoes.infra.exception.RegraNegocioException;
 import com.example.gw_gerenciador_cartoes.service.validator.CartaoStatusValidator;
 import com.example.gw_gerenciador_cartoes.service.validator.CartaoValidator;
+import com.example.gw_gerenciador_cartoes.service.validator.PoliticaExpiracaoCartao;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
 
 @Service
@@ -32,8 +32,9 @@ public class CartaoService implements CartaoServicePort {
     private final CartaoEmailService cartaoEmailService;
     private final CartaoStatusValidator cartaoStatusValidator;
     private final CartaoCreatorService cartaoCreatorService;
+    private final PoliticaExpiracaoCartao politicaExpiracaoCartao;
 
-    public CartaoService(CartaoRepositoryPort repository, SolicitacaoCartaoServicePort solicitacaoCartaoService, CartaoValidator cartaoValidator, DadosCartaoGenerator dadosCartaoGenerator, CartaoMapper mapper, CartaoEmailService cartaoEmailService, CartaoStatusValidator cartaoStatusValidator, CartaoCreatorService cartaoCreatorService) {
+    public CartaoService(CartaoRepositoryPort repository, SolicitacaoCartaoServicePort solicitacaoCartaoService, CartaoValidator cartaoValidator, DadosCartaoGenerator dadosCartaoGenerator, CartaoMapper mapper, CartaoEmailService cartaoEmailService, CartaoStatusValidator cartaoStatusValidator, CartaoCreatorService cartaoCreatorService, PoliticaExpiracaoCartao politicaExpiracaoCartao) {
         this.repository = repository;
         this.solicitacaoCartaoService = solicitacaoCartaoService;
         this.cartaoValidator = cartaoValidator;
@@ -42,6 +43,7 @@ public class CartaoService implements CartaoServicePort {
         this.cartaoEmailService = cartaoEmailService;
         this.cartaoStatusValidator = cartaoStatusValidator;
         this.cartaoCreatorService = cartaoCreatorService;
+        this.politicaExpiracaoCartao = politicaExpiracaoCartao;
     }
 
     @Override
@@ -117,7 +119,7 @@ public class CartaoService implements CartaoServicePort {
         segundaVia.setSolicitacaoId(original.getSolicitacaoId());
         segundaVia.setNumero(cartaoCreatorService.gerarNumeroCartaoUnico());
         segundaVia.setCvv(dadosCartaoGenerator.gerarCvv());
-        segundaVia.setDataVencimento(calcularDataVencimentoSegundaVia(original.getDataVencimento()));
+        segundaVia.setDataVencimento(politicaExpiracaoCartao.calcularParaSegundaVia(original.getDataVencimento()));
         segundaVia.setDataCriacao(LocalDateTime.now());
         segundaVia.setTipoCartao(original.getTipoCartao());
         segundaVia.setStatus(StatusCartao.DESATIVADO);
@@ -125,16 +127,6 @@ public class CartaoService implements CartaoServicePort {
         segundaVia.setMotivoStatus(MensagensErroConstantes.MOTIVO_CARTAO_SEGUNDA_VIA_GERADA + dto.getMotivoSegundaVia());
         segundaVia.setLimite(original.getLimite());
         return segundaVia;
-    }
-
-    private LocalDateTime calcularDataVencimentoSegundaVia(LocalDateTime dataCriacaoOriginal) {
-        long diasDesdeCriacao = Duration.between(dataCriacaoOriginal, LocalDateTime.now()).toDays();
-
-        if (diasDesdeCriacao < 30) {
-            return dataCriacaoOriginal.plusDays(1);
-        } else {
-            return LocalDateTime.now().plusYears(3);
-        }
     }
 
     @Override

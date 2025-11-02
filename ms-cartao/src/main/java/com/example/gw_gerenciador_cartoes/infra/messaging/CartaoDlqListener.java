@@ -26,5 +26,4 @@ public class CartaoDlqListener {
             log.error("Erro ao processar mensagem da DLQ: {}", payload, e);
         }
     }
-
 }

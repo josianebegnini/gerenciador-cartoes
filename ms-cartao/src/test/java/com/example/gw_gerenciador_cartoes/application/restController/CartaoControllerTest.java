@@ -1,12 +1,11 @@
-package com.example.gw_gerenciador_cartoes.service.application.restController;
+package com.example.gw_gerenciador_cartoes.application.restController;
 
 import com.example.gw_gerenciador_cartoes.application.dto.cartao.AlterarStatusRequestDTO;
 import com.example.gw_gerenciador_cartoes.application.dto.cartao.CadastrarCartaoExistenteRequestDTO;
 import com.example.gw_gerenciador_cartoes.application.dto.cartao.CartaoResponseDTO;
 import com.example.gw_gerenciador_cartoes.application.dto.cartao.SegundaViaCartaoRequestDTO;
-import com.example.gw_gerenciador_cartoes.application.restController.CartaoController;
 import com.example.gw_gerenciador_cartoes.domain.ports.CartaoServicePort;
-import com.example.gw_gerenciador_cartoes.service.testutil.CartaoTestFactory;
+import com.example.gw_gerenciador_cartoes.testutil.CartaoTestFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -20,8 +19,10 @@ import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class CartaoControllerTest {
@@ -39,10 +40,15 @@ public class CartaoControllerTest {
 
         when(cartaoService.alterarStatus(request)).thenReturn(response);
 
-        ResponseEntity<CartaoResponseDTO> result = controller.alterarStatus(request);
+        ResponseEntity<CartaoResponseDTO> resposta = controller.alterarStatus(request);
 
-        assertEquals(200, result.getStatusCodeValue());
-        assertEquals(response, result.getBody());
+        assertEquals(200, resposta.getStatusCodeValue());
+        assertSame(response, resposta.getBody());
+        assertThat(resposta.getBody()).isNotNull();
+        assertThat(resposta.getBody().getNumero()).isEqualTo(response.getNumero());
+
+        verify(cartaoService, times(1)).alterarStatus(request);
+        verifyNoMoreInteractions(cartaoService);
     }
 
     @Test
@@ -52,25 +58,36 @@ public class CartaoControllerTest {
 
         when(cartaoService.solicitarSegundaVia(request)).thenReturn(response);
 
-        ResponseEntity<CartaoResponseDTO> result = controller.solicitarSegundaVia(request);
+        ResponseEntity<CartaoResponseDTO> resposta = controller.solicitarSegundaVia(request);
 
-        assertEquals(200, result.getStatusCodeValue());
-        assertEquals(response, result.getBody());
+        assertEquals(200, resposta.getStatusCodeValue());
+        assertSame(response, resposta.getBody());
+        assertThat(resposta.getBody()).isNotNull();
+        assertThat(resposta.getBody().getNumero()).isEqualTo(response.getNumero());
+
+        verify(cartaoService, times(1)).solicitarSegundaVia(request);
+        verifyNoMoreInteractions(cartaoService);
     }
 
     @Test
     void deveBuscarCartoesPorCliente() {
         Long idCliente = 1L;
         Pageable pageable = PageRequest.of(0, 10);
-        List<CartaoResponseDTO> lista = List.of(CartaoTestFactory.criarCartaoResponseDTO());
-        Page<CartaoResponseDTO> page = new PageImpl<>(lista);
+        List<CartaoResponseDTO> conteudo = CartaoTestFactory.criarListaCartaoResponseDTO(
+                CartaoTestFactory.criarListaCartoes(2)
+        );
+        Page<CartaoResponseDTO> page = new PageImpl<>(conteudo, pageable, 2);
 
         when(cartaoService.buscarPorCliente(idCliente, pageable)).thenReturn(page);
 
-        ResponseEntity<Page<CartaoResponseDTO>> result = controller.buscarPorCliente(idCliente, pageable);
+        ResponseEntity<Page<CartaoResponseDTO>> resposta = controller.buscarPorCliente(idCliente, pageable);
 
-        assertEquals(200, result.getStatusCodeValue());
-        assertEquals(page, result.getBody());
+        assertEquals(200, resposta.getStatusCodeValue());
+        assertSame(page, resposta.getBody());
+        assertThat(resposta.getBody()).isNotNull();
+        assertThat(resposta.getBody().getContent()).hasSize(2);
+        verify(cartaoService, times(1)).buscarPorCliente(idCliente, pageable);
+        verifyNoMoreInteractions(cartaoService);
     }
 
     @Test
@@ -83,7 +100,12 @@ public class CartaoControllerTest {
         ResponseEntity<CartaoResponseDTO> result = controller.cadastrarCartaoExistente(request);
 
         assertEquals(201, result.getStatusCodeValue());
-        assertEquals(response, result.getBody());
+        assertSame(response, result.getBody());
+        assertThat(result.getBody()).isNotNull();
+        assertThat(result.getBody().getNumero()).isEqualTo(response.getNumero());
+
+        verify(cartaoService, times(1)).cadastrarCartaoExistente(request);
+        verifyNoMoreInteractions(cartaoService);
     }
 
     @Test
@@ -97,6 +119,11 @@ public class CartaoControllerTest {
         ResponseEntity<Page<CartaoResponseDTO>> result = controller.listarTodos(pageable);
 
         assertEquals(200, result.getStatusCodeValue());
-        assertEquals(page, result.getBody());
+        assertSame(page, result.getBody());
+        assertThat(result.getBody()).isNotNull();
+        assertThat(result.getBody().getContent()).hasSize(1);
+
+        verify(cartaoService, times(1)).listarTodos(pageable);
+        verifyNoMoreInteractions(cartaoService);
     }
 }
