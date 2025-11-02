@@ -54,6 +54,7 @@ public class ClienteServiceImpl implements ClienteServicePort {
         if (!cliente.isPresent()) {
             throw new RuntimeException("Cliente bnao encontrado id " + id);
         }
+        clienteRepository.deleteById(cliente.get().getId());
 
     }
 

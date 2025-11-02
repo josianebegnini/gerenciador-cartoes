@@ -73,9 +73,9 @@
       </div>
 
       <!-- Formulário de Cartão -->
-      <!-- <form class="cadastro-form" (ngSubmit)="criarCartao()" *ngIf="clienteEncontrado"> -->
+      <form class="cadastro-form" (ngSubmit)="criarCartao()" *ngIf="clienteEncontrado">
         <!-- Dados do Cartão -->
-        <!-- <div class="form-section">
+        <div class="form-section">
           <h2 class="section-title">Dados do Cartão</h2>
           <div class="form-grid">
             <div class="form-group full-width">
@@ -86,7 +86,7 @@
                 [(ngModel)]="cartao.numero"
                 name="numero"
                 placeholder="0000 0000 0000 0000"
-                (input)="formatarNumeroCartao($event)"
+                (input)="$event"
                 maxlength="19"
                 required
               />
@@ -100,7 +100,7 @@
                 [(ngModel)]="cartao.cvv"
                 name="cvv"
                 placeholder="123"
-                (input)="formatarCVV($event)"
+                (input)="$event"
                 maxlength="4"
                 required
               />
@@ -135,11 +135,11 @@
             </div>
 
             <div class="form-group">
-              <label for="formatoCartao">Formato do Cartão *</label>
+              <label for="tipoEmissao">Tipo Emissão *</label>
               <select
-                id="formatoCartao"
-                [(ngModel)]="cartao.categoriaCartao"
-                name="formatoCartao"
+                id="tipoEmissao"
+                [(ngModel)]="cartao.tipoEmissao"
+                name="tipoEmissao"
                 required
               >
                 <option value="fisico">Físico</option>
@@ -147,10 +147,26 @@
               </select>
             </div>
           </div>
-        </div>-->
+        </div>
+
+        <div class="form-group">
+              <label for="status">Status do Cartão *</label>
+              <select
+                id="status"
+                [(ngModel)]="cartao.status"
+                name="status"
+                required
+              >
+                <option value="ativado">ativado</option>
+                <option value="bloqueado">bloqueado</option>
+                <option value="desativado">desativado</option>
+                <option value="rejeitado">rejeitado</option>
+                <option value="cancelado">cancelado</option>
+              </select>
+            </div>
 
         <!-- Botões -->
-        <!-- <div class="form-actions">
+       <div class="form-actions">
           <button
             type="button"
             class="btn btn-secondary"
@@ -167,7 +183,21 @@
             {{ carregando ? 'Cadastrando...' : 'Criar Cartão' }}
           </button>
         </div>
+
+        <div class="form-group">
+              <label for="limite"> Digite o limite do cartão caso queira aumentar o limite do cartão atual? *</label>
+              <input
+                type="text"
+                id="limite"
+                [(ngModel)]="cartao.limite"
+                name="limite"
+                placeholder="limite"
+                (input)="$event"
+                [disabled]="isLoading"
+                required
+              />
+        </div>
       </form>
     </div>
   </div>
-</div>  -->
+</div>

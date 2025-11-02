@@ -183,19 +183,6 @@
                 required
               />
             </div>
-            <div class="form-group">
-              <label for="saldo">Deseja depositar algum saldo inicial? *</label>
-              <input
-                type="text"
-                id="saldo"
-                [(ngModel)]="cliente.conta.saldo"
-                name="saldo"
-                placeholder="saldo"
-                (input)="formatarSaldo($event)"
-                [disabled]="isLoading"
-                required
-              />
-            </div>
           </div>
         </section>
 

@@ -7,6 +7,7 @@ import com.example.gw_gerenciador_cartoes.application.dto.cartao.SegundaViaCarta
 import com.example.gw_gerenciador_cartoes.domain.ports.CartaoControllerDoc;
 import com.example.gw_gerenciador_cartoes.domain.ports.CartaoServicePort;
 import jakarta.validation.Valid;
+
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
