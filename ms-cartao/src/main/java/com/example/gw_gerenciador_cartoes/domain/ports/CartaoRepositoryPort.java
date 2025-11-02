@@ -20,4 +20,6 @@ public interface CartaoRepositoryPort {
 
     Page<Cartao> buscarTodos(Pageable pageable);
 
+    Page<Cartao> buscarPorFiltros(Long clienteId, String numero, String cvv, Pageable pageable);
+
 }

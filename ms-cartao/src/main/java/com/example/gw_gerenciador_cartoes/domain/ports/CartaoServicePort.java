@@ -18,4 +18,7 @@ public interface CartaoServicePort {
 
     Page<CartaoResponseDTO> listarTodos(Pageable pageable);
 
+    CartaoResponseDTO buscarPorNumeroECvv(String numero, String cvv);
+
+    Page<CartaoResponseDTO> buscarCartoes(Long clienteId, String numero, String cvv, Pageable pageable);
 }

@@ -2,20 +2,22 @@ package com.example.gw_gerenciador_cartoes.service;
 
 import com.example.gw_gerenciador_cartoes.application.dto.cartao.*;
 import com.example.gw_gerenciador_cartoes.application.mapper.CartaoMapper;
-import com.example.gw_gerenciador_cartoes.infra.enums.StatusCartao;
 import com.example.gw_gerenciador_cartoes.domain.model.Cartao;
 import com.example.gw_gerenciador_cartoes.domain.model.SolicitacaoCartao;
 import com.example.gw_gerenciador_cartoes.domain.ports.CartaoRepositoryPort;
 import com.example.gw_gerenciador_cartoes.domain.ports.CartaoServicePort;
 import com.example.gw_gerenciador_cartoes.domain.ports.SolicitacaoCartaoServicePort;
-import com.example.gw_gerenciador_cartoes.infra.exception.*;
+import com.example.gw_gerenciador_cartoes.infra.email.CartaoEmailService;
+import com.example.gw_gerenciador_cartoes.infra.enums.StatusCartao;
+import com.example.gw_gerenciador_cartoes.infra.exception.CartaoNotFoundException;
+import com.example.gw_gerenciador_cartoes.infra.exception.MensagensErroConstantes;
+import com.example.gw_gerenciador_cartoes.infra.exception.RegraNegocioException;
 import com.example.gw_gerenciador_cartoes.service.validator.CartaoStatusValidator;
 import com.example.gw_gerenciador_cartoes.service.validator.CartaoValidator;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
@@ -25,19 +27,21 @@ public class CartaoService implements CartaoServicePort {
     private final CartaoRepositoryPort repository;
     private final SolicitacaoCartaoServicePort solicitacaoCartaoService;
     private final CartaoValidator cartaoValidator;
-    private final CartaoGenerator cartaoGenerator;
+    private final DadosCartaoGenerator dadosCartaoGenerator;
     private final CartaoMapper mapper;
     private final CartaoEmailService cartaoEmailService;
     private final CartaoStatusValidator cartaoStatusValidator;
+    private final CartaoCreatorService cartaoCreatorService;
 
-    public CartaoService(CartaoRepositoryPort repository, SolicitacaoCartaoServicePort solicitacaoCartaoService, CartaoValidator cartaoValidator, CartaoGenerator cartaoGenerator, CartaoMapper mapper, CartaoEmailService cartaoEmailService, CartaoStatusValidator cartaoStatusValidator) {
+    public CartaoService(CartaoRepositoryPort repository, SolicitacaoCartaoServicePort solicitacaoCartaoService, CartaoValidator cartaoValidator, DadosCartaoGenerator dadosCartaoGenerator, CartaoMapper mapper, CartaoEmailService cartaoEmailService, CartaoStatusValidator cartaoStatusValidator, CartaoCreatorService cartaoCreatorService) {
         this.repository = repository;
         this.solicitacaoCartaoService = solicitacaoCartaoService;
         this.cartaoValidator = cartaoValidator;
-        this.cartaoGenerator = cartaoGenerator;
+        this.dadosCartaoGenerator = dadosCartaoGenerator;
         this.mapper = mapper;
         this.cartaoEmailService = cartaoEmailService;
         this.cartaoStatusValidator = cartaoStatusValidator;
+        this.cartaoCreatorService = cartaoCreatorService;
     }
 
     @Override
@@ -50,45 +54,14 @@ public class CartaoService implements CartaoServicePort {
                 dto.getNome(),
                 dto.getEmail());
         cartaoValidator.validar(dto, solicitacao.getId());
-        Long cartaoId = criarCartao(dto, solicitacao.getId());
+        Long cartaoId = cartaoCreatorService.criarCartao(dto, solicitacao.getId());
         solicitacaoCartaoService.finalizarComoProcessada(solicitacao.getId(), cartaoId);
-    }
-
-    private Long criarCartao(ClienteContaCriadoDTO dto, Long solicitacaoId) {
-        Cartao cartao = new Cartao();
-        cartao.setSolicitacaoId(solicitacaoId);
-        cartao.setClienteId(dto.getClienteId());
-        cartao.setContaId(dto.getContaId());
-        cartao.setNumero(gerarNumeroCartaoUnico());
-        cartao.setCvv(cartaoGenerator.gerarCvv());
-        cartao.setDataVencimento(calcularDataVencimentoNovoCartao());
-        cartao.setDataCriacao(LocalDateTime.now());
-        cartao.setTipoCartao(dto.getTipoCartao());
-        cartao.setTipoEmissao(dto.getTipoEmissao());
-
-        cartao.atualizarStatus(StatusCartao.DESATIVADO, MensagensErroConstantes.MOTIVO_CARTAO_DESATIVADO_APOS_GERACAO);
-
-        if (cartao.eCredito()) {
-            cartao.setLimite(new BigDecimal("2000.00"));
-        }
-
-        Cartao cartaoCriado = repository.salvar(cartao);
-        cartaoEmailService.enviarEmailCartaoCriado(cartaoCriado);
-
-        return cartaoCriado.getId();
-    }
-
-    private String gerarNumeroCartaoUnico() {
-        String numero;
-        do {
-            numero = cartaoGenerator.gerarNumeroCartao();
-        } while (repository.existePorNumero(numero));
-        return numero;
     }
 
     @Override
     public CartaoResponseDTO alterarStatus(AlterarStatusRequestDTO dto) {
-        Cartao cartao = buscarCartaoPorNumeroECvv(dto.getNumero(), dto.getCvv());
+        Cartao cartao = repository.buscarCartaoPorNumeroECvv(dto.getNumero(), dto.getCvv())
+                .orElseThrow(() -> new CartaoNotFoundException(MensagensErroConstantes.CARTAO_NAO_ENCONTRADO));
 
         cartaoStatusValidator.validarAlteracaoStatus(cartao, dto.getNovoStatus());
 
@@ -114,7 +87,8 @@ public class CartaoService implements CartaoServicePort {
     @Override
     public CartaoResponseDTO solicitarSegundaVia(SegundaViaCartaoRequestDTO dto) {
 
-        Cartao original = buscarCartaoPorNumeroECvv(dto.getNumero(), dto.getCvv());
+        Cartao original = repository.buscarCartaoPorNumeroECvv(dto.getNumero(), dto.getCvv())
+                .orElseThrow(() -> new CartaoNotFoundException(MensagensErroConstantes.CARTAO_NAO_ENCONTRADO));
 
         if (original.getStatus() != StatusCartao.ATIVADO && original.getStatus() != StatusCartao.BLOQUEADO) {
             throw new RegraNegocioException(MensagensErroConstantes.SEGUNDA_VIA_STATUS_INVALIDO);
@@ -127,6 +101,10 @@ public class CartaoService implements CartaoServicePort {
 
         Cartao cartaoSalvo = repository.salvar(segundaVia);
 
+        if (cartaoSalvo == null || cartaoSalvo.getId() == null) {
+            throw new RegraNegocioException(MensagensErroConstantes.CARTAO_FALHA_AO_CRIAR_SEGUNDA_VIA);
+        }
+
         cartaoEmailService.enviarEmailSegundaVia(cartaoSalvo);
 
         return mapper.toCartaoResponseDTO(cartaoSalvo);
@@ -137,8 +115,8 @@ public class CartaoService implements CartaoServicePort {
         segundaVia.setClienteId(original.getClienteId());
         segundaVia.setContaId(original.getContaId());
         segundaVia.setSolicitacaoId(original.getSolicitacaoId());
-        segundaVia.setNumero(gerarNumeroCartaoUnico());
-        segundaVia.setCvv(cartaoGenerator.gerarCvv());
+        segundaVia.setNumero(cartaoCreatorService.gerarNumeroCartaoUnico());
+        segundaVia.setCvv(dadosCartaoGenerator.gerarCvv());
         segundaVia.setDataVencimento(calcularDataVencimentoSegundaVia(original.getDataVencimento()));
         segundaVia.setDataCriacao(LocalDateTime.now());
         segundaVia.setTipoCartao(original.getTipoCartao());
@@ -147,10 +125,6 @@ public class CartaoService implements CartaoServicePort {
         segundaVia.setMotivoStatus(MensagensErroConstantes.MOTIVO_CARTAO_SEGUNDA_VIA_GERADA + dto.getMotivoSegundaVia());
         segundaVia.setLimite(original.getLimite());
         return segundaVia;
-    }
-
-    private LocalDateTime calcularDataVencimentoNovoCartao() {
-        return LocalDateTime.now().plusYears(3);
     }
 
     private LocalDateTime calcularDataVencimentoSegundaVia(LocalDateTime dataCriacaoOriginal) {
@@ -163,9 +137,12 @@ public class CartaoService implements CartaoServicePort {
         }
     }
 
-    private Cartao buscarCartaoPorNumeroECvv(String numero, String cvv) {
-        return repository.buscarCartaoPorNumeroECvv(numero, cvv)
+    @Override
+    public CartaoResponseDTO buscarPorNumeroECvv(String numero, String cvv) {
+        Cartao cartao = repository.buscarCartaoPorNumeroECvv(numero, cvv)
                 .orElseThrow(() -> new CartaoNotFoundException(MensagensErroConstantes.CARTAO_NAO_ENCONTRADO));
+
+        return mapper.toCartaoResponseDTO(cartao);
     }
 
     @Override
@@ -176,6 +153,9 @@ public class CartaoService implements CartaoServicePort {
 
     @Override
     public CartaoResponseDTO cadastrarCartaoExistente(CadastrarCartaoExistenteRequestDTO dto) {
+
+        cartaoValidator.validarCartaoNaoExiste(dto.getNumero(), dto.getCvv());
+
         Cartao cartao = new Cartao();
         cartao.setClienteId(dto.getClienteId());
         cartao.setContaId(0L);
@@ -191,6 +171,11 @@ public class CartaoService implements CartaoServicePort {
         cartao.setLimite(dto.getLimite());
 
         Cartao cartaoSalvo = repository.salvar(cartao);
+
+        if (cartaoSalvo == null || cartaoSalvo.getId() == null) {
+            throw new RegraNegocioException(MensagensErroConstantes.CARTAO_FALHA_AO_CRIAR);
+        }
+
         return mapper.toCartaoResponseDTO(cartaoSalvo);
     }
 
@@ -198,6 +183,12 @@ public class CartaoService implements CartaoServicePort {
     public Page<CartaoResponseDTO> listarTodos(Pageable pageable) {
         return repository.buscarTodos(pageable)
                 .map(mapper::toCartaoResponseDTO);
+    }
+
+    @Override
+    public Page<CartaoResponseDTO> buscarCartoes(Long clienteId, String numero, String cvv, Pageable pageable) {
+        Page<Cartao> cartoes = repository.buscarPorFiltros(clienteId, numero, cvv, pageable);
+        return cartoes.map(mapper::toCartaoResponseDTO);
     }
 
 }

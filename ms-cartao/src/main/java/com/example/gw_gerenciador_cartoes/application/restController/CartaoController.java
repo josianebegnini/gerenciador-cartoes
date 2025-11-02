@@ -1,26 +1,19 @@
 package com.example.gw_gerenciador_cartoes.application.restController;
 
-import org.springdoc.core.annotations.ParameterObject;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.example.gw_gerenciador_cartoes.application.dto.cartao.AlterarStatusRequestDTO;
 import com.example.gw_gerenciador_cartoes.application.dto.cartao.CadastrarCartaoExistenteRequestDTO;
 import com.example.gw_gerenciador_cartoes.application.dto.cartao.CartaoResponseDTO;
 import com.example.gw_gerenciador_cartoes.application.dto.cartao.SegundaViaCartaoRequestDTO;
 import com.example.gw_gerenciador_cartoes.domain.ports.CartaoControllerDoc;
 import com.example.gw_gerenciador_cartoes.domain.ports.CartaoServicePort;
-
 import jakarta.validation.Valid;
+
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/cartoes")
@@ -52,6 +45,14 @@ public class CartaoController implements CartaoControllerDoc {
         return ResponseEntity.ok(cartoes);
     }
 
+    @GetMapping("/por-numero-e-cv")
+    public ResponseEntity<CartaoResponseDTO> buscarPorNumeroECvv(
+            @RequestParam String numero,
+            @RequestParam String cvv) {
+
+        return ResponseEntity.ok(cartaoService.buscarPorNumeroECvv(numero, cvv));
+    }
+
     @PostMapping("/cadastrar-existente")
     public ResponseEntity<CartaoResponseDTO> cadastrarCartaoExistente(
             @RequestBody @Valid CadastrarCartaoExistenteRequestDTO dto) {
@@ -59,11 +60,22 @@ public class CartaoController implements CartaoControllerDoc {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @GetMapping
+    @GetMapping("/todos")
     public ResponseEntity<Page<CartaoResponseDTO>> listarTodos(
             @ParameterObject Pageable pageable) {
         Page<CartaoResponseDTO> cartoes = cartaoService.listarTodos(pageable);
         return ResponseEntity.ok(cartoes);
     }
 
+
+    @GetMapping("/filtro")
+    public ResponseEntity<Page<CartaoResponseDTO>> buscarCartoes(
+            @RequestParam(required = false) Long clienteId,
+            @RequestParam(required = false) String numero,
+            @RequestParam(required = false) String cvv,
+            @ParameterObject Pageable pageable) {
+
+        Page<CartaoResponseDTO> cartoes = cartaoService.buscarCartoes(clienteId, numero, cvv, pageable);
+        return ResponseEntity.ok(cartoes);
+    }
 }
