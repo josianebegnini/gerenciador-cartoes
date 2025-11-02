@@ -67,7 +67,6 @@ public class CartaoController implements CartaoControllerDoc {
         return ResponseEntity.ok(cartoes);
     }
 
-
     @GetMapping("/filtro")
     public ResponseEntity<Page<CartaoResponseDTO>> buscarCartoes(
             @RequestParam(required = false) Long clienteId,

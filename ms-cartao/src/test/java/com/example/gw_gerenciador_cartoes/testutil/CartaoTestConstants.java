@@ -1,4 +1,4 @@
-package com.example.gw_gerenciador_cartoes.service.testutil;
+package com.example.gw_gerenciador_cartoes.testutil;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

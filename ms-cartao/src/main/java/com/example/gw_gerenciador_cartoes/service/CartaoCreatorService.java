@@ -7,6 +7,7 @@ import com.example.gw_gerenciador_cartoes.infra.email.CartaoEmailService;
 import com.example.gw_gerenciador_cartoes.infra.enums.StatusCartao;
 import com.example.gw_gerenciador_cartoes.infra.exception.MensagensErroConstantes;
 import com.example.gw_gerenciador_cartoes.infra.exception.RegraNegocioException;
+import com.example.gw_gerenciador_cartoes.service.validator.PoliticaExpiracaoCartao;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -18,11 +19,13 @@ public class CartaoCreatorService {
     private final DadosCartaoGenerator dadosCartaoGenerator;
     private final CartaoRepositoryPort repository;
     private final CartaoEmailService cartaoEmailService;
+    private final PoliticaExpiracaoCartao politicaExpiracaoCartao;
 
-    public CartaoCreatorService(DadosCartaoGenerator dadosCartaoGenerator, CartaoRepositoryPort repository, CartaoEmailService cartaoEmailService) {
+    public CartaoCreatorService(DadosCartaoGenerator dadosCartaoGenerator, CartaoRepositoryPort repository, CartaoEmailService cartaoEmailService, PoliticaExpiracaoCartao politicaExpiracaoCartao) {
         this.dadosCartaoGenerator = dadosCartaoGenerator;
         this.repository = repository;
         this.cartaoEmailService = cartaoEmailService;
+        this.politicaExpiracaoCartao = politicaExpiracaoCartao;
     }
 
     public Long criarCartao(ClienteContaCriadoDTO dto, Long solicitacaoId) {
@@ -32,7 +35,7 @@ public class CartaoCreatorService {
         cartao.setContaId(dto.getContaId());
         cartao.setNumero(gerarNumeroCartaoUnico());
         cartao.setCvv(dadosCartaoGenerator.gerarCvv());
-        cartao.setDataVencimento(calcularDataVencimentoNovoCartao());
+        cartao.setDataVencimento(politicaExpiracaoCartao.calcularParaCartaoNovo());
         cartao.setDataCriacao(LocalDateTime.now());
         cartao.setTipoCartao(dto.getTipoCartao());
         cartao.setTipoEmissao(dto.getTipoEmissao());
@@ -61,7 +64,4 @@ public class CartaoCreatorService {
         return numero;
     }
 
-    public LocalDateTime calcularDataVencimentoNovoCartao() {
-        return LocalDateTime.now().plusYears(3);
-    }
 }
