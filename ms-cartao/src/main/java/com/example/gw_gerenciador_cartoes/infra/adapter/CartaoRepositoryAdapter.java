@@ -7,6 +7,7 @@ import com.example.gw_gerenciador_cartoes.infra.entity.CartaoEntity;
 import com.example.gw_gerenciador_cartoes.infra.repository.CartaoRepositoryJpa;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -63,5 +64,23 @@ public class CartaoRepositoryAdapter implements CartaoRepositoryPort {
         return jpaRepository.findAll(pageable)
                 .map(mapper::toDomain);
 
+    }
+
+    @Override
+    public Page<Cartao> buscarPorFiltros(Long clienteId, String numero, String cvv, Pageable pageable) {
+        Specification<CartaoEntity> spec = (root, query, cb) -> cb.conjunction();
+
+        if (clienteId != null) {
+            spec = spec.and((root, query, cb) -> cb.equal(root.get("clienteId"), clienteId));
+        }
+        if (numero != null && !numero.isBlank()) {
+            spec = spec.and((root, query, cb) -> cb.equal(root.get("numero"), numero));
+        }
+        if (cvv != null && !cvv.isBlank()) {
+            spec = spec.and((root, query, cb) -> cb.equal(root.get("cvv"), cvv));
+        }
+
+        return jpaRepository.findAll(spec, pageable)
+                .map(mapper::toDomain);
     }
 }

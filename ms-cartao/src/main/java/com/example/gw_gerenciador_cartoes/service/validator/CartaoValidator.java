@@ -1,8 +1,11 @@
 package com.example.gw_gerenciador_cartoes.service.validator;
 
 import com.example.gw_gerenciador_cartoes.application.dto.cartao.ClienteContaCriadoDTO;
+import com.example.gw_gerenciador_cartoes.domain.ports.CartaoRepositoryPort;
 import com.example.gw_gerenciador_cartoes.infra.exception.CampoObrigatorioException;
 import com.example.gw_gerenciador_cartoes.infra.exception.MensagemErro;
+import com.example.gw_gerenciador_cartoes.infra.exception.MensagensErroConstantes;
+import com.example.gw_gerenciador_cartoes.infra.exception.RegraNegocioException;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -11,6 +14,12 @@ import java.util.Objects;
 
 @Component
 public class CartaoValidator {
+
+    private final CartaoRepositoryPort repository;
+
+    public CartaoValidator(CartaoRepositoryPort repository) {
+        this.repository = repository;
+    }
 
     public void validar(ClienteContaCriadoDTO dto, Long solicitacaoId) {
         validarCamposObrigatorios(dto, solicitacaoId);
@@ -54,6 +63,14 @@ public class CartaoValidator {
 
     private boolean isEmailValido(String email) {
         return email != null && email.matches("^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,}$");
+    }
+
+    public void validarCartaoNaoExiste(String numero, String cvv) {
+        boolean cartaoJaExiste = repository.buscarCartaoPorNumeroECvv(numero, cvv).isPresent();
+
+        if (cartaoJaExiste) {
+            throw new RegraNegocioException(MensagensErroConstantes.CARTAO_JA_EXISTE);
+        }
     }
 
 }

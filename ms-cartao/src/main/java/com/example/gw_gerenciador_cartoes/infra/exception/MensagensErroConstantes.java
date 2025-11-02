@@ -3,14 +3,17 @@ package com.example.gw_gerenciador_cartoes.infra.exception;
 public final class MensagensErroConstantes {
 
     public static final String CARTAO_NAO_ENCONTRADO = "[CART001] Cartão não encontrado.";
-    public static final String CARTAO_ATIVACAO_STATUS_INVALIDO = "[CART002] Só é possível ativar cartões com status DESATIVADO.";
-    public static final String CARTAO_BLOQUEAR_STATUS_INVALIDO = "[CART003] Só pode ser bloqueado se estiver com status ATIVADO";
-    public static final String CARTAO_STATUS_NÃO_SUPORTADO = "[CART004] Status de alteração não suportado.";
-    public static final String CARTAO_STATUS_IIPO_EMISSAO_INVALIDO = "[CART004] TipoEmissao inválido: ";
-    public static final String CARTAO_STATUS_IIPO_CARTAO_INVALIDO = "[CART005]TipoCartao inválido: ";
-    public static final String CARTAO_STATUS_CARTAO_INVALIDO = "[CART006] StatusCartao inválido: ";
+    public static final String CARTAO_JA_EXISTE = "[CART002]Cartão já Existe";
+    public static final String CARTAO_FALHA_AO_CRIAR = "[CART003] Falha ao salvar cartão";
+    public static final String CARTAO_ATIVACAO_STATUS_INVALIDO = "[CART004] Só é possível ativar cartões com status DESATIVADO.";
+    public static final String CARTAO_BLOQUEAR_STATUS_INVALIDO = "[CART005] Só pode ser bloqueado se estiver com status ATIVADO";
+    public static final String CARTAO_STATUS_NÃO_SUPORTADO = "[CART006] Status de alteração não suportado.";
+    public static final String CARTAO_STATUS_IIPO_EMISSAO_INVALIDO = "[CART007] TipoEmissao inválido: ";
+    public static final String CARTAO_STATUS_IIPO_CARTAO_INVALIDO = "[CART008]TipoCartao inválido: ";
+    public static final String CARTAO_STATUS_CARTAO_INVALIDO = "[CART009] StatusCartao inválido: ";
 
     public static final String SEGUNDA_VIA_STATUS_INVALIDO = "[SGVC001] Segunda via só pode ser solicitada para cartões ATIVADOS ou BLOQUEADOS.";
+    public static final String CARTAO_FALHA_AO_CRIAR_SEGUNDA_VIA = "[SGVC001] Falha ao salvar segunda via do cartão";
 
     public static final String SOLICITACAO_NAO_ENCONTRADA= "[SOL001] Não foi possível encontrar a solicitação.";
 
@@ -25,7 +28,5 @@ public final class MensagensErroConstantes {
     public static final String ERRO_REGRA_NEGOCIO_SEM_ID = "[ERR003] Erro de regra de negócio sem ID ou solicitação inexistente.";
     public static final String ERRO_INESPERADO_LOG = "[ERR004] [Erro inesperado] ";
     public static final String ERRO_REGRA_NEGOCIO_LOG = "[ERR005] [RegraNegocioException sem ID ou solicitação inexistente] ";
-
-
 
 }

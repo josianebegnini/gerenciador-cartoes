@@ -1,17 +1,17 @@
 package com.example.gw_gerenciador_cartoes.service;
 
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
 
-@Component
-public class CartaoGenerator {
+@Service
+public class DadosCartaoGenerator {
 
     private final SecureRandom random = new SecureRandom();
 
     public String gerarNumeroCartao() {
 
-        final String bin = "400000";
+        final String bin = "411111";
         String parteConta = String.format("%09d", random.nextInt(1_000_000_000));
         String base = bin + parteConta;
 

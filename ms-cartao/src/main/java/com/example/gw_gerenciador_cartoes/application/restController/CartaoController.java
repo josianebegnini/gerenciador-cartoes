@@ -1,6 +1,9 @@
 package com.example.gw_gerenciador_cartoes.application.restController;
 
-import com.example.gw_gerenciador_cartoes.application.dto.cartao.*;
+import com.example.gw_gerenciador_cartoes.application.dto.cartao.AlterarStatusRequestDTO;
+import com.example.gw_gerenciador_cartoes.application.dto.cartao.CadastrarCartaoExistenteRequestDTO;
+import com.example.gw_gerenciador_cartoes.application.dto.cartao.CartaoResponseDTO;
+import com.example.gw_gerenciador_cartoes.application.dto.cartao.SegundaViaCartaoRequestDTO;
 import com.example.gw_gerenciador_cartoes.domain.ports.CartaoControllerDoc;
 import com.example.gw_gerenciador_cartoes.domain.ports.CartaoServicePort;
 import jakarta.validation.Valid;
@@ -41,6 +44,14 @@ public class CartaoController implements CartaoControllerDoc {
         return ResponseEntity.ok(cartoes);
     }
 
+    @GetMapping("/por-numero-e-cv")
+    public ResponseEntity<CartaoResponseDTO> buscarPorNumeroECvv(
+            @RequestParam String numero,
+            @RequestParam String cvv) {
+
+        return ResponseEntity.ok(cartaoService.buscarPorNumeroECvv(numero, cvv));
+    }
+
     @PostMapping("/cadastrar-existente")
     public ResponseEntity<CartaoResponseDTO> cadastrarCartaoExistente(
             @RequestBody @Valid CadastrarCartaoExistenteRequestDTO dto) {
@@ -48,11 +59,22 @@ public class CartaoController implements CartaoControllerDoc {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @GetMapping
+    @GetMapping("/todos")
     public ResponseEntity<Page<CartaoResponseDTO>> listarTodos(
             @ParameterObject Pageable pageable) {
         Page<CartaoResponseDTO> cartoes = cartaoService.listarTodos(pageable);
         return ResponseEntity.ok(cartoes);
     }
 
+
+    @GetMapping("/filtro")
+    public ResponseEntity<Page<CartaoResponseDTO>> buscarCartoes(
+            @RequestParam(required = false) Long clienteId,
+            @RequestParam(required = false) String numero,
+            @RequestParam(required = false) String cvv,
+            @ParameterObject Pageable pageable) {
+
+        Page<CartaoResponseDTO> cartoes = cartaoService.buscarCartoes(clienteId, numero, cvv, pageable);
+        return ResponseEntity.ok(cartoes);
+    }
 }
