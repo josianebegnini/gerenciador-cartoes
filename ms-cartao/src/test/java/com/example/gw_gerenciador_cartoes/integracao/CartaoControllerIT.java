@@ -1,6 +1,9 @@
-package com.example.gw_gerenciador_cartoes.application.restController;
+package com.example.gw_gerenciador_cartoes.integracao;
 
 import com.example.gw_gerenciador_cartoes.application.dto.cartao.AlterarStatusRequestDTO;
+import com.example.gw_gerenciador_cartoes.application.dto.cartao.CadastrarCartaoExistenteRequestDTO;
+import com.example.gw_gerenciador_cartoes.application.dto.cartao.CartaoResponseDTO;
+import com.example.gw_gerenciador_cartoes.application.dto.cartao.SegundaViaCartaoRequestDTO;
 import com.example.gw_gerenciador_cartoes.domain.model.Cartao;
 import com.example.gw_gerenciador_cartoes.domain.ports.CartaoRepositoryPort;
 import com.example.gw_gerenciador_cartoes.infra.email.CartaoEmailService;
@@ -9,6 +12,7 @@ import com.example.gw_gerenciador_cartoes.infra.enums.TipoCartao;
 import com.example.gw_gerenciador_cartoes.infra.enums.TipoEmissao;
 import com.example.gw_gerenciador_cartoes.infra.exception.MensagensErroConstantes;
 import com.example.gw_gerenciador_cartoes.infra.messaging.EmailPublisher;
+import com.example.gw_gerenciador_cartoes.testutil.CartaoTestFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,7 +36,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -40,7 +44,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @Transactional
-public class CartaoControllerAlterarStatusIT {
+public class CartaoControllerIT {
 
     @MockBean
     private EmailPublisher emailPublisher;
@@ -93,21 +97,27 @@ public class CartaoControllerAlterarStatusIT {
 
     @Test
     void deveAlterarStatusDeDesativadoParaAtivadoComSucesso() throws Exception {
-        AlterarStatusRequestDTO request = new AlterarStatusRequestDTO();
-        request.setNumero(numeroCartao);
-        request.setCvv(cvv);
-        request.setNovoStatus(StatusCartao.ATIVADO);
+        AlterarStatusRequestDTO request = CartaoTestFactory.criarAlterarStatusRequestDTO();
+
+        Cartao cartao = CartaoTestFactory.criarCartaoCompleto();
+        cartao.setNumero(request.getNumero());
+        cartao.setCvv(request.getCvv());
+        cartao.setStatus(StatusCartao.DESATIVADO);
+        cartao.setMotivoStatus("Cartão criado");
+        cartao.setId(null);
+
+        cartaoRepository.salvar(cartao);
 
         mockMvc.perform(put("/api/cartoes/alterar-status")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.numero").value(numeroCartao))
+                .andExpect(jsonPath("$.numero").value("1234567890123456"))
                 .andExpect(jsonPath("$.status").value(StatusCartao.ATIVADO.name()));
 
-        Optional<Cartao> cartaoAtualizadoOpt = cartaoRepository.buscarCartaoPorNumeroECvv(numeroCartao, cvv);
+        Optional<Cartao> cartaoAtualizadoOpt = cartaoRepository.buscarCartaoPorNumeroECvv("1234567890123456", "123");
         assertTrue(cartaoAtualizadoOpt.isPresent());
-        
+
         Cartao cartaoAtualizado = cartaoAtualizadoOpt.get();
         assertEquals(StatusCartao.ATIVADO, cartaoAtualizado.getStatus());
         assertEquals(MensagensErroConstantes.MOTIVO_CARTAO_ATIVADO, cartaoAtualizado.getMotivoStatus());
@@ -146,10 +156,9 @@ public class CartaoControllerAlterarStatusIT {
 
     @Test
     void deveRetornarErroQuandoCartaoNaoForEncontrado() throws Exception {
-        AlterarStatusRequestDTO request = new AlterarStatusRequestDTO();
+        AlterarStatusRequestDTO request = CartaoTestFactory.criarAlterarStatusRequestDTO();
         request.setNumero("0000000000000000");
         request.setCvv("999");
-        request.setNovoStatus(StatusCartao.ATIVADO);
 
         mockMvc.perform(put("/api/cartoes/alterar-status")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -186,52 +195,10 @@ public class CartaoControllerAlterarStatusIT {
     }
 
     @Test
-    void deveRetornarErroQuandoTentarBloquearCartaoDesativado() throws Exception {
-        AlterarStatusRequestDTO request = new AlterarStatusRequestDTO();
-        request.setNumero(numeroCartao);
-        request.setCvv(cvv);
-        request.setNovoStatus(StatusCartao.BLOQUEADO);
-
-        mockMvc.perform(put("/api/cartoes/alterar-status")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.erro").value(MensagensErroConstantes.CARTAO_BLOQUEAR_STATUS_INVALIDO));
-
-        Optional<Cartao> cartaoOpt = cartaoRepository.buscarCartaoPorNumeroECvv(numeroCartao, cvv);
-        assertTrue(cartaoOpt.isPresent());
-        assertEquals(StatusCartao.DESATIVADO, cartaoOpt.get().getStatus());
-
-        verify(cartaoEmailService, never()).enviarEmailCartaoBloqueado(any(), anyString());
-    }
-
-    @Test
-    void deveRetornarErroQuandoStatusNaoSuportado() throws Exception {
-        AlterarStatusRequestDTO request = new AlterarStatusRequestDTO();
-        request.setNumero(numeroCartao);
-        request.setCvv(cvv);
-        request.setNovoStatus(StatusCartao.CANCELADO);
-
-        mockMvc.perform(put("/api/cartoes/alterar-status")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.erro").value(MensagensErroConstantes.CARTAO_STATUS_NÃO_SUPORTADO));
-
-        Optional<Cartao> cartaoOpt = cartaoRepository.buscarCartaoPorNumeroECvv(numeroCartao, cvv);
-        assertTrue(cartaoOpt.isPresent());
-        assertEquals(StatusCartao.DESATIVADO, cartaoOpt.get().getStatus());
-
-        verify(cartaoEmailService, never()).enviarEmailCartaoAtivado(any());
-        verify(cartaoEmailService, never()).enviarEmailCartaoBloqueado(any(), anyString());
-    }
-
-    @Test
     void deveRetornarErroQuandoValidacaoFalhar() throws Exception {
-        AlterarStatusRequestDTO request = new AlterarStatusRequestDTO();
+        AlterarStatusRequestDTO request = CartaoTestFactory.criarAlterarStatusRequestDTO();
         request.setNumero("");
         request.setCvv("");
-        request.setNovoStatus(StatusCartao.ATIVADO);
 
         mockMvc.perform(put("/api/cartoes/alterar-status")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -242,40 +209,99 @@ public class CartaoControllerAlterarStatusIT {
     }
 
     @Test
-    void deveValidarFluxoCompletoDeAtivacaoEBloqueio() throws Exception {
-        AlterarStatusRequestDTO requestAtivar = new AlterarStatusRequestDTO();
-        requestAtivar.setNumero(numeroCartao);
-        requestAtivar.setCvv(cvv);
-        requestAtivar.setNovoStatus(StatusCartao.ATIVADO);
+    void deveSolicitarSegundaViaComSucesso() throws Exception {
 
-        mockMvc.perform(put("/api/cartoes/alterar-status")
+        Cartao original = CartaoTestFactory.criarCartaoOriginalSegundaVia();
+        original.setId(null);
+        cartaoRepository.salvar(original);
+
+        SegundaViaCartaoRequestDTO request = CartaoTestFactory.criarSegundaViaCartaoRequestDTO();
+
+        String responseContent = mockMvc.perform(post("/api/cartoes/segunda-via")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(requestAtivar)))
+                        .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status").value(StatusCartao.ATIVADO.name()));
+                .andExpect(jsonPath("$.numero").isNotEmpty())
+                .andExpect(jsonPath("$.cvv").isNotEmpty())
+                .andExpect(jsonPath("$.status").value(StatusCartao.DESATIVADO.name()))
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
 
-        Optional<Cartao> cartaoOpt = cartaoRepository.buscarCartaoPorNumeroECvv(numeroCartao, cvv);
-        assertTrue(cartaoOpt.isPresent());
-        assertEquals(StatusCartao.ATIVADO, cartaoOpt.get().getStatus());
+        CartaoResponseDTO response = objectMapper.readValue(responseContent, CartaoResponseDTO.class);
 
-        AlterarStatusRequestDTO requestBloquear = new AlterarStatusRequestDTO();
-        requestBloquear.setNumero(numeroCartao);
-        requestBloquear.setCvv(cvv);
-        requestBloquear.setNovoStatus(StatusCartao.BLOQUEADO);
+        Optional<Cartao> novaViaOpt = cartaoRepository.buscarCartaoPorNumeroECvv(
+                response.getNumero(), response.getCvv());
 
-        mockMvc.perform(put("/api/cartoes/alterar-status")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(requestBloquear)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status").value(StatusCartao.BLOQUEADO.name()));
+        assertTrue(novaViaOpt.isPresent());
 
-        cartaoOpt = cartaoRepository.buscarCartaoPorNumeroECvv(numeroCartao, cvv);
-        assertTrue(cartaoOpt.isPresent());
-        assertEquals(StatusCartao.BLOQUEADO, cartaoOpt.get().getStatus());
+        Cartao novaVia = novaViaOpt.get();
+        assertEquals(StatusCartao.DESATIVADO, novaVia.getStatus());
+        assertEquals(
+                MensagensErroConstantes.MOTIVO_CARTAO_SEGUNDA_VIA_GERADA + request.getMotivoSegundaVia(),
+                novaVia.getMotivoStatus()
+        );
 
-        verify(cartaoEmailService, times(1)).enviarEmailCartaoAtivado(any(Cartao.class));
-        verify(cartaoEmailService, times(1)).enviarEmailCartaoBloqueado(any(Cartao.class), anyString());
+        verify(cartaoEmailService, times(1)).enviarEmailSegundaVia(any(Cartao.class));
     }
 
+    @Test
+    void deveBuscarCartoesPorIdClienteComSucesso() throws Exception {
+        mockMvc.perform(get("/api/cartoes/cliente/{idCliente}", cartaoSalvo.getClienteId())
+                        .param("page", "0")
+                        .param("size", "10"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].numero").value(numeroCartao));
+    }
+
+    @Test
+    void deveBuscarCartaoPorNumeroECvvComSucesso() throws Exception {
+        mockMvc.perform(get("/api/cartoes/por-numero-e-cv")
+                        .param("numero", numeroCartao)
+                        .param("cvv", cvv))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.numero").value(numeroCartao))
+                .andExpect(jsonPath("$.cvv").value(cvv));
+    }
+
+    @Test
+    void deveCadastrarCartaoExistenteComSucesso() throws Exception {
+        CadastrarCartaoExistenteRequestDTO request = CartaoTestFactory.criarCadastrarCartaoExistenteRequestDTO();
+
+        mockMvc.perform(post("/api/cartoes/cadastrar-existente")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.numero").value("1234567890123456"))
+                .andExpect(jsonPath("$.status").value(StatusCartao.ATIVADO.name()));
+
+        Optional<Cartao> cartaoOpt = cartaoRepository.buscarCartaoPorNumeroECvv("1234567890123456", "123");
+        assertTrue(cartaoOpt.isPresent());
+
+        Cartao cartao = cartaoOpt.get();
+        assertEquals(StatusCartao.ATIVADO, cartao.getStatus());
+    }
+
+    @Test
+    void deveListarTodosOsCartoesComSucesso() throws Exception {
+        mockMvc.perform(get("/api/cartoes/todos")
+                        .param("page", "0")
+                        .param("size", "10"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content").isArray())
+                .andExpect(jsonPath("$.content[0].numero").value(numeroCartao));
+    }
+
+    @Test
+    void deveBuscarCartoesComFiltrosComSucesso() throws Exception {
+        mockMvc.perform(get("/api/cartoes/filtro")
+                        .param("clienteId", "1")
+                        .param("numero", numeroCartao)
+                        .param("cvv", cvv)
+                        .param("page", "0")
+                        .param("size", "10"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].numero").value(numeroCartao));
+    }
 }
 

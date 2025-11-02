@@ -45,7 +45,7 @@ public class CartaoController implements CartaoControllerDoc {
         return ResponseEntity.ok(cartoes);
     }
 
-    @GetMapping("/por-numero-e-cv")
+    @GetMapping("/por-numero-e-cvv")
     public ResponseEntity<CartaoResponseDTO> buscarPorNumeroECvv(
             @RequestParam String numero,
             @RequestParam String cvv) {
