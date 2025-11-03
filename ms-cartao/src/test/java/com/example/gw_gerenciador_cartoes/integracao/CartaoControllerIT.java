@@ -256,7 +256,7 @@ public class CartaoControllerIT {
 
     @Test
     void deveBuscarCartaoPorNumeroECvvComSucesso() throws Exception {
-        mockMvc.perform(get("/api/cartoes/por-numero-e-cv")
+        mockMvc.perform(get("/api/cartoes/por-numero-e-cvv")
                         .param("numero", numeroCartao)
                         .param("cvv", cvv))
                 .andExpect(status().isOk())
