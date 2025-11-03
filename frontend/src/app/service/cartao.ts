@@ -53,7 +53,7 @@ export class CartaoService {
   listarTodos(page = 0, size = 10): Observable<any> {
     const params = new HttpParams().set("page", page.toString()).set("size", size.toString()).set("sort", "id,DESC")
 
-    return this.http.get<any>(`${this.apiUrl}`, { params })
+    return this.http.get<any>(`${this.apiUrl}/todos`, { params })
   }
 
   // ========== FORMATAÇÃO ========== //
