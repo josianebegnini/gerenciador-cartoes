@@ -107,7 +107,6 @@ export class CadastroCliente implements OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (cliente) => {
-          console.log("Cliente criado:", cliente);
           this.mostrarMensagem("Cliente cadastrado com sucesso!", "success");
           this.isLoading = false;
 

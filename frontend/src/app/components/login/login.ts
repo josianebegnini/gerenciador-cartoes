@@ -35,7 +35,6 @@ export class LoginComponent {
     const credentials = this.loginForm.value;
     this.authService.login(credentials).subscribe({
       next: (response) => {
-        console.log('Login realizado com sucesso:', response);
         this.router.navigate(['/home']);
       },
       error: (err) => {

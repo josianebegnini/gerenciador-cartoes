@@ -72,13 +72,13 @@ carregarDados(): void {
               cliente.cartao = cartaoEncontrado;
             },
             error: (err) => {
-              console.error(`[v1] Erro ao buscar cartão do cliente ${cliente.id}:`, err);
+              console.error(`Erro ao buscar cartão do cliente ${cliente.id}:`, err);
             }
           });
         });
       },
       error: (error) => {
-        console.error("[v1] Erro ao carregar dados:", error);
+        console.error("Erro ao carregar dados:", error);
         this.mostrarErro("Erro ao carregar dados. Tente novamente.");
       }
     });

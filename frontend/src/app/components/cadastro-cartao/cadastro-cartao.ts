@@ -237,8 +237,6 @@ export class CadastroCartaoComponent implements OnDestroy {
     )
   };
 
-  console.log("DTO enviado:", JSON.stringify(dto, null, 2));
-
   this.carregando = true;
 
   this.cartaoService

@@ -29,6 +29,7 @@ export class SegundaViaPopupComponent {
   constructor(private cartaoService: CartaoService) {}
 
   selecionarCartao(cartao: Cartao): void {
+    console.log(cartao.numero)
     this.cartaoSelecionado = cartao
     this.mensagemErro = ""
   }

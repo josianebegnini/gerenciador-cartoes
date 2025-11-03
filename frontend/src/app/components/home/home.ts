@@ -237,7 +237,7 @@ export class Home implements OnInit, OnDestroy {
             cartao.status = statusRecebido
             this.mostrarSucesso("Status alterado com sucesso!")
           } else {
-            console.warn("[v0] Status inválido recebido:", statusRecebido)
+            console.warn("Status inválido recebido:", statusRecebido)
             this.mostrarErro("Status recebido é inválido.")
           }
         },

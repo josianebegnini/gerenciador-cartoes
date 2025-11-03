@@ -77,13 +77,11 @@ export class ClienteDetalhesComponent implements OnChanges {
   // ========== EXPORTAR RELATORIO CLIENTE ========== //
   exportarPDF(): void {
     if (!this.cliente) return
-    console.log("[v0] Exportando PDF...")
     this.exportacaoService.exportarClienteJSON(this.cliente, this.cartoesDoClienteSelecionado[0] || null)
   }
 
   exportarXML(): void {
     if (!this.cliente) return
-    console.log("[v0] Exportando XML...")
     this.exportacaoService.exportarClienteJSON(this.cliente, this.cartoesDoClienteSelecionado[0] || null)
   }
 

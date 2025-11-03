@@ -51,7 +51,6 @@ export class CadastroUserComponent {
       email: dados.email
     }).subscribe({
       next: (res) => {
-        console.log('✅ Cadastro realizado com sucesso:', res);
         alert('Conta criada com sucesso! Faça login para continuar.');
         this.router.navigate(['/login']);
       },
