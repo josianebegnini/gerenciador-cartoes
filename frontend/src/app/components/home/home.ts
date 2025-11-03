@@ -9,6 +9,7 @@ import { Subject, takeUntil, finalize, of, forkJoin } from "rxjs"
 import { ClienteDetalhesComponent } from "../cliente-detalhes/cliente-detalhes"
 import { MenuLateral } from "../menu-lateral/menu-lateral"
 import { Router } from "@angular/router"
+import { AuthService } from "../../service/auth.service"
 import { SegundaViaPopupComponent } from "../cartao-segunda-via/cartao-segunda-via"
 import type { AlterarStatusRequestDTO, SegundaViaCartaoRequestDTO } from "../../models/cartao-dtos"
 
@@ -57,6 +58,7 @@ export class Home implements OnInit, OnDestroy {
     public clienteService: ClienteService,
     private cartaoService: CartaoService,
     private router: Router,
+    private auth: AuthService,
   ) {}
 
   ngOnInit(): void {
@@ -390,6 +392,7 @@ export class Home implements OnInit, OnDestroy {
   }
 
   onNavegarLogout(): void {
+    this.auth.logout()
     this.router.navigate(["/login"])
   }
 

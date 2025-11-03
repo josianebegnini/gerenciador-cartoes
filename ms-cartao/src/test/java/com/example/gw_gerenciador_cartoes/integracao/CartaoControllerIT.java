@@ -238,7 +238,7 @@ public class CartaoControllerIT {
         Cartao novaVia = novaViaOpt.get();
         assertEquals(StatusCartao.DESATIVADO, novaVia.getStatus());
         assertEquals(
-                MensagensErroConstantes.MOTIVO_CARTAO_SEGUNDA_VIA_GERADA + request.getMotivoSegundaVia(),
+                MensagensErroConstantes.MOTIVO_CARTAO_SEGUNDA_VIA_GERADA + request.getMotivo(),
                 novaVia.getMotivoStatus()
         );
 
