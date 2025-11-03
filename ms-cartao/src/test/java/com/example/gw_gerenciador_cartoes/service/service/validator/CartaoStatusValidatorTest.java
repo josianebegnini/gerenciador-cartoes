@@ -86,18 +86,6 @@ public class CartaoStatusValidatorTest {
     }
 
     @Test
-    void deveLancarExcecaoParaStatusNaoSuportado_canceladoComoDestino() {
-        Cartao cartao = cartaoComStatus(StatusCartao.ATIVADO);
-        Snapshot s = snap(cartao);
-
-        RegraNegocioException ex = assertThrows(RegraNegocioException.class,
-                () -> validator.validarAlteracaoStatus(cartao, StatusCartao.CANCELADO));
-
-        assertEquals(MensagensErroConstantes.CARTAO_STATUS_NÃO_SUPORTADO, ex.getMessage());
-        assertSemAlteracoes(cartao, s);
-    }
-
-    @Test
     void deveLancarExcecaoParaStatusNaoSuportado_desativadoComoDestino() {
         Cartao cartao = cartaoComStatus(StatusCartao.DESATIVADO);
         Snapshot s = snap(cartao);
@@ -168,5 +156,55 @@ public class CartaoStatusValidatorTest {
         assertEquals(s.solicitacaoId, c.getSolicitacaoId(), "Solicitação não deve mudar");
         assertEquals(s.numero, c.getNumero(), "Número não deve mudar");
     }
+
+    @Test
+    void deveCancelarCartaoComStatusAtivado() {
+        Cartao cartao = CartaoTestFactory.criarCartaoCompleto();
+
+        CartaoStatusValidator validator = new CartaoStatusValidator();
+        validator.validarAlteracaoStatus(cartao, StatusCartao.CANCELADO);
+
+        assertEquals(StatusCartao.CANCELADO, cartao.getStatus());
+        assertEquals(MensagensErroConstantes.MOTIVO_CARTAO_CANCELADO, cartao.getMotivoStatus());
+    }
+
+    @Test
+    void deveCancelarCartaoComStatusBloqueado() {
+        Cartao cartao = CartaoTestFactory.criarCartaoCompleto();
+        cartao.setStatus(StatusCartao.BLOQUEADO);
+
+        CartaoStatusValidator validator = new CartaoStatusValidator();
+        validator.validarAlteracaoStatus(cartao, StatusCartao.CANCELADO);
+
+        assertEquals(StatusCartao.CANCELADO, cartao.getStatus());
+        assertEquals(MensagensErroConstantes.MOTIVO_CARTAO_CANCELADO, cartao.getMotivoStatus());
+    }
+
+    @Test
+    void deveCancelarCartaoComStatusDesativado() {
+        Cartao cartao = CartaoTestFactory.criarCartaoCompleto();
+        cartao.setStatus(StatusCartao.DESATIVADO);
+
+        CartaoStatusValidator validator = new CartaoStatusValidator();
+        validator.validarAlteracaoStatus(cartao, StatusCartao.CANCELADO);
+
+        assertEquals(StatusCartao.CANCELADO, cartao.getStatus());
+        assertEquals(MensagensErroConstantes.MOTIVO_CARTAO_CANCELADO, cartao.getMotivoStatus());
+    }
+
+    @Test
+    void deveLancarExcecaoAoCancelarCartaoJaCancelado() {
+        Cartao cartao = CartaoTestFactory.criarCartaoCompleto();
+        cartao.setStatus(StatusCartao.CANCELADO);
+
+        CartaoStatusValidator validator = new CartaoStatusValidator();
+
+        RegraNegocioException exception = assertThrows(RegraNegocioException.class, () ->
+                validator.validarAlteracaoStatus(cartao, StatusCartao.CANCELADO)
+        );
+
+        assertEquals(MensagensErroConstantes.CARTAO_JA_CANCELADO, exception.getMessage());
+    }
+
 
 }

@@ -28,6 +28,13 @@ public class CartaoStatusValidator {
                 cartao.atualizarStatus(StatusCartao.BLOQUEADO, MensagensErroConstantes.MOTIVO_CARTAO_BLOQUEADO_SEGURANCA);
                 break;
 
+            case CANCELADO:
+                if (cartao.getStatus() == StatusCartao.CANCELADO) {
+                    throw new RegraNegocioException(MensagensErroConstantes.CARTAO_JA_CANCELADO);
+                }
+                cartao.atualizarStatus(StatusCartao.CANCELADO, MensagensErroConstantes.MOTIVO_CARTAO_CANCELADO);
+                break;
+
             default:
                 throw new RegraNegocioException(MensagensErroConstantes.CARTAO_STATUS_NÃO_SUPORTADO);
         }
