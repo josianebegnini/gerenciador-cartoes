@@ -124,7 +124,7 @@ public class CartaoService implements CartaoServicePort {
         segundaVia.setTipoCartao(original.getTipoCartao());
         segundaVia.setStatus(StatusCartao.DESATIVADO);
         segundaVia.setTipoEmissao(original.getTipoEmissao());
-        segundaVia.setMotivoStatus(MensagensErroConstantes.MOTIVO_CARTAO_SEGUNDA_VIA_GERADA + dto.getMotivoSegundaVia());
+        segundaVia.setMotivoStatus(MensagensErroConstantes.MOTIVO_CARTAO_SEGUNDA_VIA_GERADA + dto.getMotivo());
         segundaVia.setLimite(original.getLimite());
         return segundaVia;
     }

@@ -13,7 +13,7 @@ public class SegundaViaCartaoRequestDTO {
     private String cvv;
 
     @NotBlank(message = "O motivo é obrigatório")
-    private String motivoSegundaVia;
+    private String motivo;
 
     public SegundaViaCartaoRequestDTO() {
     }
@@ -21,7 +21,7 @@ public class SegundaViaCartaoRequestDTO {
     public SegundaViaCartaoRequestDTO(String numero, String cvv, String motivo) {
         this.numero = numero;
         this.cvv = cvv;
-        this.motivoSegundaVia = motivo;
+        this.motivo = motivo;
     }
 
     public String getNumero() {
@@ -40,12 +40,12 @@ public class SegundaViaCartaoRequestDTO {
         this.cvv = cvv;
     }
 
-    public String getMotivoSegundaVia() {
-        return motivoSegundaVia;
+    public String getMotivo() {
+        return motivo;
     }
 
-    public void setMotivoSegundaVia(String motivoSegundaVia) {
-        this.motivoSegundaVia = motivoSegundaVia;
+    public void setMotivo(String motivo) {
+        this.motivo = motivo;
     }
 
     @Override
@@ -53,12 +53,12 @@ public class SegundaViaCartaoRequestDTO {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         SegundaViaCartaoRequestDTO that = (SegundaViaCartaoRequestDTO) o;
-        return Objects.equals(numero, that.numero) && Objects.equals(cvv, that.cvv) && Objects.equals(motivoSegundaVia, that.motivoSegundaVia);
+        return Objects.equals(numero, that.numero) && Objects.equals(cvv, that.cvv) && Objects.equals(motivo, that.motivo);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(numero, cvv, motivoSegundaVia);
+        return Objects.hash(numero, cvv, motivo);
     }
 
     @Override
@@ -66,7 +66,7 @@ public class SegundaViaCartaoRequestDTO {
         return "SegundaViaCartaoRequestDTO{" +
                 "numero='" + numero + '\'' +
                 ", cvv='" + cvv + '\'' +
-                ", motivoSegundaVia='" + motivoSegundaVia + '\'' +
+                ", motivoSegundaVia='" + motivo + '\'' +
                 '}';
     }
 }

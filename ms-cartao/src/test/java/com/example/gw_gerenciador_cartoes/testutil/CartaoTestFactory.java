@@ -166,7 +166,7 @@ public class CartaoTestFactory {
         SegundaViaCartaoRequestDTO dto = new SegundaViaCartaoRequestDTO();
         dto.setNumero(CartaoTestConstants.NUMERO_PADRAO);
         dto.setCvv(CartaoTestConstants.CVV_PADRAO);
-        dto.setMotivoSegundaVia(CartaoTestConstants.MOTIVO_CARTAO_DANIFICADO);
+        dto.setMotivo(CartaoTestConstants.MOTIVO_CARTAO_DANIFICADO);
         return dto;
     }
 
@@ -174,7 +174,7 @@ public class CartaoTestFactory {
         SegundaViaCartaoRequestDTO dto = new SegundaViaCartaoRequestDTO();
         dto.setNumero("0000000000000000");
         dto.setCvv("000");
-        dto.setMotivoSegundaVia("Cartão vencido");
+        dto.setMotivo("Cartão vencido");
         return dto;
     }
 
@@ -189,7 +189,7 @@ public class CartaoTestFactory {
         segundaVia.setTipoCartao(original.getTipoCartao());
         segundaVia.setStatus(StatusCartao.DESATIVADO);
         segundaVia.setTipoEmissao(original.getTipoEmissao());
-        segundaVia.setMotivoStatus(MensagensErroConstantes.MOTIVO_CARTAO_SEGUNDA_VIA_GERADA + dto.getMotivoSegundaVia());
+        segundaVia.setMotivoStatus(MensagensErroConstantes.MOTIVO_CARTAO_SEGUNDA_VIA_GERADA + dto.getMotivo());
         segundaVia.setLimite(original.getLimite());
         return segundaVia;
     }
