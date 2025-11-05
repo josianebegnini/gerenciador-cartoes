@@ -142,9 +142,9 @@ Endpoints:
 | `DELETE` | `/clientes/{id}` | Remove cliente          |
 
 
-🔹 ms-cartao – Gerenciamento de Cartões
+🔹 ms-cartao – Gerenciamento de Cartões  
 
-Administra cartões vinculados a clientes, limites e status.
+Administra cartões vinculados a clientes, limites e status.  
 
 Endpoints:
 | Método   | Endpoint                       | Descrição                   |
@@ -157,25 +157,25 @@ Endpoints:
 | `GET`    | `/cartoes/cliente/{idCliente}` | Lista cartões de um cliente |
 
 
-🔹 ms-email – Microsserviço de Envio de E-mails
+🔹 ms-email – Microsserviço de Envio de E-mails  
 
-Responsável por receber mensagens via RabbitMQ, processar templates com Thymeleaf e enviar e-mails transacionais.
-
-
-🔸 Estrutura de Mensagem (DTO)
-public class EmailMessageDTO {
-    private String tipo;      // Tipo do e-mail / nome do template
-    private String email;     // Endereço do destinatário
-    private String nome;      // Nome do destinatário
-    private Map<String, Object> dados; // Variáveis do template
-}
+Responsável por receber mensagens via RabbitMQ, processar templates com Thymeleaf e enviar e-mails transacionais.  
 
 
-🔸 Filas e Routing Keys
-Fila	Routing Key	Descrição
-email-normal-queue	email.normal	E-mails padrão
-email-alta-prioridade-queue	email.alta	E-mails de alta prioridade
-email-dlq	—	Mensagens não processadas (Dead Letter Queue)
+🔸 Estrutura de Mensagem (DTO)  
+public class EmailMessageDTO {   
+    private String tipo;      // Tipo do e-mail / nome do template  
+    private String email;     // Endereço do destinatário  
+    private String nome;      // Nome do destinatário  
+    private Map<String, Object> dados; // Variáveis do template  
+}  
+
+
+🔸 Filas e Routing Keys  
+Fila	Routing Key	Descrição  
+email-normal-queue	email.normal	E-mails padrão  
+email-alta-prioridade-queue	email.alta	E-mails de alta prioridade  
+email-dlq	—	Mensagens não processadas (Dead Letter Queue)  
 
 
 🔸 Exemplos de Payloads
