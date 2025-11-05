@@ -23,20 +23,20 @@ O sistema foi construído seguindo os princípios de **arquitetura distribuída*
 
 ---
 
-## 🧩 Estrutura e Arquitetura
+ ## 🧩 Estrutura e Arquitetura
 
-gerenciador-cartoes/
+ESTRUTURA E ARQUITETURA
 
+<pre>gerenciador-cartoes/
 │
-├── gateway/ # API Gateway com autenticação JWT
-├── ms-auth/ # Microsserviço de autenticação e controle de usuários
-├── ms-cliente/ # Microsserviço de gerenciamento de clientes
-├── ms-cartao/ # Microsserviço de gestão de cartões e limites
-├── ms-email/ # Microsserviço de envio de e-mails (notificações)
-├── frontend/ # Aplicação Angular 20 (interface do usuário)
-├── docker-compose.yml # Orquestração via Docker
-└── README.md # Documento de apresentação (este arquivo)
-
+├── gateway/               # API Gateway com autenticação JWT
+├── ms-auth/               # Microsserviço de autenticação e controle de usuários
+├── ms-cliente/            # Microsserviço de gerenciamento de clientes
+├── ms-cartao/             # Microsserviço de gestão de cartões e limites
+├── ms-email/              # Microsserviço de envio de e-mails (notificações)
+├── frontend/              # Aplicação Angular 20 (interface do usuário)
+├── docker-compose.yml     # Orquestração via Docker
+└── README.md              # Documento de apresentação (este arquivo)</pre>
 
 ---
 
@@ -80,11 +80,11 @@ Cada serviço é independente e possui seu próprio `pom.xml`, podendo ser execu
 
 ## 🚀 Execução do Projeto
 
-### 🔸 Executar com Docker
+🔸 Executar com Docker
 
 Na raiz do projeto (`gerenciador-cartoes/`):
 
-```bash
+bash
 docker-compose up --build
 
 
@@ -102,7 +102,8 @@ API Gateway: http://localhost:8080
 
 RabbitMQ UI: http://localhost:15672
 
-🔐 Autenticação e Segurança
+
+ ## 🔐 Autenticação e Segurança
 
 Fluxo baseado em JWT (JSON Web Token):
 
@@ -112,7 +113,8 @@ Recebe um token JWT.
 
 O Gateway valida o token em cada requisição e redireciona para o serviço correto.
 
-🧩 Descrição dos Microsserviços
+
+ ## 🧩 Descrição dos Microsserviços
 
 🔹 ms-auth – Autenticação e Usuários
 
@@ -159,6 +161,7 @@ Endpoints:
 
 Responsável por receber mensagens via RabbitMQ, processar templates com Thymeleaf e enviar e-mails transacionais.
 
+
 🔸 Estrutura de Mensagem (DTO)
 public class EmailMessageDTO {
     private String tipo;      // Tipo do e-mail / nome do template
@@ -166,75 +169,79 @@ public class EmailMessageDTO {
     private String nome;      // Nome do destinatário
     private Map<String, Object> dados; // Variáveis do template
 }
+
+
 🔸 Filas e Routing Keys
 Fila	Routing Key	Descrição
 email-normal-queue	email.normal	E-mails padrão
 email-alta-prioridade-queue	email.alta	E-mails de alta prioridade
 email-dlq	—	Mensagens não processadas (Dead Letter Queue)
+
+
 🔸 Exemplos de Payloads
 
-Cartão Ativo
-{
-  "tipo": "cartao-ativo",
-  "email": "cliente@example.com",
-  "nome": "Josiane",
-  "dados": { "finalCartao": "1234" }
-}
+Cartão Ativo  
+{  
+  "tipo": "cartao-ativo",  
+  "email": "cliente@example.com",  
+  "nome": "Josiane",  
+  "dados": { "finalCartao": "1234" }  
+}  
 
-Recuperação de Senha
-{
-  "tipo": "recuperacao-senha",
-  "email": "cliente@example.com",
-  "nome": "Josiane",
-  "dados": {
-    "linkRecuperacao": "https://meusistema.com/redefinir-senha?token=abc123"
-  }
-}
+Recuperação de Senha  
+{  
+  "tipo": "recuperacao-senha",  
+  "email": "cliente@example.com",  
+  "nome": "Josiane",  
+  "dados": {  
+    "linkRecuperacao": "https://meusistema.com/redefinir-senha?token=abc123"  
+  }  
+}  
+  
+Cartão Criado  
+{  
+  "tipo": "cartao-criado",  
+  "email": "cliente@example.com",  
+  "nome": "Josiane",  
+  "dados": {  
+    "numeroCartao": "**** **** **** 3456",  
+    "dataEmissao": "27/10/2025"  
+  }  
+}  
 
-Cartão Criado
-{
-  "tipo": "cartao-criado",
-  "email": "cliente@example.com",
-  "nome": "Josiane",
-  "dados": {
-    "numeroCartao": "**** **** **** 3456",
-    "dataEmissao": "27/10/2025"
-  }
-}
-
-Cartão Bloqueado (Alta prioridade)
-{
-  "tipo": "cartao-bloqueado",
-  "email": "cliente@example.com",
-  "nome": "Josiane",
-  "dados": {
-    "finalCartao": "1234",
+Cartão Bloqueado (Alta prioridade)  
+{  
+  "tipo": "cartao-bloqueado",  
+  "email": "cliente@example.com",  
+  "nome": "Josiane",  
+  "dados": {  
+    "finalCartao": "1234",  
     "dataBloqueio": "2025-10-27",
-    "suporteLink": "https://meusistema.com/contato"
-  }
-}
+    "suporteLink": "https://meusistema.com/contato"  
+  }  
+}  
 
-Segunda Via do Cartão
-{
-  "tipo": "segunda-via",
-  "email": "cliente@example.com",
-  "nome": "Josiane",
-  "dados": {
-    "finalCartao": "1234",
-    "statusEnvio": "Em transporte",
-    "previsaoEntrega": "31/10/2025"
-  }
-}
+Segunda Via do Cartão  
+{  
+  "tipo": "segunda-via",  
+  "email": "cliente@example.com",  
+  "nome": "Josiane",  
+  "dados": {  
+    "finalCartao": "1234",  
+    "statusEnvio": "Em transporte",  
+    "previsaoEntrega": "31/10/2025"  
+  }  
+}  
 
-Conta Criada
-{
-  "tipo": "conta-criada",
-  "email": "cliente@example.com",
-  "nome": "Josiane",
-  "dados": {
-    "dataCriacao": "2025-10-27"
-  }
-}
+Conta Criada  
+{  
+  "tipo": "conta-criada",  
+  "email": "cliente@example.com",  
+  "nome": "Josiane",  
+  "dados": {  
+    "dataCriacao": "2025-10-27"  
+  }  
+}  
 
 🔸 Fluxo de Comunicação
 
@@ -248,7 +255,7 @@ Envia o e-mail via SMTP.
 
 Mensagens não entregues são movidas para email-dlq.
 
-🧪 Testes e Validação
+ ## 🧪 Testes e Validação
 
 Testes unitários e de integração com JUnit 5 e Spring Boot Test.
 
@@ -256,7 +263,7 @@ Validação dos endpoints via Swagger UI ou Postman.
 
 Teste de envio de mensagens RabbitMQ → ms-email.
 
-📈 Aprendizados e Conclusão
+ ## 📈 Aprendizados e Conclusão
 
 Durante o desenvolvimento deste projeto foram aplicados conceitos de:
 
@@ -274,11 +281,11 @@ Integração contínua e boas práticas com Spring Boot
 
 O Gerenciador de Cartões representa o resultado prático dos conhecimentos adquiridos no curso Upskilling Full Stack Java – Proway, demonstrando domínio em desenvolvimento backend, frontend e integração entre serviços.
 
-👩‍💻 Autoria
+ ## 👩‍💻 Autoria
 
-Desenvolvido por: Josiane, Nicolle, José Vitor, Tomás e Kamila
-Curso: Upskilling em Desenvolvimento Full Stack Java – Proway
-Ano: 2025
-Contato: www.linkedin.com/in/josiane-begnini
+Desenvolvido por: Josiane, Nicolle, José Vitor, Tomás e Kamila  
+Curso: Upskilling em Desenvolvimento Full Stack Java – Proway  
+Ano: 2025  
+Contato: www.linkedin.com/in/josiane-begnini  
 
 
