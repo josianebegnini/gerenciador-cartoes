@@ -1,6 +1,5 @@
 package com.example.gw_gerenciador_cartoes.infra.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
@@ -66,10 +65,8 @@ public class RabbitMQConfig {
     }
 
     @Bean
-    public Jackson2JsonMessageConverter messageConverter() {
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.findAndRegisterModules();
-        return new Jackson2JsonMessageConverter(objectMapper);
+    public Jackson2JsonMessageConverter jackson2JsonMessageConverter() {
+        return new Jackson2JsonMessageConverter();
     }
 
     @Bean
@@ -81,32 +78,14 @@ public class RabbitMQConfig {
     }
 
     @Bean
-    public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory(ConnectionFactory connectionFactory) {
+    public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory(
+            ConnectionFactory connectionFactory,
+            Jackson2JsonMessageConverter messageConverter) {
         SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
         factory.setConnectionFactory(connectionFactory);
+        factory.setMessageConverter(messageConverter);
         factory.setAcknowledgeMode(AcknowledgeMode.AUTO);
         factory.setDefaultRequeueRejected(false);
-//        factory.setPrefetchCount(10);
-        factory.setMessageConverter(new Jackson2JsonMessageConverter());
         return factory;
     }
-
-    @Bean
-    public TopicExchange cartaoRespostaExchange() {
-        return new TopicExchange("cartao-resposta-exchange");
-    }
-
-    @Bean
-    public Queue cartaoCriarRespostaQueue() {
-        return QueueBuilder.durable("cartao-criar-resposta-queue").build();
-    }
-
-    @Bean
-    public Binding bindingCartaoCriarResposta() {
-        return BindingBuilder
-                .bind(cartaoCriarRespostaQueue())
-                .to(cartaoRespostaExchange())
-                .with("cartao.criar.resposta");
-    }
-
 }

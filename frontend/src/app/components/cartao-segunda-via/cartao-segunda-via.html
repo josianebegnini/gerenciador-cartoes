@@ -1,4 +1,4 @@
-<div class="modal-overlay" *ngIf="isOpen && cliente && cartao" (click)="onOverlayClick($event)">
+<div class="modal-overlay" *ngIf="isOpen && cliente && cartoes.length > 0" (click)="onOverlayClick($event)">
   <div class="modal-container">
     <div class="modal-header">
       <h2 class="modal-title">Solicitação de Segunda Via</h2>
@@ -25,9 +25,61 @@
         </div>
       </div>
 
-      <!-- Dados do Cartão -->
-      <div class="section-title">Dados do Cartão Atual</div>
-      <div class="detail-grid">
+      <!-- Seleção de Cartões -->
+      <div class="section-title">Selecione um Cartão</div>
+      <div class="cartoes-grid">
+        <div
+          *ngFor="let cartao of cartoes"
+          class="cartao-card"
+          [class.cartao-selecionado]="cartaoSelecionado?.numero === cartao.numero"
+          (click)="selecionarCartao(cartao)"
+        >
+          <div class="cartao-header">
+            <span class="cartao-numero">{{ formatarNumeroCartao(cartao.numero) }}</span>
+            <span
+              class="cartao-status"
+              [style.backgroundColor]="obterCorStatus(cartao.status)"
+            >
+              {{ cartao.status }}
+            </span>
+          </div>
+
+          <div class="cartao-body">
+            <div class="cartao-info">
+              <span class="cartao-label">Vencimento</span>
+              <span class="cartao-valor">{{ cartao.dataVencimento }}</span>
+            </div>
+            <div class="cartao-info">
+              <span class="cartao-label">Tipo</span>
+              <span class="cartao-valor">{{ cartao.tipoCartao }}</span>
+            </div>
+          </div>
+
+          <div class="cartao-footer">
+            <span class="cartao-limite">Limite: R$ {{ cartao.limite | number: '1.2-2' }}</span>
+          </div>
+
+          <!-- Checkmark de seleção -->
+          <div class="cartao-checkmark" *ngIf="cartaoSelecionado?.numero === cartao.numero">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" fill="white"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mensagem de erro - Seleção de cartão -->
+      <div class="error-message" *ngIf="mensagemErro && !cartaoSelecionado">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="2" fill="none"/>
+          <path d="M8 4V9M8 12V13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        {{ mensagemErro }}
+      </div>
+
+      <!-- Dados do Cartão Selecionado -->
+      <div *ngIf="cartaoSelecionado" class="section-title">Dados do Cartão Selecionado</div>
+      <div class="detail-grid" *ngIf="cartaoSelecionado">
         <div class="detail-item">
           <label class="detail-label">
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -36,7 +88,7 @@
             </svg>
             Número do Cartão
           </label>
-          <p class="detail-value">{{ formatarNumeroCartao(cartao.numero) }}</p>
+          <p class="detail-value">{{ formatarNumeroCartao(cartaoSelecionado.numero) }}</p>
         </div>
 
         <div class="detail-item">
@@ -47,7 +99,7 @@
             </svg>
             Data de Vencimento
           </label>
-          <p class="detail-value">{{ cartao.dataVencimento }}</p>
+          <p class="detail-value">{{ cartaoSelecionado.dataVencimento }}</p>
         </div>
 
         <div class="detail-item">
@@ -58,7 +110,7 @@
             </svg>
             Tipo de Cartão
           </label>
-          <p class="detail-value">{{ cartao.tipoCartao }}</p>
+          <p class="detail-value">{{ cartaoSelecionado.tipoCartao }}</p>
         </div>
       </div>
 
@@ -69,7 +121,7 @@
           <path d="M10 8V12M10 14V15" stroke="#F59E0B" stroke-width="2" stroke-linecap="round"/>
         </svg>
         <p class="detail-info-text">
-          <strong>Atenção:</strong> A solicitação de segunda via resultará no bloqueio do cartão atual e emissão de um novo cartão com número diferente.
+          <strong>Atenção:</strong> A solicitação de segunda via resultará no cancelamento do cartão atual e emissão de um novo cartão com número diferente.
         </p>
       </div>
 
@@ -105,7 +157,7 @@
       <button
         class="btn-primary"
         (click)="confirmarSolicitacao()"
-        [disabled]="isSubmitting || !motivo.trim()"
+        [disabled]="isSubmitting || !cartaoSelecionado || !motivo.trim()"
       >
         <span *ngIf="!isSubmitting">Confirmar Solicitação</span>
         <span *ngIf="isSubmitting" class="btn-loading">

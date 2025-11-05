@@ -1,21 +1,38 @@
 package com.example.gw_gerenciador_cartoes.domain.model;
 
-import com.example.gw_gerenciador_cartoes.domain.enums.StatusSolicitacao;
+import com.example.gw_gerenciador_cartoes.infra.enums.StatusSolicitacao;
+import com.example.gw_gerenciador_cartoes.infra.enums.TipoCartao;
+import com.example.gw_gerenciador_cartoes.infra.enums.TipoEmissao;
 
 import java.time.LocalDateTime;
 
 public class SolicitacaoCartao extends AbstractCartao{
+
     private Long cartaoId;
     private String nome;
-    private String motivoRejeicao;
+    private String email;
     private StatusSolicitacao status;
-    private String tipoCartao;
-    private String tipoEmissao;
+    private String motivoRejeicao;
+    private TipoCartao tipoCartao;
+    private TipoEmissao tipoEmissao;
     private LocalDateTime dataSolicitacao;
     private LocalDateTime ultimaDataProcessamento;
     private String mensagemSolicitacao;
 
     public SolicitacaoCartao() {
+    }
+
+    public SolicitacaoCartao(Long cartaoId, String nome, String email, StatusSolicitacao status, String motivoRejeicao, TipoCartao tipoCartao, TipoEmissao tipoEmissao, LocalDateTime dataSolicitacao, LocalDateTime ultimaDataProcessamento, String mensagemSolicitacao) {
+        this.cartaoId = cartaoId;
+        this.nome = nome;
+        this.email = email;
+        this.status = status;
+        this.motivoRejeicao = motivoRejeicao;
+        this.tipoCartao = tipoCartao;
+        this.tipoEmissao = tipoEmissao;
+        this.dataSolicitacao = dataSolicitacao;
+        this.ultimaDataProcessamento = ultimaDataProcessamento;
+        this.mensagemSolicitacao = mensagemSolicitacao;
     }
 
     public Long getCartaoId() {
@@ -34,12 +51,12 @@ public class SolicitacaoCartao extends AbstractCartao{
         this.nome = nome;
     }
 
-    public String getMotivoRejeicao() {
-        return motivoRejeicao;
+    public String getEmail() {
+        return email;
     }
 
-    public void setMotivoRejeicao(String motivoRejeicao) {
-        this.motivoRejeicao = motivoRejeicao;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public StatusSolicitacao getStatus() {
@@ -50,19 +67,27 @@ public class SolicitacaoCartao extends AbstractCartao{
         this.status = status;
     }
 
-    public String getTipoCartao() {
+    public String getMotivoRejeicao() {
+        return motivoRejeicao;
+    }
+
+    public void setMotivoRejeicao(String motivoRejeicao) {
+        this.motivoRejeicao = motivoRejeicao;
+    }
+
+    public TipoCartao getTipoCartao() {
         return tipoCartao;
     }
 
-    public void setTipoCartao(String tipoCartao) {
+    public void setTipoCartao(TipoCartao tipoCartao) {
         this.tipoCartao = tipoCartao;
     }
 
-    public String getTipoEmissao() {
+    public TipoEmissao getTipoEmissao() {
         return tipoEmissao;
     }
 
-    public void setTipoEmissao(String tipoEmissao) {
+    public void setTipoEmissao(TipoEmissao tipoEmissao) {
         this.tipoEmissao = tipoEmissao;
     }
 

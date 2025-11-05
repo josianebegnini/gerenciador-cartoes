@@ -7,10 +7,13 @@ import { environment } from "../enviroments/enviroment";
 @Injectable({
   providedIn: "root",
 })
+
 export class ClienteService {
   private apiUrl = `${environment.apiUrl}/clientes`;
 
   constructor(private http: HttpClient) {}
+
+  // ========== OPERAÇÕES HTTP ========== //
 
   getClientes(
     page = 0,
@@ -50,15 +53,15 @@ export class ClienteService {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 
-  // ========== FORMATAÇÃO ==========
-
-  formatarCPF(cpf: string): string {
-    const cpfLimpo = this.limparCPF(cpf);
-    return cpfLimpo.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
-  }
+  // ========== FORMATAÇÃO ========== //
 
   limparCPF(cpf: string): string {
     return cpf.replace(/\D/g, "");
+  }
+
+   formatarCPF(cpf: string): string {
+    const cpfLimpo = this.limparCPF(cpf);
+    return cpfLimpo.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
   }
 
   formatarCPFAoDigitar(valor: string): string {
@@ -109,17 +112,7 @@ export class ClienteService {
     });
   }
 
-  formatarSaldoAoDigitar(valor: string): string {
-    const valorNumerico = valor.replace(/\D/g, "");
-    const numero = Number.parseFloat(valorNumerico) / 100;
-
-    return numero.toLocaleString("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-    });
-  }
-
-  // ========== VALIDAÇÃO ==========
+  // ========== VALIDAÇÃO ========== //
 
   validarCPF(cpf: string): boolean {
     const cpfLimpo = this.limparCPF(cpf);
@@ -218,7 +211,7 @@ export class ClienteService {
     };
   }
 
-  // ========== FILTROS ==========
+  // ========== FILTROS ========== //
 
   filtrarClientes(clientes: Cliente[], filtroCpf: string, filtroNome: string): Cliente[] {
     return clientes.filter((cliente) => {
@@ -228,16 +221,26 @@ export class ClienteService {
     });
   }
 
-  // ========== PREPARAÇÃO DE DADOS ==========
+  // ========== PREPARAÇÃO DE DADOS ========== //
 
   private prepararClienteParaEnvio(cliente: Cliente): any {
-    return {
-      ...cliente,
-      cpf: this.limparCPF(cliente.cpf),
-      endereco: {
-        ...cliente.endereco,
-        cep: this.limparCEP(cliente.endereco.cep),
-      },
-    };
-  }
+  return {
+    nome: cliente.nome,
+    email: cliente.email,
+    dataNasc: new Date(cliente.dataNasc).toISOString().split('T')[0],
+    cpf: this.limparCPF(cliente.cpf),
+    enderecoDTO: {
+      cidade: cliente.endereco.cidade,
+      bairro: cliente.endereco.bairro,
+      rua: cliente.endereco.rua,
+      cep: this.formatarCEP(cliente.endereco.cep),
+      complemento: cliente.endereco.complemento,
+      numero: cliente.endereco.numero
+    },
+    contaDTO: {
+      agencia: cliente.conta.agencia,
+      tipo: cliente.conta.tipo.toLowerCase()
+    }
+  };
+}
 }

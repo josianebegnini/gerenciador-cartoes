@@ -1,8 +1,8 @@
 package com.example.gw_gerenciador_cartoes.infra.entity;
 
-import com.example.gw_gerenciador_cartoes.domain.enums.StatusCartao;
-import com.example.gw_gerenciador_cartoes.domain.enums.TipoCartao;
-import com.example.gw_gerenciador_cartoes.domain.enums.TipoEmissaoCartao;
+import com.example.gw_gerenciador_cartoes.infra.enums.StatusCartao;
+import com.example.gw_gerenciador_cartoes.infra.enums.TipoCartao;
+import com.example.gw_gerenciador_cartoes.infra.enums.TipoEmissao;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
@@ -35,9 +35,6 @@ public class CartaoEntity {
     @Column(name = "data_vencimento", nullable = false)
     private LocalDateTime dataVencimento;
 
-    @Column(name = "nome", nullable = false)
-    private String nome;
-
     @Column(name = "data_criacao", nullable = false)
     private LocalDateTime dataCriacao;
 
@@ -54,7 +51,7 @@ public class CartaoEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "tipo_emissao_cartao", nullable = false)
-    private TipoEmissaoCartao tipoEmissao;
+    private TipoEmissao tipoEmissao;
 
     @Column(name = "limite", nullable = true)
     private BigDecimal limite;
@@ -62,7 +59,7 @@ public class CartaoEntity {
     public CartaoEntity() {
     }
 
-    public CartaoEntity(Long id, Long clienteId, Long contaId, Long solicitacaoId, String numero, String cvv, LocalDateTime dataVencimento, String nome, LocalDateTime dataCriacao, StatusCartao status, String motivoStatus, TipoCartao tipoCartao, TipoEmissaoCartao tipoEmissao, BigDecimal limite) {
+    public CartaoEntity(Long id, Long clienteId, Long contaId, Long solicitacaoId, String numero, String cvv, LocalDateTime dataVencimento, LocalDateTime dataCriacao, StatusCartao status, String motivoStatus, TipoCartao tipoCartao, TipoEmissao tipoEmissao, BigDecimal limite) {
         this.id = id;
         this.clienteId = clienteId;
         this.contaId = contaId;
@@ -70,7 +67,6 @@ public class CartaoEntity {
         this.numero = numero;
         this.cvv = cvv;
         this.dataVencimento = dataVencimento;
-        this.nome = nome;
         this.dataCriacao = dataCriacao;
         this.status = status;
         this.motivoStatus = motivoStatus;
@@ -135,14 +131,6 @@ public class CartaoEntity {
         this.dataVencimento = dataVencimento;
     }
 
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
     public LocalDateTime getDataCriacao() {
         return dataCriacao;
     }
@@ -175,11 +163,11 @@ public class CartaoEntity {
         this.tipoCartao = tipoCartao;
     }
 
-    public TipoEmissaoCartao getTipoEmissao() {
+    public TipoEmissao getTipoEmissao() {
         return tipoEmissao;
     }
 
-    public void setTipoEmissao(TipoEmissaoCartao tipoEmissao) {
+    public void setTipoEmissao(TipoEmissao tipoEmissao) {
         this.tipoEmissao = tipoEmissao;
     }
 

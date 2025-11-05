@@ -1,14 +1,13 @@
 package com.example.gw_gerenciador_cartoes.infra.adapter;
 
 import com.example.gw_gerenciador_cartoes.application.mapper.CartaoMapper;
-import com.example.gw_gerenciador_cartoes.domain.enums.StatusCartao;
 import com.example.gw_gerenciador_cartoes.domain.model.Cartao;
 import com.example.gw_gerenciador_cartoes.domain.ports.CartaoRepositoryPort;
 import com.example.gw_gerenciador_cartoes.infra.entity.CartaoEntity;
-import com.example.gw_gerenciador_cartoes.infra.exception.CartaoNotFoundException;
 import com.example.gw_gerenciador_cartoes.infra.repository.CartaoRepositoryJpa;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -43,14 +42,13 @@ public class CartaoRepositoryAdapter implements CartaoRepositoryPort {
                 });
     }
 
-
     @Override
     public boolean existePorNumero(String numero) {
         return jpaRepository.existsByNumero(numero);
     }
 
     @Override
-    public Optional<Cartao> buscarPorNumeroECvv(String numero, String cvv) {
+    public Optional<Cartao> buscarCartaoPorNumeroECvv(String numero, String cvv) {
         return jpaRepository.findByNumeroAndCvv(numero, cvv)
                 .map(mapper::toDomain);
     }
@@ -62,14 +60,27 @@ public class CartaoRepositoryAdapter implements CartaoRepositoryPort {
     }
 
     @Override
-    public Optional<Cartao> atualizarStatus(Long cartaoId, StatusCartao novoStatus, String motivo) {
-        return jpaRepository.findById(cartaoId)
-                .map(entity -> {
-                    Cartao cartao = mapper.toDomain(entity);
-                    cartao.atualizarStatus(novoStatus, motivo);
-                    CartaoEntity atualizado = mapper.toEntity(cartao);
-                    CartaoEntity saved = jpaRepository.save(atualizado);
-                    return mapper.toDomain(saved);
-                });
+    public Page<Cartao> buscarTodos(Pageable pageable) {
+        return jpaRepository.findAll(pageable)
+                .map(mapper::toDomain);
+
+    }
+
+    @Override
+    public Page<Cartao> buscarPorFiltros(Long clienteId, String numero, String cvv, Pageable pageable) {
+        Specification<CartaoEntity> spec = (root, query, cb) -> cb.conjunction();
+
+        if (clienteId != null) {
+            spec = spec.and((root, query, cb) -> cb.equal(root.get("clienteId"), clienteId));
+        }
+        if (numero != null && !numero.isBlank()) {
+            spec = spec.and((root, query, cb) -> cb.equal(root.get("numero"), numero));
+        }
+        if (cvv != null && !cvv.isBlank()) {
+            spec = spec.and((root, query, cb) -> cb.equal(root.get("cvv"), cvv));
+        }
+
+        return jpaRepository.findAll(spec, pageable)
+                .map(mapper::toDomain);
     }
 }

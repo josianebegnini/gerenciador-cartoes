@@ -11,6 +11,7 @@ import { AuthService } from '../../service/auth.service';
   templateUrl: './login.html',
   styleUrls: ['./login.css']
 })
+
 export class LoginComponent {
   loginForm: FormGroup;
 
@@ -20,7 +21,7 @@ export class LoginComponent {
     private authService: AuthService
   ) {
     this.loginForm = this.fb.group({
-      username: ['', Validators.required],
+      username: ['', [Validators.required]],
       password: ['', [Validators.required, Validators.minLength(6)]],
     });
   }
@@ -34,7 +35,6 @@ export class LoginComponent {
     const credentials = this.loginForm.value;
     this.authService.login(credentials).subscribe({
       next: (response) => {
-        console.log('Login realizado com sucesso:', response);
         this.router.navigate(['/home']);
       },
       error: (err) => {

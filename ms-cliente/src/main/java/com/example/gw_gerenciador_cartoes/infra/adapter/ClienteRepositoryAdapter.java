@@ -8,31 +8,29 @@ import com.example.gw_gerenciador_cartoes.infra.adapter.util.UtilsMapper;
 import com.example.gw_gerenciador_cartoes.infra.entity.ClienteEntity;
 import com.example.gw_gerenciador_cartoes.infra.entity.ContaEntity;
 import com.example.gw_gerenciador_cartoes.infra.entity.EnderecoEntity;
-import com.example.gw_gerenciador_cartoes.infra.messaging.CriarCartaoProducer;
 import com.example.gw_gerenciador_cartoes.infra.repository.ClienteJpaRepository;
 import com.example.gw_gerenciador_cartoes.infra.repository.ContaJpaRepository;
 import com.example.gw_gerenciador_cartoes.infra.repository.EnderecoJpaRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import static com.example.gw_gerenciador_cartoes.infra.adapter.util.UtilsMapper.*;
 
-@Component
+@Repository
 public class ClienteRepositoryAdapter implements ClienteRepositoryPort {
 
     private final ClienteJpaRepository clienteJpaRepository;
     private final EnderecoJpaRepository enderecoJpaRepository;
     private final ContaJpaRepository contaJpaRepository;
-    private final CriarCartaoProducer criarCartaoProducer;
 
-    public ClienteRepositoryAdapter(ClienteJpaRepository clienteJpaRepository, EnderecoJpaRepository enderecoJpaRepository, ContaJpaRepository contaJpaRepository, CriarCartaoProducer criarCartaoProducer) {
+    public ClienteRepositoryAdapter(ClienteJpaRepository clienteJpaRepository, EnderecoJpaRepository enderecoJpaRepository, ContaJpaRepository contaJpaRepository) {
         this.clienteJpaRepository = clienteJpaRepository;
         this.enderecoJpaRepository = enderecoJpaRepository;
         this.contaJpaRepository = contaJpaRepository;
-        this.criarCartaoProducer = criarCartaoProducer;
     }
 
     @Override

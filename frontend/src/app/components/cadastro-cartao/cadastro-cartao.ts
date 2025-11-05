@@ -8,6 +8,7 @@ import { Cartao } from "../../models/cartao";
 import { MenuLateral } from "../menu-lateral/menu-lateral";
 import { FormsModule } from "@angular/forms";
 import { CommonModule } from "@angular/common";
+import { CartaoRequestDTO } from "../../models/cartao-dtos";
 
 @Component({
   selector: "app-cadastro-cartao",
@@ -16,22 +17,29 @@ import { CommonModule } from "@angular/common";
   standalone: true,
   imports: [MenuLateral, FormsModule, CommonModule],
 })
+
 export class CadastroCartaoComponent implements OnDestroy {
   private destroy$ = new Subject<void>();
+
+  // ========== VÁRIAVEIS DE BUSCA DE CLIENTE ========== //
 
   cpfBusca = "";
   clienteEncontrado: Cliente | null = null;
   buscandoCliente = false;
   erroCliente = "";
+  isLoading = false;
+
+  // ========== LIMPANDO CONTENTEUDO DO FORM ========== //
 
   cartao: Cartao = {
     clienteId: 0,
     numero: "",
     cvv: "",
     dataVencimento: "",
-    tipoCartao: "debito",
-    status: "desativado",
-    categoriaCartao: "fisico",
+    status: 'ATIVADO',
+    tipoCartao: "",
+    tipoEmissao: "",
+    limite: 0
   };
 
   carregando = false;
@@ -48,6 +56,8 @@ export class CadastroCartaoComponent implements OnDestroy {
     this.destroy$.next();
     this.destroy$.complete();
   }
+
+  // ========== NAVEGAÇÃO ========== //
 
   novoCliente(): void {
     this.router.navigate(["/cadastro-cliente"]);
@@ -69,12 +79,14 @@ export class CadastroCartaoComponent implements OnDestroy {
     this.router.navigate(["/login"]);
   }
 
+  // ========== FORMATAÇÃO ========== //
+
   formatarCPF(event: Event): void {
     const input = event.target as HTMLInputElement;
     this.cpfBusca = this.clienteService.aplicarMascaraCPF(input.value);
   }
 
-  formatarNumeroCartao(event: Event): void {
+  /*formatarNumeroCartao(event: Event): void {
     const input = event.target as HTMLInputElement;
     this.cartao.numero = this.cartaoService.mascaraNumeroCartao(input.value);
   }
@@ -82,52 +94,88 @@ export class CadastroCartaoComponent implements OnDestroy {
   formatarCVV(event: Event): void {
     const input = event.target as HTMLInputElement;
     this.cartao.cvv = this.cartaoService.aplicarMascaraCVV(input.value);
-  }
+  }*/
 
   formatarDataVencimento(event: Event): void {
     const input = event.target as HTMLInputElement;
-    this.cartao.dataVencimento = this.cartaoService.formatarDataVencimento(input.value);
+    const formatado = this.cartaoService.formatarDataVencimento(input.value);
+    input.value = formatado;
+    this.cartao.dataVencimento = formatado;
   }
+
+  formatarLimite(event: Event): void {
+  const input = event.target as HTMLInputElement;
+  const valorDigitado = input.value;
+
+  const valorNumerico = valorDigitado.replace(/\D/g, "");
+
+  if (!valorNumerico) {
+    input.value = "";
+    this.cartao.limite = 0;
+    return;
+  }
+
+  const valorFloat = Number(valorNumerico) / 100;
+  this.cartao.limite = valorFloat;
+
+  input.value = valorFloat.toLocaleString("pt-BR", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+}
+
+  // ========== CARREGAR DADOS DO CLIENTE ========== //
 
   buscarClientePorCPF(): void {
-    const valido = this.clienteService.validarCPF(this.cpfBusca);
+  const valido = this.clienteService.validarCPF(this.cpfBusca);
 
-    if (!valido) {
-      console.error("CPF inválido", this.cpfBusca);
-      this.erroCliente = "CPF inválido";
-      return;
-    }
+  if (!valido) {
+    console.error("CPF inválido", this.cpfBusca);
+    this.erroCliente = "CPF inválido";
+    return;
+  }
 
-    this.buscandoCliente = true;
-    this.erroCliente = "";
-    this.clienteEncontrado = null;
+  this.buscandoCliente = true;
+  this.erroCliente = "";
+  this.clienteEncontrado = null;
 
-    const cpfLimpo = this.cpfBusca.replace(/\D/g, "");
+  const cpfLimpo = this.cpfBusca.replace(/\D/g, "");
 
-    this.clienteService
-      .getClientes()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (clientes) => {
-          const cliente = clientes.find((c: { cpf: string }) => c.cpf.replace(/\D/g, "") === cpfLimpo);
+  this.clienteService
+    .getClientes()
+    .pipe(takeUntil(this.destroy$))
+    .subscribe({
+      next: (res) => {
+        const clientes = Array.isArray(res) ? res : res.content;
 
-          if (cliente) {
-            this.clienteEncontrado = cliente;
-            this.cartao.clienteId = cliente.id!;
-            this.erroCliente = "";
-          } else {
-            this.erroCliente = "Cliente não encontrado. Verifique o CPF ou cadastre o cliente primeiro.";
-          }
-
-          this.buscandoCliente = false;
-        },
-        error: (error) => {
-          console.error("[v0] Erro ao buscar cliente:", error);
+        if (!Array.isArray(clientes)) {
+          console.error("Resposta inesperada da API:", res);
           this.erroCliente = "Erro ao buscar cliente. Tente novamente.";
           this.buscandoCliente = false;
-        },
-      });
-  }
+          return;
+        }
+
+        const cliente = clientes.find((c: { cpf: string }) => c.cpf.replace(/\D/g, "") === cpfLimpo);
+
+        if (cliente) {
+          this.clienteEncontrado = cliente;
+          this.cartao.clienteId = cliente.id!;
+          this.erroCliente = "";
+        } else {
+          this.erroCliente = "Cliente não encontrado. Verifique o CPF ou cadastre o cliente primeiro.";
+        }
+
+        this.buscandoCliente = false;
+      },
+      error: (error) => {
+        console.error("Erro ao buscar cliente:", error);
+        this.erroCliente = "Erro ao buscar cliente. Tente novamente.";
+        this.buscandoCliente = false;
+      },
+    });
+}
+
+  // ========== VALIDAÇÃO ========== //
 
   validarFormulario(): boolean {
     if (!this.clienteEncontrado) {
@@ -145,35 +193,74 @@ export class CadastroCartaoComponent implements OnDestroy {
     return true;
   }
 
-  criarCartao(): void {
-    this.mensagemErro = "";
-    this.mensagemSucesso = "";
 
-    if (!this.validarFormulario()) {
-      return;
-    }
 
-    this.carregando = true;
+  converterDataVencimentoParaISO(data: string): string {
+    const [mes, ano] = data.split("/");
 
-    this.cartaoService
-      .createCartao(this.cartao)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: () => {
-          this.mensagemSucesso = "Cartão cadastrado com sucesso!";
-          this.carregando = false;
+    if (!mes || !ano || mes.length !== 2 || ano.length !== 2) return "";
 
-          setTimeout(() => {
-            this.router.navigate(["/home"]);
-          }, 1000);
-        },
-        error: (error) => {
-          console.error("[v0] Erro ao criar cartão:", error);
-          this.mensagemErro = error.error?.message || "Erro ao cadastrar cartão. Tente novamente.";
-          this.carregando = false;
-        },
-      });
+    const anoCompleto = 2000 + parseInt(ano, 10); // Ex: "25" vira "2025"
+    const mesNum = parseInt(mes, 10);
+
+    // Retorna no formato "yyyy-MM-ddT00:00:00"
+    return `${anoCompleto}-${String(mesNum).padStart(2, "0")}-01T00:00:00`;
   }
+
+
+
+  // ========== CRIAÇÃO DE CARTÃO ========== //
+
+  criarCartao(): void {
+  this.mensagemErro = "";
+  this.mensagemSucesso = "";
+
+  if (!this.validarFormulario()) {
+    return;
+  }
+
+  const dto: Cartao = {
+    clienteId: this.cartao.clienteId,
+    numero: this.cartao.numero.replace(/\s+/g, ""), // remove espaços
+    cvv: this.cartao.cvv,
+    dataVencimento: this.converterDataVencimentoParaISO(this.cartao.dataVencimento), // yyyy-MM-dd
+    status: this.cartao.status || "ativado", // enum padronizado
+    motivoStatus: "Cadastro inicial",
+    tipoCartao: (this.cartao.tipoCartao || "CREDITO").toUpperCase(), // enum padronizado
+    tipoEmissao: (this.cartao.tipoEmissao || "VIRTUAL").toUpperCase(), // enum padronizado
+    limite: parseFloat(
+      typeof this.cartao.limite === "string"
+        ? parseFloat(this.cartao.limite).toFixed(2)
+        : this.cartao.limite > 0
+          ? this.cartao.limite.toFixed(2)
+          : "1000.00"
+    )
+  };
+
+  this.carregando = true;
+
+  this.cartaoService
+    .createCartao(dto)
+    .pipe(takeUntil(this.destroy$))
+    .subscribe({
+      next: () => {
+        this.mensagemSucesso = "Cartão cadastrado com sucesso!";
+        this.carregando = false;
+
+        setTimeout(() => {
+          this.router.navigate(["/home"]);
+        }, 1000);
+      },
+      error: (error) => {
+        console.error("Erro ao criar cartão:", error);
+        this.mensagemErro = error.error?.message || "Erro ao cadastrar cartão. Tente novamente.";
+        this.carregando = false;
+      },
+    });
+}
+
+
+  // ========== CANCELANDO OPERAÇÃO DE CADASTRO ========== //
 
   cancelar(): void {
     this.cpfBusca = "";
@@ -184,9 +271,10 @@ export class CadastroCartaoComponent implements OnDestroy {
       numero: "",
       cvv: "",
       dataVencimento: "",
-      tipoCartao: "debito",
-      status: "desativado",
-      categoriaCartao: "fisico",
+      status: 'ATIVADO',
+      tipoCartao: "",
+      tipoEmissao: "",
+      limite: 0
     };
     this.mensagemErro = "";
     this.mensagemSucesso = "";

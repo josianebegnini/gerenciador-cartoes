@@ -1,3 +1,5 @@
+// ========== DTOS PARA OPERAÇÕES HTTP ========== //
+
 export interface LoginRequest {
   username: string
   password: string
@@ -20,8 +22,10 @@ export interface CadastroRequest {
   email: string;
 }
 
+
 export interface RegisterRequest {
   username: string;
   password: string;
-  confirmPassword?: string; 
+  confirmPassword?: string;
+  email: string;
 }

@@ -1,6 +1,8 @@
 package com.example.gw_gerenciador_cartoes.infra.entity;
 
-import com.example.gw_gerenciador_cartoes.domain.enums.StatusSolicitacao;
+import com.example.gw_gerenciador_cartoes.infra.enums.StatusSolicitacao;
+import com.example.gw_gerenciador_cartoes.infra.enums.TipoCartao;
+import com.example.gw_gerenciador_cartoes.infra.enums.TipoEmissao;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -26,6 +28,9 @@ public class SolicitacaoCartaoEntity {
     @Column(name = "nome", nullable = true)
     private String nome;
 
+    @Column(name = "email", nullable = true)
+    private String email;
+
     @Column(name = "motivo_rejeicao", nullable = true)
     private String motivoRejeicao;
 
@@ -33,11 +38,13 @@ public class SolicitacaoCartaoEntity {
     @Column(name = "status", nullable = true)
     private StatusSolicitacao status;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "tipo_cartao", nullable = true)
-    private String tipoCartao;
+    private TipoCartao tipoCartao;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "tipo_emissao", nullable = true)
-    private String tipoEmissao;
+    private TipoEmissao tipoEmissao;
 
     @Column(name = "data_solicitacao", nullable = true)
     private LocalDateTime dataSolicitacao;
@@ -89,6 +96,14 @@ public class SolicitacaoCartaoEntity {
         this.nome = nome;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     public String getMotivoRejeicao() {
         return motivoRejeicao;
     }
@@ -105,19 +120,19 @@ public class SolicitacaoCartaoEntity {
         this.status = status;
     }
 
-    public String getTipoCartao() {
+    public TipoCartao getTipoCartao() {
         return tipoCartao;
     }
 
-    public void setTipoCartao(String tipoCartao) {
+    public void setTipoCartao(TipoCartao tipoCartao) {
         this.tipoCartao = tipoCartao;
     }
 
-    public String getTipoEmissao() {
+    public TipoEmissao getTipoEmissao() {
         return tipoEmissao;
     }
 
-    public void setTipoEmissao(String tipoEmissao) {
+    public void setTipoEmissao(TipoEmissao tipoEmissao) {
         this.tipoEmissao = tipoEmissao;
     }
 

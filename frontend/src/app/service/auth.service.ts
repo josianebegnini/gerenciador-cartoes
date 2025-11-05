@@ -1,12 +1,13 @@
 import { Injectable } from "@angular/core";
-import { HttpClient } from "@angular/common/http";
-import { BehaviorSubject, Observable, tap } from "rxjs";
+import { HttpClient, HttpHeaders } from "@angular/common/http";
+import { BehaviorSubject, map, Observable, tap } from "rxjs";
 import { environment } from "../enviroments/enviroment";
-import type { LoginRequest, LoginResponse, User, RegisterRequest } from "../models/auth.models";
+import type { LoginRequest, LoginResponse, User, RegisterRequest, CadastroRequest } from "../models/auth.models";
 
 @Injectable({
   providedIn: "root",
 })
+
 export class AuthService {
   private apiUrl = `${environment.apiUrl}/auth`;
   private currentUserSubject = new BehaviorSubject<User | null>(this.getUserFromStorage());
@@ -14,28 +15,28 @@ export class AuthService {
 
   constructor(private http: HttpClient) {}
 
-  // ---------- LOGIN ----------
+  // ========== OPERAÇÕES HTTP ========== //
+
   login(credentials: LoginRequest): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(`${this.apiUrl}/login`, credentials).pipe(
       tap((res) => this.setSession(res))
     );
   }
 
-  // ---------- REGISTER ----------
-  register(data: RegisterRequest): Observable<LoginResponse> {
+  register(data: CadastroRequest): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(`${this.apiUrl}/register`, data).pipe(
       tap((res) => this.setSession(res))
     );
   }
 
-  // ---------- LOGOUT ----------
   logout(): void {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     this.currentUserSubject.next(null);
   }
 
-  // ---------- GETTERS ----------
+  // ========== UTILITÁRIOS ========== //
+
   getToken(): string | null {
     return localStorage.getItem("token");
   }
@@ -53,7 +54,8 @@ export class AuthService {
     return user?.roles?.includes(role) ?? false;
   }
 
-  // ---------- VALIDATIONS ----------
+  // ========== VALIDAÇÃO ========== //
+
   validateCredentials(username: string, password: string): { valid: boolean; errors: string[] } {
     const errors: string[] = [];
 
@@ -64,7 +66,6 @@ export class AuthService {
     return { valid: errors.length === 0, errors };
   }
 
-  // ---------- PRIVATE ----------
   private setSession(authResult: LoginResponse): void {
     const user: User = { username: authResult.username, roles: authResult.roles };
 
