@@ -26,6 +26,7 @@ O sistema foi construído seguindo os princípios de **arquitetura distribuída*
 ## 🧩 Estrutura e Arquitetura
 
 gerenciador-cartoes/
+
 │
 ├── gateway/ # API Gateway com autenticação JWT
 ├── ms-auth/ # Microsserviço de autenticação e controle de usuários
@@ -43,7 +44,7 @@ gerenciador-cartoes/
 
 O sistema segue o padrão **API Gateway + Microsserviços**, com comunicação via HTTP REST e mensageria via **RabbitMQ**.
 
-
+![img.png](img.png)
 
 
 Cada serviço é independente e possui seu próprio `pom.xml`, podendo ser executado individualmente ou em conjunto via Docker.
